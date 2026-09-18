@@ -1,0 +1,21 @@
+{
+  "short_name": "Lobbz",
+  "name": "Lobbz — O lobby da sua galera!",
+  "icons": [
+    {
+      "src": "img/lobbziconeapp1.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/lobbziconeapp1.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/inicio.html",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait"
+}

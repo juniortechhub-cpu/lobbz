@@ -1,2 +1,0 @@
-# lobbz
-Site Lobbz - Chat 

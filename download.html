@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instalar Aplicativo - Lobbz</title>
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .page-container {
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 32px 24px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .icon-wrapper {
+      width: 64px;
+      height: 64px;
+      background: rgba(37, 99, 235, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+    }
+
+    .icon-wrapper svg {
+      width: 32px;
+      height: 32px;
+      stroke: #2563eb;
+    }
+
+    .icon-wrapper.success {
+      background: rgba(34, 197, 94, 0.1);
+      animation: pulse 2s infinite;
+    }
+
+    .icon-wrapper.success svg {
+      stroke: #22c55e;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-direction: column;
+    }
+
+    .btn-primary {
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #94a3b8;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      color: #ffffff;
+    }
+
+    .thank-you-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 40px 24px;
+      display: none;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .thank-you-card.active {
+      display: block;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background-color: #334155;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background-color: #22c55e;
+      transition: width 0.05s linear;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-container">
+    
+    <div class="thank-you-card" id="thankYouCard">
+      <div class="icon-wrapper success">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <h2>Instalação Concluída!</h2>
+      <p>O Lobbz foi adicionado com sucesso ao seu dispositivo!</p>
+      
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <a href="/inicio.html" class="btn-primary">
+        Abrir o Lobbz Agora
+      </a>
+    </div>
+
+  </div>
+
+  <div class="modal-overlay" id="downloadModal">
+    <div class="modal-card">
+      <div class="icon-wrapper">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        </svg>
+      </div>
+      <h2>Instalar Aplicativo</h2>
+      <p>Deseja instalar o Web App oficial no seu dispositivo para ter um acesso mais rápido e uma experiência em tela cheia?</p>
+      
+      <div class="btn-group">
+        <button class="btn-primary" id="btnConfirmarDownload">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Instalar Agora
+        </button>
+        <button class="btn-secondary" onclick="fecharModal()">Agora não</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+    let deferredPrompt;
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('downloadModal').classList.add('active');
+    });
+
+    document.getElementById('btnConfirmarDownload').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('downloadModal').classList.remove('active');
+          exibirAgradecimento();
+        }
+        deferredPrompt = null;
+      } else {
+        alert("Para instalar, use o menu do navegador (três pontinhos) e clique em 'Adicionar à tela inicial'.");
+      }
+    });
+
+    function fecharModal() {
+      document.getElementById('downloadModal').classList.remove('active');
+    }
+
+    function exibirAgradecimento() {
+      document.getElementById('thankYouCard').classList.add('active');
+      const progressBar = document.getElementById('progressBar');
+      progressBar.style.width = '100%';
+    }
+  </script>
+
+</body>
+</html>
