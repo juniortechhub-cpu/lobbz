@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Conta - Chat App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {background-color: #0F1117; color: #FFFFFF; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;}
+    .register-card {background-color: #1E2230; border-radius: 24px; padding: 32px 24px; max-width: 420px; width: 100%; border: 1px solid rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);}
+    .icon-box {width: 70px; height: 70px; border-radius: 20px; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center;}
+    .register-card h2 { font-size: 22px; font-weight: 700; text-align: center; }
+    .register-card p { color: #94A3B8; font-size: 13px; text-align: center; margin-top: -12px; }
+    .input-group {width: 100%; display: flex; flex-direction: column; gap: 6px; text-align: left;}
+    .input-group label { font-size: 12px; font-weight: 600; color: #94A3B8; }
+    .input-wrapper {position: relative; display: flex; align-items: center;}
+    .input-wrapper svg {position: absolute; left: 14px; stroke: #94A3B8;}
+    .input-wrapper input {width: 100%; background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px 14px 12px 42px; color: #FFFFFF; font-size: 14px; outline: none; font-family: inherit;}
+    .input-wrapper input:focus {border-color: #0066FF;}
+    .btn-register {width: 100%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: #FFFFFF; border: none; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; margin-top: 10px;}
+    .login-box {margin-top: 10px; font-size: 13px; color: #94A3B8; text-align: center;}
+    .login-box a {color: #0066FF; font-weight: 600; text-decoration: none;}
+    .login-box a:hover {text-decoration: underline;}
+    .btn-back {background: none; border: none; color: #94A3B8; font-size: 12px; cursor: pointer; text-decoration: none;}
+    .btn-back:hover {color: #FFFFFF; text-decoration: underline;}
+    .hidden { display: none !important; }
+    .checkbox-group {display: flex; align-items: center; gap: 10px; margin-top: 4px; margin-bottom: 4px;}
+    .checkbox-group input[type="checkbox"] {width: 18px; height: 18px; accent-color: #0066FF; cursor: pointer;}
+    .checkbox-group label {font-size: 12px; color: #94A3B8; cursor: pointer; line-height: 1.4;}
+    .checkbox-group label a {color: #0066FF; text-decoration: none;}
+    .checkbox-group label a:hover {text-decoration: underline;}
+    .email-notice {background-color: rgba(0, 102, 255, 0.1); border: 1px solid rgba(0, 102, 255, 0.3); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;}
+    .email-notice svg { flex-shrink: 0; stroke: #0066FF; }
+    .email-notice p { color: #94A3B8; font-size: 12px; text-align: left; margin-top: 0; line-height: 1.4;}
+    .email-notice p strong { color: #FFFFFF;}
+    .upload-grid { display: flex; flex-direction: column; gap: 10px; width: 100%;}
+    .file-box { position: relative; width: 100%; border: 1px dashed rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 12px 14px; background-color: rgba(255, 255, 255, 0.03); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s;}
+    .file-box:hover { border-color: #0066FF; background-color: rgba(0, 102, 255, 0.05);}
+    .file-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;}
+    .file-box-icon { width: 36px; height: 36px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
+    .file-box-icon svg { stroke: #0066FF;}
+    .file-box-text { display: flex; flex-direction: column; text-align: left;}
+    .file-box-text span { font-size: 13px; font-weight: 600; color: #FFFFFF;}
+    .file-box-text small { font-size: 11px; color: #94A3B8;}
+    /* ICONE DE CARREGAMENTO NO INPUT */
+    .spinner-icon {position: absolute; right: 14px; width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.1); border-top-color: #0066FF; border-radius: 50%; animation: spin 0.8s linear infinite;}
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    /* MODAL DE CAPTURA DE CÂMERA */
+    .camera-modal {position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0F1117; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; padding: 20px;}
+    .camera-container {position: relative; width: 100%; max-width: 360px; height: 480px;
+      background-color: #000; border-radius: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center;}
+    .camera-container video { width: 100%; height: 100%; object-fit: cover; }  
+    /* GUIA PARA A SELFIE (OVAL) */
+    .guide-selfie {position: absolute; width: 220px; height: 290px; border: 3px dashed #0066FF; border-radius: 50%; box-shadow: 0 0 0 9999px rgba(15, 17, 23, 0.75); pointer-events: none;}
+    /* GUIA PARA OS DOCUMENTOS (RETANGULAR / VERTICAL) */
+    .guide-doc {position: absolute; width: 240px; height: 380px; border: 3px dashed #0066FF; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(15, 17, 23, 0.75); pointer-events: none;}
+    .camera-controls {display: flex; gap: 16px; margin-top: 20px; width: 100%; max-width: 360px;}
+    .btn-capture {flex: 1; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: #FFF; border: none; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer;}
+    .btn-close-cam {background: rgba(255, 255, 255, 0.1); color: #FFF; border: none; padding: 14px 20px; border-radius: 12px; cursor: pointer;}
+  </style>
+</head>
+<body>
+
+  <div class="register-card">
+    <div class="icon-box">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="8.5" cy="7" r="4"></circle>
+        <line x1="20" y1="8" x2="20" y2="14"></line>
+        <line x1="23" y1="11" x2="17" y2="11"></line>
+      </svg>
+    </div>
+
+    <h2>Crie sua Conta</h2>
+    <p>Cadastre-se para interagir no chat, transmitir ao vivo e gerenciar seu canal.</p>
+
+    <!-- ETAPA 1 -->
+    <form id="step1" style="width: 100%; display: flex; flex-direction: column; gap: 14px;" onsubmit="proximaEtapa(event)">
+        <div class="input-group">
+        <label>Nome Completo</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <input type="text" id="nomeCompleto" placeholder="Seu nome" required>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Nome de Usuário (@canal)</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path></svg>
+          <input type="text" id="input-username" placeholder="seuusuario" required>
+          <div id="loading-username" class="spinner-icon hidden"></div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>E-mail</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <input type="email" id="input-email" placeholder="seu@email.com" required>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Senha</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <input type="password" id="input-password" placeholder="••••••••" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-register">Continuar Cadastro</button>
+    </form>
+
+    <!-- ETAPA 2 (Inicia oculta) -->
+    <form id="step2" class="hidden" style="width: 100%; display: flex; flex-direction: column; gap: 14px;" onsubmit="irParaEtapa3(event)">
+      
+      <!-- AVISO DE E-MAIL ENVIADO -->
+      <div class="email-notice">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+          <path d="M18 12l2 2 4-4"></path>
+        </svg>
+        <p>Enviamos um link de verificação para o seu e-mail cadastrado. Por favor, <strong>confirme seu e-mail</strong> para ativar a conta.</p>
+      </div>
+
+      <div class="input-group">
+        <label>Telefone / WhatsApp</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          <input type="tel" id="input-phone" placeholder="(00) 00000-0000" maxlength="15" oninput="mascaraTelefone(this); validarEtapa2();" required>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Data de Nascimento</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <input type="text" id="input-birth" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this); validarEtapa2();" required>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>CPF</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          <input type="text" id="input-cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this); validarEtapa2();" required>
+          <div id="loading-cpf" class="spinner-icon hidden"></div>
+        </div>
+      </div>
+
+      <!-- Checkbox Termos e Políticas -->
+      <div class="checkbox-group">
+        <input type="checkbox" id="terms" onchange="validarEtapa2()">
+        <label for="terms">
+          Li e concordo com os <a href="termosdeuso.html" target="_blank">Termos de Uso</a> e <a href="politicasdeprivacidade.html" target="_blank">Políticas de Privacidade</a>.
+        </label>
+      </div>
+
+      <button type="submit" id="btn-finalizar" class="btn-register" disabled style="opacity: 0.5; cursor: not-allowed;">Continuar Cadastro</button>
+      <button type="button" class="btn-back" onclick="voltarParaEtapa1()">Voltar para a etapa anterior</button>
+    </form>
+
+    <!-- ETAPA 3 (Verificação de Identidade) -->
+    <form id="step3" class="hidden" style="width: 100%; display: flex; flex-direction: column; gap: 14px;" onsubmit="fazerCadastro(event)">
+      
+      <!-- AVISO LEGAL DE VERIFICAÇÃO -->
+      <div class="email-notice">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <p>Por exigência da legislação brasileira (<strong>Lei nº 8.069/1990 - ECA</strong> e <strong>Lei nº 12.965/2014</strong>), precisamos verificar sua identidade e idade para garantir a segurança na plataforma.</p>
+      </div>
+
+      <div class="upload-grid">
+        <!-- 1. FRENTE DO DOCUMENTO -->
+        <div class="file-box" onclick="abrirCamera('frente')">
+          <div class="file-box-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><line x1="15" y1="8" x2="17" y2="8"></line><line x1="15" y1="12" x2="17" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
+          </div>
+          <div class="file-box-text">
+            <span>Frente do Documento (RG ou CNH)</span>
+            <small id="txt-frente">Clique para abrir a câmera traseira</small>
+          </div>
+        </div>
+
+        <!-- 2. VERSO DO DOCUMENTO -->
+        <div class="file-box" onclick="abrirCamera('verso')">
+          <div class="file-box-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="7" y1="16" x2="13" y2="16"></line></svg>
+          </div>
+          <div class="file-box-text">
+            <span>Verso do Documento</span>
+            <small id="txt-verso">Clique para abrir a câmera traseira</small>
+          </div>
+        </div>
+
+        <!-- 3. SELFIE -->
+        <div class="file-box" onclick="abrirCamera('selfie')">
+          <div class="file-box-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          </div>
+          <div class="file-box-text">
+            <span>Selfie do Rosto</span>
+            <small id="txt-selfie">Clique para abrir a câmera frontal</small>
+          </div>
+        </div>
+      </div>
+
+    <!-- ESTRUTURA DA CÂMERA (MODAL OCULTO) -->
+    <div id="camera-modal" class="camera-modal hidden">
+      <div class="camera-container">
+        <video id="video-stream" autoplay playsinline></video>
+        <div id="camera-guide"></div>
+      </div>
+      <div class="camera-controls">
+        <button type="button" class="btn-close-cam" onclick="fecharCamera()">Cancelar</button>
+        <button type="button" class="btn-capture" onclick="tirarFoto()">Tirar Foto</button>
+      </div>
+    </div>
+
+      <button type="submit" class="btn-register">Finalizar Cadastro</button>
+      <button type="button" class="btn-back" onclick="voltarParaEtapa2()">Voltar para a etapa anterior</button>
+    </form>
+
+    <div class="login-box">
+      Já tem uma conta? <a href="login.html">Fazer login</a>
+    </div>
+
+    <button class="btn-back" onclick="window.location.href='inicio.html'">Voltar para o Início sem login</button>
+  </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+      import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U",
+        authDomain: "lobbz-a2e5b.firebaseapp.com",
+        projectId: "lobbz-a2e5b",
+        storageBucket: "lobbz-a2e5b.firebasestorage.app",
+        messagingSenderId: "54068991558",
+        appId: "1:54068991558:web:c4ccbe7ac3d53de0d80e07"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      let usuarioAtualUid = null;
+
+      //================================================
+      //    ETAPA 1: CRIAR CONTA E SALVAR
+      //================================================
+      async function proximaEtapa(event) {
+        event.preventDefault();
+
+        const nome = document.getElementById('nomeCompleto').value.trim();
+        const username = document.getElementById('input-username').value.trim().toLowerCase();
+        const email = document.getElementById('input-email').value.trim();
+        const senha = document.getElementById('input-password').value;
+        const loader = document.getElementById('loading-username');
+
+        try {
+          loader.classList.remove('hidden');
+
+          const userQuery = query(collection(db, "usuarios"), where("nomeUsuario", "==", username));
+          const querySnapshot = await getDocs(userQuery);
+
+          if (!querySnapshot.empty) {
+            loader.classList.add('hidden');
+            alert("Este nome de usuário já está em uso. Escolha outro.");
+            return;
+          }
+
+          let user = auth.currentUser;
+
+          if (!user) {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+            user = userCredential.user;
+            await sendEmailVerification(user);
+          }
+
+          usuarioAtualUid = user.uid;
+
+          await setDoc(doc(db, "usuarios", username), {
+            uidAuth: user.uid,
+            nomeCompleto: nome,
+            nomeUsuario: username,
+            email: email,
+            etapaAtual: 2,
+            cadastroConcluido: false,
+            criadoEm: new Date().toISOString()
+          }, { merge: true });
+
+          window.docIdAtual = username;
+          loader.classList.add('hidden');
+
+          document.getElementById('step1').classList.add('hidden');
+          document.getElementById('step2').classList.remove('hidden');
+          validarEtapa2();
+        } catch (error) {
+          loader.classList.add('hidden');
+          if (error.code === 'auth/email-already-in-use') {
+            try {
+              const cred = await signInWithEmailAndPassword(auth, email, senha);
+              usuarioAtualUid = cred.user.uid;
+              window.docIdAtual = username;
+              document.getElementById('step1').classList.add('hidden');
+              document.getElementById('step2').classList.remove('hidden');
+              validarEtapa2();
+            } catch (err) {
+              alert("E-mail já cadastrado. Verifique sua senha para continuar.");
+            }
+          } else {
+            alert("Erro ao avançar: " + error.message);
+          }
+        }
+      }
+
+      //================================================
+      //    ETAPA 2: ATUALIZAR DADOS PESSOAIS
+      //================================================
+      async function irParaEtapa3(event) {
+        event.preventDefault();
+
+        const telefone = document.getElementById('input-phone').value.trim();
+        const dataNasc = document.getElementById('input-birth').value.trim();
+        const cpf = document.getElementById('input-cpf').value.trim();
+        const loader = document.getElementById('loading-cpf');
+
+        try {
+          loader.classList.remove('hidden');
+
+          const cpfQuery = query(collection(db, "usuarios"), where("cpf", "==", cpf));
+          const cpfSnapshot = await getDocs(cpfQuery);
+
+          if (!cpfSnapshot.empty) {
+            loader.classList.add('hidden');
+            alert("Este CPF já está cadastrado no sistema.");
+            return;
+          }
+
+          if (window.docIdAtual) {
+            await updateDoc(doc(db, "usuarios", window.docIdAtual), {
+              telefone: telefone,
+              dataNascimento: dataNasc,
+              cpf: cpf,
+              termosAceitos: true,
+              etapaAtual: 3
+            });
+          }
+
+          loader.classList.add('hidden');
+          document.getElementById('step2').classList.add('hidden');
+          document.getElementById('step3').classList.remove('hidden');
+        } catch (error) {
+          loader.classList.add('hidden');
+          alert("Erro ao salvar etapa 2: " + error.message);
+        }
+      }
+
+      function voltarParaEtapa1() {
+        document.getElementById('step2').classList.add('hidden');
+        document.getElementById('step1').classList.remove('hidden');
+      }
+
+      function voltarParaEtapa2() {
+        document.getElementById('step3').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+      }
+
+      // MASCARAS DE DADOS
+        function mascaraTelefone(input) {
+          let value = input.value.replace(/\D/g, "");
+          if (value.length > 11) value = value.slice(0, 11);
+          value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
+          value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+          input.value = value;
+        }
+
+        function mascaraData(input) {
+          let value = input.value.replace(/\D/g, "");
+          if (value.length > 8) value = value.slice(0, 8);
+          value = value.replace(/(\d{2})(\d)/, "$1/$2");
+          value = value.replace(/(\d{2})(\d)/, "$1/$2");
+          input.value = value;
+        }
+
+        function mascaraCPF(input) {
+          let value = input.value.replace(/\D/g, "");
+          if (value.length > 11) value = value.slice(0, 11);
+          value = value.replace(/(\d{3})(\d)/, "$1.$2");
+          value = value.replace(/(\d{3})(\d)/, "$1.$2");
+          value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+          input.value = value;
+        }
+
+        function validarEtapa2() {
+          const phone = document.getElementById('input-phone').value.trim();
+          const birth = document.getElementById('input-birth').value.trim();
+          const cpf = document.getElementById('input-cpf').value.trim();
+          const terms = document.getElementById('terms').checked;
+          const btn = document.getElementById('btn-finalizar');
+
+          const phoneValido = phone.length >= 14;
+          const birthValida = birth.length === 10;
+          const cpfValido = cpf.length === 14;
+
+          if (phoneValido && birthValida && cpfValido && terms) {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+          } else {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+          }
+        }
+
+        // FUNÇÃO SALVAR DADOS NO FIRESTORE
+      async function fazerCadastro(event) {
+        event.preventDefault();
+
+        try {
+          if (window.docIdAtual) {
+            await updateDoc(doc(db, "usuarios", window.docIdAtual), {
+              fotosDocumento: {
+                frente: fotosCapturadas.frente,
+                verso: fotosCapturadas.verso,
+                selfie: fotosCapturadas.selfie
+              },
+              saldoMoedas: 0,
+              etapaAtual: 3,
+              cadastroConcluido: true
+            });
+          }
+
+          alert("Cadastro finalizado com sucesso!");
+          window.location.href = 'login.html';
+        } catch (error) {
+          alert("Erro ao finalizar cadastro: " + error.message);
+        }
+      }
+
+        function atualizarNomeArquivo(input, idTexto) {
+          const campoTexto = document.getElementById(idTexto);
+          if (input.files && input.files[0]) {
+            campoTexto.innerText = "Arquivo selecionado: " + input.files[0].name;
+            campoTexto.style.color = "#0066FF";
+          } else {
+            campoTexto.innerText = "Clique para selecionar a imagem";
+            campoTexto.style.color = "#94A3B8";
+          }
+        }
+
+        //================================================
+        //    FUNÇÃO DA CAMERA PARA VALIDAÇÃO DE IDENTIDADE
+        //================================================
+        let streamAtual = null;
+        let campoAtual = '';
+
+        async function abrirCamera(tipo) {
+          campoAtual = tipo;
+          const modal = document.getElementById('camera-modal');
+          const video = document.getElementById('video-stream');
+          const guide = document.getElementById('camera-guide');
+
+          // Seleciona a câmera (frontal para selfie, traseira para documentos)
+          const isSelfie = tipo === 'selfie';
+          const facingMode = isSelfie ? "user" : { exact: "environment" };
+
+          // Define a máscara/guia visual
+          guide.className = isSelfie ? "guide-selfie" : "guide-doc";
+
+          modal.classList.remove('hidden');
+
+          try {
+            streamAtual = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: facingMode }
+            });
+            video.srcObject = streamAtual;
+          } catch (err) {
+            // Caso falhe a câmera traseira exata, tenta a padrão da traseira
+            try {
+              streamAtual = await navigator.mediaDevices.getUserMedia({ video: true });
+              video.srcObject = streamAtual;
+            } catch (error) {
+              alert("Não foi possível acessar a câmera do seu dispositivo.");
+              fecharCamera();
+            }
+          }
+        }
+
+        function fecharCamera() {
+          if (streamAtual) {
+            streamAtual.getTracks().forEach(track => track.stop());
+          }
+          document.getElementById('camera-modal').classList.add('hidden');
+        }
+
+        let fotosCapturadas = { frente: null, verso: null, selfie: null };
+
+        function tirarFoto() {
+          const video = document.getElementById('video-stream');
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 480;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          
+          fotosCapturadas[campoAtual] = canvas.toDataURL('image/jpeg', 0.7);
+
+          const texto = document.getElementById('txt-' + campoAtual);
+          texto.innerText = "Foto capturada com sucesso!";
+          texto.style.color = "#0066FF";
+          fecharCamera();
+        }
+
+
+      window.proximaEtapa = proximaEtapa;
+      window.irParaEtapa3 = irParaEtapa3;
+      window.voltarParaEtapa1 = voltarParaEtapa1;
+      window.voltarParaEtapa2 = voltarParaEtapa2;
+      window.fazerCadastro = fazerCadastro;
+      window.mascaraTelefone = mascaraTelefone;
+      window.mascaraData = mascaraData;
+      window.mascaraCPF = mascaraCPF;
+      window.validarEtapa2 = validarEtapa2;
+      window.abrirCamera = abrirCamera;
+      window.fecharCamera = fecharCamera;
+      window.tirarFoto = tirarFoto;
+    </script>
+</body>
+</html>

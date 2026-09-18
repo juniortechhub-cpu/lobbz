@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat App - Tela Inicial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {box-sizing: border-box; margin: 0; padding: 0;}
+
+    body {background-color: #0F1117; color: #FFFFFF; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden;}
+/* Sidebar (Menu Lateral) */
+    .sidebar {width: 100%; background-color: #1E2230; border-right: none; display: none; flex-direction: column; flex: 1;}
+    .header-sidebar {padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
+    .logo {font-size: 20px; font-weight: 700; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px;}
+    .chat-list {flex: 1; overflow-y: auto; padding: 12px; display: flex; align-items: center; justify-content: center;}
+    .chat-item {display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; cursor: pointer; transition: background-color 0.2s;}
+    .chat-item:hover {background-color: rgba(255, 255, 255, 0.05);}
+    .chat-item.active {background-color: rgba(0, 102, 255, 0.15); border: 1px solid rgba(0, 102, 255, 0.3);}
+    .avatar-container {position: relative;}
+    .avatar {width: 44px; height: 44px; border-radius: 50%; background-color: #7C3AED; display: flex; align-items: center; justify-content: center; font-weight: 600;}
+    .status-dot {width: 12px; height: 12px; background-color: #10B981; border: 2px solid #1E2230; border-radius: 50%; position: absolute; bottom: 0; right: 0;}
+    .chat-info {flex: 1; overflow: hidden;}
+    .chat-info-top {display: flex; justify-content: space-between; margin-bottom: 4px;}
+    .chat-name {font-size: 14px; font-weight: 600;}
+    .chat-time {font-size: 11px; color: #94A3B8;}
+    .chat-last-message {font-size: 13px; color: #94A3B8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    /* Main Area (Área Principal) */
+    .main-content {flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px;}
+    .welcome-card {background-color: #1E2230; border-radius: 24px; padding: 40px; max-width: 480px; width: 100%; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; align-items: center; gap: 20px;}
+    .icon-box {width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center;}
+    .welcome-card h2 {font-size: 24px; font-weight: 700;}
+    .welcome-card p {color: #94A3B8; font-size: 14px; line-height: 1.5;}
+    .btn-start {background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: #FFFFFF; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px;}
+    /* Top Header Tabs para a Tela de Início */
+    .top-feed-header {position: absolute; top: 20px; display: flex; align-items: center; gap: 24px; background-color: rgba(30, 34, 48, 0.8); backdrop-filter: blur(10px); padding: 10px 24px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.08); z-index: 10;}
+    .top-tab {color: #94A3B8; font-size: 14px; font-weight: 600; text-decoration: none; padding-bottom: 4px; position: relative; cursor: pointer; transition: color 0.2s;}
+    .top-tab:hover {color: #FFFFFF;}
+    .top-tab.active {color: #FFFFFF;}
+    .top-tab.active::after {content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 16px; height: 3px; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); border-radius: 2px;}
+    .top-tab.live-tab {display: flex; align-items: center; gap: 6px;}
+    .live-dot {width: 8px; height: 8px; background-color: #FF2D55; border-radius: 50%;}
+    /* Ajuste para posicionar a barra no fundo */
+    .main-content {position: relative; padding-bottom: 90px;}
+    /* Barra Inferior (Bottom Nav) */
+    .bottom-nav {position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #1E2230; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);}
+    .nav-item {display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 4px; padding: 8px 14px; width: 72px; border-radius: 12px; color: #94A3B8; text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;}
+    .nav-item span {text-align: center; width: 100%; display: block;}
+    .nav-item:hover {color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05);}
+    .nav-item.active {color: #FFFFFF; background: linear-gradient(135deg, rgba(0, 102, 255, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%); border: 1px solid rgba(0, 102, 255, 0.4);}
+    /* Destaque Especial na aba Ao Vivo */
+    .nav-item.live-item {color: #FFFFFF; background: linear-gradient(135deg, #FF2D55 0%, #FF3B30 100%); border-radius: 14px; padding: 10px 14px; box-shadow: 0 4px 15px rgba(255, 45, 85, 0.4); transform: translateY(-4px);}
+    .nav-item.live-item:hover {box-shadow: 0 6px 20px rgba(255, 45, 85, 0.6);}
+    .badge-live {background-color: #FF2D55; color: white; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;}
+    /* Responsividade para Telas Pequenas (Mobile) */
+    /* Ajuste para PC (Desktop) */
+        @media (min-width: 769px) {
+        .sidebar {
+            width: 100%;
+        }
+        }
+
+    /* Responsividade para Mobile */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+
+      .sidebar {
+        width: 100% !important;
+        max-width: 100vw;
+        border-right: none;
+        flex: 1;
+      }
+
+      .main-content {
+        width: 100%;
+        padding: 16px;
+        padding-bottom: 100px;
+      }
+
+      .welcome-card {
+        padding: 20px;
+        width: 100%;
+      }
+
+      .bottom-nav {
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 95%;
+        max-width: 380px;
+        padding: 6px;
+        gap: 2px;
+        justify-content: space-between;
+        z-index: 999;
+      }
+
+      .nav-item {
+        width: auto;
+        flex: 1;
+        padding: 6px 2px;
+        font-size: 10px;
+      }
+
+      .nav-item.live-item {
+        padding: 6px 4px;
+      }
+    }
+    /* Campo de Pesquisa do Chat */
+    .chat-search-box {width: 100%; max-width: 480px; margin-top: 16px; display: flex; align-items: center; background-color: #1E2230; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 10px 14px; gap: 10px;}
+    .chat-search-input {background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 14px; width: 100%; font-family: 'Plus Jakarta Sans', sans-serif;}
+    .chat-search-input::placeholder {color: #94A3B8;}
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Navegação Inferior -->
+<!-- Barra de Navegação Inferior -->
+<!-- Conteúdo Principal / Tela Inicial (Feed de Vídeos) -->
+ <!-- ========================================== -->
+  <!-- ÁREA PRINCIPAL -->
+  <!-- ========================================== -->
+<div class="main-content">
+    
+    <!-- CONTEÚDO DA ABA INÍCIO -->
+    <div id="tab-inicio-content" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+      <div class="top-feed-header">
+        <a href="#" class="top-tab">Seguindo</a>
+        <a href="#" class="top-tab active">Descubra</a>
+        <a href="#" class="top-tab live-tab">
+          <span class="live-dot"></span>
+          Ao Vivo
+        </a>
+      </div>
+
+      <div class="welcome-card">
+        <div class="icon-box">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+        </div>
+        <h2>Feed de Transmissões</h2>
+        <p>Explore canais, descubra novos criadores de conteúdo e assista a transmissões ao vivo agora mesmo.</p>
+        <button class="btn-start">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+          Explorar Vídeos
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ABA 2: CHAT (CÓDIGO INDIVIDUAL) -->
+    <!-- ========================================== -->
+    <div id="tab-chat-content" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+      
+      <!-- 1. Menu Superior do Chat -->
+      <div class="top-feed-header" style="position: relative; top: 0; margin-bottom: 16px;">
+        <a href="#" class="top-tab active" id="chat-tab-amigos" onclick="mudarSubAbaChat('amigos'); return false;">Amigos</a>
+        <a href="#" class="top-tab" id="chat-tab-aleatorio" onclick="mudarSubAbaChat('aleatorio'); return false;">Chat Aleatório</a>
+      </div>
+
+      <!-- 2. Barra de Pesquisa Estilo WhatsApp (LOGOMANTE ABAIXO DO MENU) -->
+      <div class="chat-search-box" style="margin-top: 0; margin-bottom: 20px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" class="chat-search-input" placeholder="Pesquisar conversas ou pessoas...">
+      </div>
+
+      <!-- 3. Card Central -->
+      <div class="welcome-card">
+        <div class="icon-box">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <h2 id="chat-title">Conversas de Amigos</h2>
+        <p id="chat-subtitle">Selecione um amigo para começar a conversar.</p>
+      </div>
+
+    </div>
+    <!-- ========================================== -->
+    <!-- ABA 4: MEU CANAL  -->
+    <!-- ========================================== -->
+    <div id="tab-canal-content" style="display: none; flex-direction: column; align-items: center; width: 100%; max-width: 480px;">
+      <div class="welcome-card" style="width: 100%;">
+        <div class="avatar-container">
+          <div class="avatar" style="width: 70px; height: 70px; font-size: 24px;">U</div>
+        </div>
+        <h2>Seu Canal</h2>
+        <p>@usuario123</p>
+        
+        <!-- Métricas Rápidas -->
+        <div style="display: flex; justify-content: space-around; width: 100%; border-top: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 12px 0; margin: 8px 0;">
+          <div>
+            <strong style="display: block; font-size: 16px;">0</strong>
+            <span style="font-size: 11px; color: #94A3B8;">Inscritos</span>
+          </div>
+          <div>
+            <strong style="display: block; font-size: 16px;">0</strong>
+            <span style="font-size: 11px; color: #94A3B8;">Vídeos</span>
+          </div>
+          <div>
+            <strong style="display: block; font-size: 16px;">0</strong>
+            <span style="font-size: 11px; color: #94A3B8;">Lives</span>
+          </div>
+        </div>
+
+        <button class="btn-start" style="width: 100%; justify-content: center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Editar Perfil
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ABA 5: MENU DE CONFIGURAÇÕES -->
+    <!-- ========================================== -->
+    <div id="tab-menu-content" style="display: none; flex-direction: column; align-items: center; width: 100%; max-width: 480px;">
+      <div class="welcome-card" style="width: 100%; text-align: left; align-items: stretch;">
+        <h2 style="font-size: 20px; text-align: center; margin-bottom: 10px;">Configurações</h2>
+        
+        <!-- Opção 1: Dados do Cadastro -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span style="font-size: 14px; font-weight: 600;">Dados de Cadastro</span>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- Opção 2: Notificações -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span style="font-size: 14px; font-weight: 600;">Notificações</span>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- Opção 3: Privacidade e Segurança -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span style="font-size: 14px; font-weight: 600;">Privacidade e Segurança</span>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- Opção 4: Ajuda e Suporte -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span style="font-size: 14px; font-weight: 600;">Ajuda e Suporte</span>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- Opção 5: Sair da Conta -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; cursor: pointer; color: #FF2D55;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF2D55" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span style="font-size: 14px; font-weight: 600;">Sair da Conta</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================== -->
+  <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
+  <!-- ========================================== -->
+  <div class="bottom-nav">
+    
+    <!-- 1. Início -->
+    <a href="#" id="btn-tab-inicio" class="nav-item active" onclick="mudarAba('inicio'); return false;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span>Início</span>
+    </a>
+
+    <!-- 2. Chat -->
+    <a href="#" id="btn-tab-chat" class="nav-item" onclick="mudarAba('chat'); return false;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <span>Chat</span>
+    </a>
+
+    <!-- 3. Entrar ao vivo -->
+    <a href="#" id="btn-tab-aovivo" class="nav-item live-item" onclick="alternarSubmenuLive(); return false;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+      </svg>
+      <span>Ao Vivo</span>
+    </a>
+
+    <!-- 4. Meu Canal -->
+    <a href="#" id="btn-tab-canal" class="nav-item" onclick="mudarAba('canal'); return false;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>Meu Canal</span>
+    </a>
+
+    <!-- 5. Menu -->
+    <a href="#" id="btn-tab-menu" class="nav-item" onclick="mudarAba('menu'); return false;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <span>Menu</span>
+    </a>
+  </div>
+
+  <!-- SUBMENU SELEÇÃO AO VIVO -->
+  <div id="live-submenu" style="display: none; position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background-color: #1E2230; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 12px; z-index: 1000; flex-direction: column; gap: 8px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); min-width: 220px;">
+    <p style="font-size: 11px; color: #94A3B8; text-align: center; margin-bottom: 4px; font-weight: 600; text-transform: uppercase;">Tipo de Transmissão</p>
+    
+    <!-- Opção 1: Câmera -->
+    <button onclick="selecionarTipoLive('camera')" style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: #FFFFFF; padding: 10px 14px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 13px; font-weight: 600;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF2D55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+      </svg>
+      Câmera do Aparelho
+    </button>
+
+    <!-- Opção 2: Tela do Celular -->
+    <button onclick="selecionarTipoLive('tela')" style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: #FFFFFF; padding: 10px 14px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 13px; font-weight: 600;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+      </svg>
+      Tela do Celular
+    </button>
+  </div>
+
+
+
+
+<script>
+// Pega o nome do usuário presente na URL (ex: ?user=nomeusuario)
+    const urlParams = new URLSearchParams(window.location.search);
+    const nomeUsuario = urlParams.get('user');
+
+    // Se existir um nome de usuário na URL, define usuarioLogado como true
+    let usuarioLogado = nomeUsuario ? true : false;
+
+    function mudarAba(nomeAba) {
+      // Esconde o submenu Ao Vivo se estiver aberto
+      document.getElementById('live-submenu').style.display = 'none';
+
+      // Se tentar acessar qualquer aba privada sem estar logado, envia para a tela de login
+      if (!usuarioLogado && nomeAba !== 'inicio') {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // 1. Esconde todos os conteúdos
+      document.getElementById('tab-inicio-content').style.display = 'none';
+      document.getElementById('tab-chat-content').style.display = 'none';
+      document.getElementById('tab-canal-content').style.display = 'none';
+      document.getElementById('tab-menu-content').style.display = 'none';
+
+      // 2. Remove o destaque visual de todos os botões
+      document.getElementById('btn-tab-inicio').classList.remove('active');
+      document.getElementById('btn-tab-chat').classList.remove('active');
+      document.getElementById('btn-tab-canal').classList.remove('active');
+      document.getElementById('btn-tab-menu').classList.remove('active');
+
+      // 3. Exibe a aba solicitada e ativa o botão correspondente
+      if (nomeAba === 'inicio') {
+        document.getElementById('tab-inicio-content').style.display = 'flex';
+        document.getElementById('btn-tab-inicio').classList.add('active');
+      } else if (nomeAba === 'chat') {
+        document.getElementById('tab-chat-content').style.display = 'flex';
+        document.getElementById('btn-tab-chat').classList.add('active');
+      } else if (nomeAba === 'canal') {
+        document.getElementById('tab-canal-content').style.display = 'flex';
+        document.getElementById('btn-tab-canal').classList.add('active');
+      } else if (nomeAba === 'menu') {
+        document.getElementById('tab-menu-content').style.display = 'flex';
+        document.getElementById('btn-tab-menu').classList.add('active');
+      }
+    }
+    //=========================================================
+    // Função para abrir ou fechar o submenu do botão Ao Vivo
+    //=========================================================
+    function alternarSubmenuLive() {
+      if (!usuarioLogado) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const menu = document.getElementById('live-submenu');
+      if (menu.style.display === 'none' || menu.style.display === '') {
+        menu.style.display = 'flex';
+      } else {
+        menu.style.display = 'none';
+      }
+    }
+
+    // Função executada ao selecionar Câmera ou Tela no Ao Vivo
+    function selecionarTipoLive(tipo) {
+      document.getElementById('live-submenu').style.display = 'none';
+      if (tipo === 'camera') {
+        alert('Iniciando transmissão via Câmera...');
+      } else if (tipo === 'tela') {
+        alert('Iniciando transmissão da Tela do Celular...');
+      }
+    }
+
+    //=========================================================
+    // Função para alternar entre "Amigos" e "Chat Aleatório"
+    //=========================================================
+    function mudarSubAbaChat(tipo) {
+      const tabAmigos = document.getElementById('chat-tab-amigos');
+      const tabAleatorio = document.getElementById('chat-tab-aleatorio');
+      const chatTitle = document.getElementById('chat-title');
+      const chatSubtitle = document.getElementById('chat-subtitle');
+
+      if (tipo === 'amigos') {
+        tabAmigos.classList.add('active');
+        tabAleatorio.classList.remove('active');
+        chatTitle.innerText = 'Conversas de Amigos';
+        chatSubtitle.innerText = 'Selecione um amigo para começar a conversar.';
+      } else if (tipo === 'aleatorio') {
+        tabAleatorio.classList.add('active');
+        tabAmigos.classList.remove('active');
+        chatTitle.innerText = 'Chat Aleatório';
+        chatSubtitle.innerText = 'Procurando alguém para você conversar agora...';
+      }
+    }
+    
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview da Identidade Visual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0F1117;
+      color: #FFFFFF;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    p.subtitle {
+      color: #94A3B8;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      margin-bottom: 16px;
+      border-left: 4px solid #7C3AED;
+      padding-left: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background-color: #1E2230;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .color-swatch {
+      height: 100px;
+      width: 100%;
+    }
+
+    .card-info {
+      padding: 12px;
+    }
+
+    .card-info h3 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .card-info code {
+      color: #94A3B8;
+      font-size: 12px;
+    }
+
+    /* Gradient Card Special */
+    .gradient-card {
+      grid-column: span 2;
+    }
+    @media (max-width: 500px) {
+      .gradient-card { grid-column: span 1; }
+    }
+
+    /* Interactive Component Mockup */
+    .mockup-container {
+      background-color: #1E2230;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .chat-bubble-sent {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%);
+      color: #FFFFFF;
+      padding: 12px 18px;
+      border-radius: 16px 16px 2px 16px;
+      max-width: 70%;
+      font-size: 14px;
+    }
+
+    .chat-bubble-received {
+      align-self: flex-start;
+      background-color: #0F1117;
+      color: #FFFFFF;
+      padding: 12px 18px;
+      border-radius: 16px 16px 16px 2px;
+      max-width: 70%;
+      font-size: 14px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-danger {
+      background-color: #FF3B30;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .badge-live {
+      background-color: #FF2D55;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Paleta de Cores e Interface</h1>
+    <p class="subtitle">Modo Escuro • Identidade Visual para Chat & Streaming</p>
+
+    <div class="section-title">1. Cores Principais e Gradiente</div>
+    <div class="grid">
+      <div class="card">
+        <div class="color-swatch" style="background-color: #0066FF;"></div>
+        <div class="card-info">
+          <h3>Azul Elétrico</h3>
+          <code>#0066FF</code>
+          <h6>Transmite confiança, tecnologia e clareza para a parte de bate-papo e estrutura de rede.</h6>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="color-swatch" style="background-color: #7C3AED;"></div>
+        <div class="card-info">
+          <h3>Roxo Neon</h3>
+          <code>#7C3AED</code>
+          <h6>Representa criatividade, transmissões ao vivo e a dinâmica de salas interativas.</h6>
+        </div>
+      </div>
+
+      <div class="card gradient-card">
+        <div class="color-swatch" style="background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%);"></div>
+        <div class="card-info">
+          <h3>Gradiente Marca (Azul → Roxo)</h3>
+          <code>linear-gradient(135deg, #0066FF, #7C3AED)</code>
+          <h6>Esse degradê é perfeito para o logotipo, botões principais de ação (como "Iniciar Chat" ou "Entrar na Live") e bordas de avatares quando o usuário está online.</h6>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">2. Destaque e Ação (Accent)</div>
+    <div class="grid">
+      <div class="card">
+        <div class="color-swatch" style="background-color: #FF3B30;"></div>
+        <div class="card-info">
+          <h3>Vermelho Alerta</h3>
+          <code>#FF3B30</code>
+          <h6>Excelente para botões de "Encerrar Chamada", badges de "AO VIVO", notificações não lidas e detalhes de destaque secundários.</h6>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="color-swatch" style="background-color: #FF2D55;"></div>
+        <div class="card-info">
+          <h3>Rosa Coral (Live)</h3>
+          <code>#FF2D55</code>
+          <h6>Excelente para botões de "Encerrar Chamada", badges de "AO VIVO", notificações não lidas e detalhes de destaque secundários.</h6>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">3. Base e Fundo (Dark Mode)</div>
+    <div class="grid">
+      <div class="card">
+        <div class="color-swatch" style="background-color: #0F1117;"></div>
+        <div class="card-info">
+          <h3>Fundo Principal</h3>
+          <code>#0F1117</code>
+          <h6>Preto Profundo Grafite (#0F1117) em vez de preto puro, dando uma sensação mais moderna e suave.</h6>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="color-swatch" style="background-color: #1E2230;"></div>
+        <div class="card-info">
+          <h3>Cards e Módulos</h3>
+          <code>#1E2230</code>
+          <h6>Cinza Escuro Neutro (#1E2230) para destacar balões de mensagem, caixas de vídeo e menus laterais.</h6>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="color-swatch" style="background-color: #94A3B8;"></div>
+        <div class="card-info">
+          <h3>Texto Secundário</h3>
+          <code>#94A3B8</code>
+          <h6>Branco Puro (#FFFFFF) para títulos e Cinza Claro (#94A3B8) para textos secundários e metadados de hora/status.</h6>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">4. Simulação Prática de Elementos</div>
+    <div class="mockup-container">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 600;">Sala de Chat</span>
+        <span class="badge-live">AO VIVO</span>
+      </div>
+
+      <div class="chat-bubble-received">
+        E aí! Preparado para começar o teste do chat de texto?
+        "Fundo Cinza Escuro (#1E2230) com texto branco."
+      </div>
+
+      <div class="chat-bubble-sent">
+        Com certeza! O gradiente nos balões de envio ficou excelente.
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary">Iniciar Conexão</button>
+        <button class="btn-danger">Sair</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
