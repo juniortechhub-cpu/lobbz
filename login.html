@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Chat App</title>
+  <link id="app-favicon" rel="icon" type="image/png" href="">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -26,6 +27,14 @@
     .register-box {margin-top: 10px; font-size: 13px; color: #94A3B8; text-align: center;}
     .register-box a {color: #0066FF; font-weight: 600; text-decoration: none;}
     .register-box a:hover {text-decoration: underline;}
+    /* ESTILOS DA TELA DE CARREGAMENTO (LOADING) */
+    #loading-screen {position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 17, 23, 0.85); backdrop-filter: blur(8px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; gap: 16px;}
+    .astro-box {width: 130px; height: 130px; animation: floatAstro 2.5s ease-in-out infinite;}
+    .loading-text {color: #94A3B8; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;}
+    @keyframes floatAstro {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(3deg); }
+    }
   </style>
 </head>
 <body>
@@ -42,7 +51,7 @@
     <h2>Acesse sua Conta</h2>
     <p>Faça login para ter acesso completo ao chat, transmissões e ao seu perfil.</p>
 
-    <form style="width: 100%; display: flex; flex-direction: column; gap: 16px;" onsubmit="fazerLogin(event)">
+    <form id="form-login" style="width: 100%; display: flex; flex-direction: column; gap: 16px;">
       
       <!-- Campo E-mail -->
       <div class="input-group">
@@ -76,10 +85,41 @@
     <button class="btn-back" onclick="window.location.href='inicio.html'">Voltar para o Início sem login</button>
   </div>
 
+  <!-- TELA DE LOADING COM ASTRONAUTA -->
+  <div id="loading-screen">
+    <div class="astro-box">
+      <svg viewBox="0 0 200 200" fill="none">
+        <path d="M 60 145 Q 40 160 50 175 Q 70 165 75 145 Z" fill="#FF3B30" />
+        <path d="M 62 148 Q 48 158 55 168 Q 68 160 72 148 Z" fill="#FFA100" />
+        <rect x="55" y="105" width="30" height="45" rx="10" fill="url(#gradSplash)" transform="rotate(-25 55 105)" />
+        <ellipse cx="100" cy="125" rx="32" ry="38" fill="#E2E8F0" />
+        <ellipse cx="100" cy="125" rx="26" ry="32" fill="#FFFFFF" />
+        <rect x="80" y="150" width="16" height="25" rx="8" fill="#CBD5E1" />
+        <rect x="104" y="150" width="16" height="25" rx="8" fill="#CBD5E1" />
+        <rect x="76" y="168" width="20" height="12" rx="6" fill="#7C3AED" />
+        <rect x="104" y="168" width="20" height="12" rx="6" fill="#7C3AED" />
+        <path d="M 70 115 Q 55 125 65 140" stroke="#CBD5E1" stroke-width="12" stroke-linecap="round" fill="none" />
+        <path d="M 130 115 Q 150 110 155 95" stroke="#CBD5E1" stroke-width="12" stroke-linecap="round" fill="none" />
+        <circle cx="156" cy="92" r="8" fill="#0066FF" />
+        <circle cx="100" cy="75" r="38" fill="#FFFFFF" />
+        <circle cx="100" cy="75" r="34" fill="#1E2230" />
+        <ellipse cx="100" cy="75" rx="28" ry="20" fill="url(#gradSplash)" />
+        <path d="M 82 65 Q 100 58 118 65" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.7" fill="none" />
+        <defs>
+          <linearGradient id="gradSplash" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0066FF" />
+            <stop offset="100%" stop-color="#7C3AED" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="loading-text">Entrando ...</div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U",
@@ -96,6 +136,7 @@
 
     async function fazerLogin(event) {
       event.preventDefault();
+      document.getElementById('loading-screen').style.display = 'flex';
 
       const email = document.getElementById('login-email').value.trim();
       const senha = document.getElementById('login-password').value;
@@ -129,12 +170,14 @@
           alert("Perfil de usuário não encontrado.");
         }
       } catch (error) {
+        document.getElementById('loading-screen').style.display = 'none';
         alert("Erro ao fazer login: " + error.message);
       }
     }
-
-    window.fazerLogin = fazerLogin;
+    //  FUNÇÃO DE ENTRAR COM ENTER
+    const formLogin = document.getElementById('form-login');
+    formLogin.addEventListener('submit', fazerLogin);
   </script>
-
+<script type="module" src="appinfo.js"></script>
 </body>
 </html>

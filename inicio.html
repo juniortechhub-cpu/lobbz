@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat App - Tela Inicial</title>
+  <link id="app-favicon" rel="icon" type="image/png" href="">
   <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,6 +119,10 @@
     .chat-search-input::placeholder {color: #94A3B8;}
   </style>
 </head>
+<!-- Firebase App e Firestore (SDKs Oficiais) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <body>
 
   <!-- Barra de Navegação Inferior -->
@@ -161,25 +166,67 @@
     <!-- ========================================== -->
     <!-- ABA 2: CHAT (CÓDIGO INDIVIDUAL) -->
     <!-- ========================================== -->
-    <div id="tab-chat-content" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+    <div id="tab-chat-content" style="display: none; flex-direction: column; align-items: center; width: 100%; position: absolute; top: 10px; left: 0; right: 0; margin: 0 auto; padding: 0 16px;">
       
-      <!-- 1. Menu Superior do Chat -->
-      <div class="top-feed-header" style="position: relative; top: 0; margin-bottom: 16px;">
-        <a href="#" class="top-tab active" id="chat-tab-amigos" onclick="mudarSubAbaChat('amigos'); return false;">Amigos</a>
-        <a href="#" class="top-tab" id="chat-tab-aleatorio" onclick="mudarSubAbaChat('aleatorio'); return false;">Chat Aleatório</a>
+      <!-- 1. Menu Superior do Chat (Alinhado à esquerda com ícones à direita) -->
+      <div class="top-feed-header" style="position: relative; top: 0; margin-bottom: 16px; width: 100%; max-width: 480px; justify-content: space-between; align-items: center; padding: 10px 16px;">
+        
+        <!-- Lado Esquerdo: Abas de navegação -->
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <a href="#" class="top-tab active" id="chat-tab-amigos" onclick="mudarSubAbaChat('amigos'); return false;">Amigos</a>
+          <a href="#" class="top-tab" id="chat-tab-aleatorio" onclick="mudarSubAbaChat('aleatorio'); return false;">Chat Aleatório</a>
+        </div>
+
+        <!-- Lado Direito: Ícones de Ação -->
+        <div style="display: flex; align-items: center; gap: 14px; position: relative;">
+          <!-- Ícone 1: Perfil com Notificação -->
+          <div style="position: relative; cursor: pointer;" onclick="alternarMenuConvites()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <line x1="20" y1="11" x2="20" y2="17"></line>
+              <line x1="17" y1="14" x2="23" y2="14"></line>
+            </svg>
+            <span id="badge-convites" style="display: none; position: absolute; top: -5px; right: -6px; background-color: #7C3AED; color: #FFFFFF; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #1E2230; text-align: center; line-height: 12px;">0</span>
+          </div>
+
+          <!-- Submenu de Convites Recebidos -->
+          <div id="submenu-convites" style="display: none; position: absolute; top: 35px; right: 0; background-color: #1E2230; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 12px; z-index: 200; width: 280px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <p style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Solicitações Recebidas</p>
+            <div id="lista-convites-recebidos">
+              <p style="font-size: 12px; color: #94A3B8; text-align: center; padding: 8px 0;">Nenhuma solicitação no momento</p>
+            </div>
+          </div>
+
+          <!-- Ícone 2: Três pontos verticais -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;">
+            <circle cx="12" cy="5" r="1"></circle>
+            <circle cx="12" cy="12" r="1"></circle>
+            <circle cx="12" cy="19" r="1"></circle>
+          </svg>
+        </div>
+
       </div>
 
-      <!-- 2. Barra de Pesquisa Estilo WhatsApp (LOGOMANTE ABAIXO DO MENU) -->
-      <div class="chat-search-box" style="margin-top: 0; margin-bottom: 20px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" class="chat-search-input" placeholder="Pesquisar conversas ou pessoas...">
+      <!-- 2. Barra de Pesquisa com Lista de Resultados (Estilo Instagram) -->
+      <div id="container-busca-chat" style="position: relative; width: 100%; max-width: 480px; margin-bottom: 20px;">
+        <div class="chat-search-box" style="margin-top: 0; margin-bottom: 0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="input-busca-chat" class="chat-search-input" placeholder="Pesquisar conversas ou pessoas..." oninput="buscarUsuarios(this.value)">
+        </div>
+
+        <!-- Lista Flutuante de Resultados/Sugestões -->
+        <div id="box-resultados-pesquisa" style="display: none; position: absolute; top: 50px; left: 0; right: 0; background-color: #1E2230; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 12px; z-index: 100; max-height: 320px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+        </div>
       </div>
 
-      <!-- 3. Card Central -->
-      <div class="welcome-card">
+      <!-- 3. Lista de Amigos e Card Central -->
+      <div id="container-lista-amigos" style="width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
+
+      <div class="welcome-card" id="card-sem-conversas">
         <div class="icon-box">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -271,10 +318,10 @@
         </div>
 
         <!-- Opção 5: Sair da Conta -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; cursor: pointer; color: #FF2D55;">
+        <div onclick="fazerLogout()" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; cursor: pointer; color: #FF2D55;">
           <div style="display: flex; align-items: center; gap: 12px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF2D55" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            <span style="font-size: 14px; font-weight: 600;">Sair da Conta</span>
+            <span style="font-size: 14px; font-weight: 600;">Sair</span>
           </div>
         </div>
 
@@ -361,13 +408,28 @@
 
 
 <script>
-// Pega o nome do usuário presente na URL (ex: ?user=nomeusuario)
+  // Pega o nome do usuário presente na URL (ex: ?user=nomeusuario)
     const urlParams = new URLSearchParams(window.location.search);
     const nomeUsuario = urlParams.get('user');
-
     // Se existir um nome de usuário na URL, define usuarioLogado como true
     let usuarioLogado = nomeUsuario ? true : false;
 
+  // CONFIGURAÇÕES DO PROJETO
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U",
+      authDomain: "lobbz-a2e5b.firebaseapp.com",
+      projectId: "lobbz-a2e5b",
+      storageBucket: "lobbz-a2e5b.firebasestorage.app",
+      messagingSenderId: "540689991558",
+      appId: "1:540689991558:web:c4ccbe7ac3d53de0d80e07"
+    };
+
+  // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    window.db = db;
+
+    //  FUNÇÃO DE MUDANÇA DE ABAS
     function mudarAba(nomeAba) {
       // Esconde o submenu Ao Vivo se estiver aberto
       document.getElementById('live-submenu').style.display = 'none';
@@ -440,23 +502,316 @@
       const tabAleatorio = document.getElementById('chat-tab-aleatorio');
       const chatTitle = document.getElementById('chat-title');
       const chatSubtitle = document.getElementById('chat-subtitle');
+      const containerBusca = document.getElementById('container-busca-chat');
 
       if (tipo === 'amigos') {
         tabAmigos.classList.add('active');
         tabAleatorio.classList.remove('active');
         chatTitle.innerText = 'Conversas de Amigos';
         chatSubtitle.innerText = 'Selecione um amigo para começar a conversar.';
+        if (containerBusca) containerBusca.style.display = 'block';
       } else if (tipo === 'aleatorio') {
         tabAleatorio.classList.add('active');
         tabAmigos.classList.remove('active');
         chatTitle.innerText = 'Chat Aleatório';
         chatSubtitle.innerText = 'Procurando alguém para você conversar agora...';
+        if (containerBusca) containerBusca.style.display = 'none';
       }
     }
+
+    //=========================================================
+    // Função para deslogar da conta
+    //=========================================================
+    function fazerLogout() {
+      usuarioLogado = false;
+      window.location.href = 'inicio.html';
+    }
+
+    //=========================================================
+    // FUNÇÃO DE BUSCA DE USUARIO NA ABA CHAT
+    // BUSCA DE USUÁRIOS EM TEMPO REAL NO FIRESTORE
+    //=========================================================
+    async function buscarUsuarios(texto) {
+      const boxResultados = document.getElementById('box-resultados-pesquisa');
+      const termo = texto.trim().toLowerCase().replace('@', '');
+
+      if (termo === '') {
+        boxResultados.style.display = 'none';
+        boxResultados.innerHTML = '';
+        return;
+      }
+
+      try {
+        const snapshot = await db.collection('usuarios').get();
+        let html = '';
+        let encontrados = 0;
+
+        if (!snapshot.empty) {
+          for (const doc of snapshot.docs) {
+            const u = doc.data();
+            const username = (u.username || doc.id).toString();
+            const nome = (u.nome || username).toString();
+            const verificado = u.verificado || false;
+
+            const nomeLower = nome.toLowerCase();
+            const userLower = username.toLowerCase();
+
+            if ((nomeLower.includes(termo) || userLower.includes(termo)) && encontrados < 5) {
+              if (encontrados === 0) {
+                html += '<p style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; text-align: left;">Sugestões</p>';
+              }
+
+              let jaEnviado = false;
+              const usuarioAtual = window.nomeUsuario || nomeUsuario;
+              
+              if (usuarioAtual) {
+                const checagem = await db.collection('usuarios').doc(usuarioAtual).collection('convites_enviados').doc(username).get();
+                if (checagem.exists) {
+                  jaEnviado = true;
+                }
+              }
+
+              html += criarItemUsuarioHTML({
+                nome: nome,
+                user: '@' + username,
+                verificado: verificado
+              }, jaEnviado);
+              encontrados++;
+            }
+          }
+        }
+
+        if (encontrados === 0) {
+          html = '<p style="font-size: 13px; color: #94A3B8; padding: 8px 0; text-align: center;">Nenhum usuário encontrado</p>';
+        }
+
+        boxResultados.innerHTML = html;
+        boxResultados.style.display = 'block';
+      } catch (erro) {
+        console.error('Erro ao buscar no Firestore:', erro);
+      }
+    }
+
+    function criarItemUsuarioHTML(u, jaEnviado) {
+      const inicial = u.nome.charAt(0).toUpperCase();
+      const targetUser = u.user.replace('@', '');
+      const svgVerificado = u.verificado ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="#0066FF" style="margin-left: 4px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' : '';
+
+      let botaoHTML = '';
+
+      if (jaEnviado) {
+        botaoHTML = `
+          <button id="btn-convite-${targetUser}" disabled style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #10B981; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: default; display: flex; align-items: center; gap: 4px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Enviado
+          </button>
+        `;
+      } else {
+        botaoHTML = `
+          <button id="btn-convite-${targetUser}" onclick="enviarConvite('${targetUser}')" style="background: rgba(0, 102, 255, 0.15); border: 1px solid rgba(0, 102, 255, 0.4); color: #0066FF; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">Enviar Convite</button>
+        `;
+      }
+
+      return `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px; border-radius: 10px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #FFF;">
+              ${inicial}
+            </div>
+            <div style="text-align: left;">
+              <div style="font-size: 13px; font-weight: 600; color: #FFF; display: flex; align-items: center;">
+                ${u.nome} ${svgVerificado}
+              </div>
+              <div style="font-size: 11px; color: #94A3B8;">${u.user}</div>
+            </div>
+          </div>
+          ${botaoHTML}
+        </div>
+      `;
+    }
+
+    //===========================================
+    //    FUNÇÃO DE ENVIAR E RECEBER CONVITES PARA CONVERSAS
+    //===========================================
+    // Alternar visibilidade do submenu de convites
+    function alternarMenuConvites() {
+      const menu = document.getElementById('submenu-convites');
+      menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+    }
+
+    // Enviar Convite de Conversa
+    async function enviarConvite(destinatarioUsername) {
+      if (!nomeUsuario) {
+        alert('Usuário não autenticado.');
+        return;
+      }
+      if (nomeUsuario === destinatarioUsername) {
+        alert('Você não pode enviar convite para você mesmo.');
+        return;
+      }
+
+      const btn = document.getElementById(`btn-convite-${destinatarioUsername}`);
+      if (btn) btn.innerText = 'Enviando...';
+
+      try {
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+        // 1. Grava na coleção 'convites_enviados' do remetente
+        await db.collection('usuarios').doc(nomeUsuario).collection('convites_enviados').doc(destinatarioUsername).set({
+          para: destinatarioUsername,
+          data: timestamp,
+          status: 'pendente'
+        });
+
+        // 2. Grava na coleção 'convites_recebidos' do destinatário
+        await db.collection('usuarios').doc(destinatarioUsername).collection('convites_recebidos').doc(nomeUsuario).set({
+          de: nomeUsuario,
+          data: timestamp,
+          status: 'pendente'
+        });
+
+        if (btn) {
+          btn.innerText = 'Enviado';
+          btn.style.background = 'rgba(16, 185, 129, 0.15)';
+          btn.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          btn.style.color = '#10B981';
+          btn.disabled = true;
+        }
+      } catch (erro) {
+        console.error('Erro ao enviar convite:', erro);
+        if (btn) btn.innerText = 'Enviar Convite';
+      }
+    }
+
+    // Escutar Notificações e Convites Recebidos em Tempo Real
+    // Escutar Notificações e Convites Recebidos em Tempo Real
+    function escutarConvitesRecebidos() {
+      if (!nomeUsuario) return;
+
+      db.collection('usuarios').doc(nomeUsuario).collection('convites_recebidos')
+        .where('status', '==', 'pendente')
+        .onSnapshot(snapshot => {
+          const badge = document.getElementById('badge-convites');
+          const containerLista = document.getElementById('lista-convites-recebidos');
+          
+          const quantidade = snapshot.size;
+
+          if (quantidade > 0) {
+            badge.style.display = 'block';
+            badge.innerText = quantidade;
+          } else {
+            badge.style.display = 'none';
+          }
+
+          if (snapshot.empty) {
+            containerLista.innerHTML = '<p style="font-size: 12px; color: #94A3B8; text-align: center; padding: 8px 0;">Nenhuma solicitação no momento</p>';
+            return;
+          }
+
+          let html = '';
+          snapshot.forEach(doc => {
+            const dados = doc.data();
+            const remetente = dados.de || doc.id;
+            const inicial = remetente.charAt(0).toUpperCase();
+
+            html += `
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div style="width: 30px; height: 30px; border-radius: 50%; background: #7C3AED; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #FFF;">
+                    ${inicial}
+                  </div>
+                  <span style="font-size: 12px; font-weight: 600; color: #FFF;">@${remetente}</span>
+                </div>
+                <button onclick="aceitarConvite('${remetente}')" style="background: #7C3AED; border: none; color: #FFF; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Aceitar</button>
+              </div>
+            `;
+          });
+
+          containerLista.innerHTML = html;
+        });
+    }
+
+    async function aceitarConvite(remetente) {
+      try {
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+        // 1. Cria a subcoleção 'amigos' na conta de quem recebeu
+        await db.collection('usuarios').doc(nomeUsuario).collection('amigos').doc(remetente).set({
+          amigo: remetente,
+          adicionadoEm: timestamp
+        });
+
+        // 2. Cria a subcoleção 'amigos' na conta de quem enviou
+        await db.collection('usuarios').doc(remetente).collection('amigos').doc(nomeUsuario).set({
+          amigo: nomeUsuario,
+          adicionadoEm: timestamp
+        });
+
+        // 3. Remove das solicitações de ambos sem mostrar alert
+        await db.collection('usuarios').doc(nomeUsuario).collection('convites_recebidos').doc(remetente).delete();
+        await db.collection('usuarios').doc(remetente).collection('convites_enviados').doc(nomeUsuario).delete();
+      } catch (e) {
+        console.error('Erro ao aceitar convite:', e);
+      }
+    }
+
+    function escutarAmigos() {
+      if (!nomeUsuario) return;
+
+      db.collection('usuarios').doc(nomeUsuario).collection('amigos')
+        .onSnapshot(snapshot => {
+          const container = document.getElementById('container-lista-amigos');
+          const cardVazio = document.getElementById('card-sem-conversas');
+
+          if (!container) return;
+
+          if (snapshot.empty) {
+            container.innerHTML = '';
+            if (cardVazio) cardVazio.style.display = 'flex';
+            return;
+          }
+
+          if (cardVazio) cardVazio.style.display = 'none';
+
+          let html = '';
+          snapshot.forEach(doc => {
+            const amigoUser = doc.id;
+            const inicial = amigoUser.charAt(0).toUpperCase();
+
+            html += `
+              <div style="display: flex; align-items: center; justify-content: space-between; background-color: #1E2230; padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='#1E2230'">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #FFF;">
+                    ${inicial}
+                  </div>
+                  <div style="text-align: left;">
+                    <div style="font-size: 14px; font-weight: 600; color: #FFF;">@${amigoUser}</div>
+                    <div style="font-size: 12px; color: #94A3B8;">Toque para conversar</div>
+                  </div>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+            `;
+          });
+
+          container.innerHTML = html;
+        });
+    }
+
+    // Inicializa as escutas ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!nomeUsuario) {
+        window.nomeUsuario = 'teste';
+      }
+      escutarConvitesRecebidos();
+      escutarAmigos();
+    });
     
 
 
 </script>
-
+<script type="module" src="appinfo.js"></script>
 </body>
 </html>
