@@ -145,18 +145,14 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, senha);
         const user = userCredential.user;
 
-        // Busca o documento do usuário pelo campo uidAuth
-        const q = query(collection(db, "usuarios"), where("uidAuth", "==", user.uid));
-        const querySnapshot = await getDocs(q);
+        // Busca o documento do usuário diretamente pela ID (UID)
+        const userDocRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(userDocRef);
 
-        if (!querySnapshot.empty) {
-          let nomeUsuario = "";
-          let cadastroConcluido = false;
-
-          querySnapshot.forEach((docSnap) => {
-            nomeUsuario = docSnap.data().nomeUsuario;
-            cadastroConcluido = docSnap.data().cadastroConcluido;
-          });
+        if (docSnap.exists()) {
+          const dadosUsuario = docSnap.data();
+          const nomeUsuario = dadosUsuario.nomeUsuario;
+          const cadastroConcluido = dadosUsuario.cadastroConcluido;
 
           if (cadastroConcluido === false) {
             alert("Você ainda não concluiu seu cadastro. Vamos continuar de onde parou!");

@@ -234,8 +234,7 @@
        const user = userCredential.user;
        await sendEmailVerification(user);
 
-       await setDoc(doc(db, "usuarios", username), {
-         uidAuth: user.uid,
+       await setDoc(doc(db, "usuarios", user.uid), {
          nomeCompleto: nome,
          nomeUsuario: username,
          email: email,

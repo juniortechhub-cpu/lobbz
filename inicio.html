@@ -138,6 +138,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <body>
 
@@ -513,6 +514,9 @@
   // Pega o nome do usuário presente na URL (ex: ?user=nomeusuario)
     const urlParams = new URLSearchParams(window.location.search);
     const nomeUsuario = urlParams.get('user');
+    let meuUID = null;
+    let amigoAtivoUID = null;
+    let amigoAtivoUsername = null;
     // Se existir um nome de usuário na URL, define usuarioLogado como true
     let usuarioLogado = nomeUsuario ? true : false;
 
@@ -657,14 +661,16 @@
         if (!snapshot.empty) {
           for (const doc of snapshot.docs) {
             const u = doc.data();
-            const username = (u.username || doc.id).toString();
-            const nome = (u.nome || username).toString();
+            const targetUID = doc.id;
+            
+            const usernameExibicao = (u.nomeUsuario || u.username || u.nome || '').toString();
+            const nomeExibicao = (u.nome || u.nomeUsuario || u.username || 'Usuário').toString();
             const verificado = u.verificado || false;
 
-            const nomeLower = nome.toLowerCase();
-            const userLower = username.toLowerCase();
+            const userLower = usernameExibicao.toLowerCase();
+            const nomeLower = nomeExibicao.toLowerCase();
 
-            if ((nomeLower.includes(termo) || userLower.includes(termo)) && encontrados < 5) {
+            if ((userLower.includes(termo) || nomeLower.includes(termo)) && encontrados < 5) {
               if (encontrados === 0) {
                 html += '<p style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; text-align: left;">Sugestões</p>';
               }
@@ -673,13 +679,11 @@
               const usuarioAtual = window.nomeUsuario || nomeUsuario;
               
               if (usuarioAtual) {
-                // 1. Checa se já são amigos
-                const checagemAmigo = await db.collection('usuarios').doc(usuarioAtual).collection('amigos').doc(username).get();
+                const checagemAmigo = await db.collection('usuarios').doc(usuarioAtual).collection('amigos').doc(targetUID).get();
                 if (checagemAmigo.exists) {
                   statusRelacao = 'amigo';
                 } else {
-                  // 2. Checa se o convite já foi enviado
-                  const checagemConvite = await db.collection('usuarios').doc(usuarioAtual).collection('convites_enviados').doc(username).get();
+                  const checagemConvite = await db.collection('usuarios').doc(meuUID).collection('convites_enviados').doc(targetUID).get();
                   if (checagemConvite.exists) {
                     statusRelacao = 'enviado';
                   }
@@ -687,10 +691,12 @@
               }
 
               html += criarItemUsuarioHTML({
-                nome: nome,
-                user: '@' + username,
-                verificado: verificado
+                nome: nomeExibicao,
+                user: '@' + usernameExibicao,
+                verificado: verificado,
+                targetUID: targetUID
               }, statusRelacao);
+
               encontrados++;
             }
           }
@@ -710,13 +716,14 @@
     function criarItemUsuarioHTML(u, statusRelacao) {
       const inicial = u.nome.charAt(0).toUpperCase();
       const targetUser = u.user.replace('@', '');
+      const targetUID = u.targetUID;
       const svgVerificado = u.verificado ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="#0066FF" style="margin-left: 4px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' : '';
 
       let botaoHTML = '';
 
       if (statusRelacao === 'amigo') {
         botaoHTML = `
-          <button onclick="abrirConversaAtiva('${targetUser}')" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.4); color: #7C3AED; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+          <button onclick="abrirConversaAtiva('${targetUID}', '${targetUser}')" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.4); color: #7C3AED; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
@@ -732,7 +739,13 @@
         `;
       } else {
         botaoHTML = `
-          <button id="btn-convite-${targetUser}" onclick="enviarConvite('${targetUser}')" style="background: rgba(0, 102, 255, 0.15); border: 1px solid rgba(0, 102, 255, 0.4); color: #0066FF; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">Enviar Convite</button>
+          <button id="btn-convite-${targetUser}" onclick="enviarConvite('${targetUID}', '${targetUser}')" style="background: rgba(0, 102, 255, 0.15); border: 1px solid rgba(0, 102, 255, 0.4); color: #0066FF; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Enviar Convite
+          </button>
         `;
       }
 
@@ -764,32 +777,37 @@
     }
 
     // Enviar Convite de Conversa
-    async function enviarConvite(destinatarioUsername) {
-      if (!nomeUsuario) {
+    async function enviarConvite(targetUID, targetUsername) {
+      const usuarioAtualUID = firebase.auth().currentUser ? firebase.auth().currentUser.uid : urlParams.get('uid');
+      const usuarioAtualUsername = window.nomeUsuario || nomeUsuario;
+
+      if (!usuarioAtualUID || !usuarioAtualUsername) {
         alert('Usuário não autenticado.');
         return;
       }
-      if (nomeUsuario === destinatarioUsername) {
+      if (usuarioAtualUID === targetUID) {
         alert('Você não pode enviar convite para você mesmo.');
         return;
       }
 
-      const btn = document.getElementById(`btn-convite-${destinatarioUsername}`);
+      const btn = document.getElementById(`btn-convite-${targetUsername}`);
       if (btn) btn.innerText = 'Enviando...';
 
       try {
         const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
-        // 1. Grava na coleção 'convites_enviados' do remetente
-        await db.collection('usuarios').doc(nomeUsuario).collection('convites_enviados').doc(destinatarioUsername).set({
-          para: destinatarioUsername,
+        // Save in sender's collection
+        await db.collection('usuarios').doc(usuarioAtualUID).collection('convites_enviados').doc(targetUID).set({
+          paraUID: targetUID,
+          paraUsername: targetUsername,
           data: timestamp,
           status: 'pendente'
         });
 
-        // 2. Grava na coleção 'convites_recebidos' do destinatário
-        await db.collection('usuarios').doc(destinatarioUsername).collection('convites_recebidos').doc(nomeUsuario).set({
-          de: nomeUsuario,
+        // Save in receiver's collection
+        await db.collection('usuarios').doc(targetUID).collection('convites_recebidos').doc(usuarioAtualUID).set({
+          deUID: usuarioAtualUID,
+          deUsername: usuarioAtualUsername,
           data: timestamp,
           status: 'pendente'
         });
@@ -810,233 +828,259 @@
     // Escutar Notificações e Convites Recebidos em Tempo Real
     // Escutar Notificações e Convites Recebidos em Tempo Real
     function escutarConvitesRecebidos() {
-      if (!nomeUsuario) return;
-
-      db.collection('usuarios').doc(nomeUsuario).collection('convites_recebidos')
-        .where('status', '==', 'pendente')
-        .onSnapshot(snapshot => {
-          const badge = document.getElementById('badge-convites');
-          const containerLista = document.getElementById('lista-convites-recebidos');
-          
-          const quantidade = snapshot.size;
-
-          if (quantidade > 0) {
-            badge.style.display = 'block';
-            badge.innerText = quantidade;
-          } else {
-            badge.style.display = 'none';
-          }
-
-          if (snapshot.empty) {
-            containerLista.innerHTML = '<p style="font-size: 12px; color: #94A3B8; text-align: center; padding: 8px 0;">Nenhuma solicitação no momento</p>';
-            return;
-          }
-
-          let html = '';
-          snapshot.forEach(doc => {
-            const dados = doc.data();
-            const remetente = dados.de || doc.id;
-            const inicial = remetente.charAt(0).toUpperCase();
-
-            html += `
-              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="width: 30px; height: 30px; border-radius: 50%; background: #7C3AED; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #FFF;">
-                    ${inicial}
-                  </div>
-                  <span style="font-size: 12px; font-weight: 600; color: #FFF;">@${remetente}</span>
-                </div>
-                <button onclick="aceitarConvite('${remetente}')" style="background: #7C3AED; border: none; color: #FFF; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Aceitar</button>
+      const uidLogado = meuUID;
+      if (!uidLogado) {
+        return;
+      }
+      const refConvites = db.collection('usuarios').doc(uidLogado).collection('convites_recebidos').where('status', '==', 'pendente');
+      refConvites.onSnapshot((snapshot) => {
+        const badge = document.getElementById('badge-convites');
+        const lista = document.getElementById('lista-convites-recebidos');
+        const qtd = snapshot.size;
+        if (qtd > 0) {
+          badge.style.display = 'block';
+          badge.innerText = qtd;
+        } else {
+          badge.style.display = 'none';
+        }
+        if (snapshot.empty) {
+          lista.innerHTML = '<p style="font-size:12px;color:#94A3B8;text-align:center;padding:8px 0;">Nenhuma solicitação no momento</p>';
+          return;
+        }
+        let htmlFinal = '';
+        snapshot.forEach((docSnap) => {
+          const dadosConvite = docSnap.data();
+          const uidRemetente = dadosConvite.deUID;
+          const nomeRemetente = dadosConvite.deUsername;
+          const letraInicial = nomeRemetente.charAt(0).toUpperCase();
+          htmlFinal += `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:12px;background:rgba(255,255,255,0.04);margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-weight:700;color:#FFF;">${letraInicial}</div>
+                <span style="font-size:12px;font-weight:600;color:#FFF;">@${nomeRemetente}</span>
               </div>
-            `;
-          });
-
-          containerLista.innerHTML = html;
+              <div style="display:flex;gap:6px;">
+                <button onclick="aceitarConvite('${uidRemetente}', '${nomeRemetente}')" style="background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);border:none;width:28px;height:28px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </button>
+                <button onclick="recusarConvite('${uidRemetente}')" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);width:28px;height:28px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+          `;
         });
+        lista.innerHTML = htmlFinal;
+      });
     }
 
-    async function aceitarConvite(remetente) {
+    async function aceitarConvite(remetenteUID, remetenteUsername) {
+      const usuarioAtualUID = firebase.auth().currentUser ? firebase.auth().currentUser.uid : urlParams.get('uid');
+      const usuarioAtualUsername = window.nomeUsuario || nomeUsuario;
+
       try {
         const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
-        // 1. Cria a subcoleção 'amigos' na conta de quem recebeu
-        await db.collection('usuarios').doc(nomeUsuario).collection('amigos').doc(remetente).set({
-          amigo: remetente,
+        // 1. Save in recipient's friends list
+        await db.collection('usuarios').doc(usuarioAtualUID).collection('amigos').doc(remetenteUID).set({
+          amigoUID: remetenteUID,
+          amigoUsername: remetenteUsername,
           adicionadoEm: timestamp
         });
 
-        // 2. Cria a subcoleção 'amigos' na conta de quem enviou
-        await db.collection('usuarios').doc(remetente).collection('amigos').doc(nomeUsuario).set({
-          amigo: nomeUsuario,
+        // 2. Save in sender's friends list
+        await db.collection('usuarios').doc(remetenteUID).collection('amigos').doc(usuarioAtualUID).set({
+          amigoUID: usuarioAtualUID,
+          amigoUsername: usuarioAtualUsername,
           adicionadoEm: timestamp
         });
 
-        // 3. Remove das solicitações de ambos sem mostrar alert
-        await db.collection('usuarios').doc(nomeUsuario).collection('convites_recebidos').doc(remetente).delete();
-        await db.collection('usuarios').doc(remetente).collection('convites_enviados').doc(nomeUsuario).delete();
+        // 3. Delete pending invitations
+        await db.collection('usuarios').doc(usuarioAtualUID).collection('convites_recebidos').doc(remetenteUID).delete();
+        await db.collection('usuarios').doc(remetenteUID).collection('convites_enviados').doc(usuarioAtualUID).delete();
       } catch (e) {
         console.error('Erro ao aceitar convite:', e);
       }
     }
 
+    //   FUNÇÃO DE RECUSAR CONVITE
+    async function recusarConvite(uidRemetente) {
+      const uidLogado = meuUID;
+      await db.collection('usuarios').doc(uidLogado).collection('convites_recebidos').doc(uidRemetente).delete();
+      await db.collection('usuarios').doc(uidRemetente).collection('convites_enviados').doc(uidLogado).delete();
+    }
+
+    //  FUNÇÃO DE CARREGAR AMIGOS NA LISTA DE AMIGOS
     function escutarAmigos() {
-      if (!nomeUsuario) return;
-
-      db.collection('usuarios').doc(nomeUsuario).collection('amigos')
-        .onSnapshot(snapshot => {
-          const container = document.getElementById('container-lista-amigos');
-          const cardVazio = document.getElementById('card-sem-conversas');
-
-          if (!container) return;
-
-          if (snapshot.empty) {
-            container.innerHTML = '';
-            if (cardVazio) cardVazio.style.display = 'flex';
-            return;
+      const uidLogado = meuUID;
+      if (!uidLogado) {
+        return;
+      }
+      db.collection('usuarios').doc(uidLogado).collection('amigos').onSnapshot((snapshot) => {
+        const container = document.getElementById('container-lista-amigos');
+        const cardVazio = document.getElementById('card-sem-conversas');
+        if (!container) {
+          return;
+        }
+        if (snapshot.empty) {
+          container.innerHTML = '';
+          if (cardVazio) {
+            cardVazio.style.display = 'flex';
           }
-
-          if (cardVazio) cardVazio.style.display = 'none'; 
-          container.style.display = 'flex';
-
-          let html = '';
-          snapshot.forEach(doc => {
-            const amigoUser = doc.id;
-            const inicial = amigoUser.charAt(0).toUpperCase();
-
-            html += `
-              <div onclick="abrirConversaAtiva('${amigoUser}')" style="display: flex; align-items: center; justify-content: space-between; background-color: #1E2230; padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='#1E2230'">
-                <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1; margin-right: 8px;">
-                  <div class="avatar-container" style="flex-shrink: 0;">
-                    <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #FFF;">
-                      ${inicial}
-                    </div>
-                    <div class="status-dot" id="status-dot-lista-${amigoUser}">
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#64748B" stroke="#1E2230" stroke-width="2"/></svg>
-                    </div>
-                  </div>
-                  <div style="text-align: left; overflow: hidden; flex: 1;">
-                    <div style="font-size: 14px; font-weight: 600; color: #FFF;">@${amigoUser}</div>
-                    <div id="subtexto-lista-${amigoUser}" style="font-size: 12px; color: #94A3B8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">Toque para conversar</div>
-                  </div>
+          return;
+        }
+        if (cardVazio) {
+          cardVazio.style.display = 'none';
+        }
+        container.style.display = 'flex';
+        let htmlFinal = '';
+        snapshot.forEach((docSnap) => {
+          const dadosAmigo = docSnap.data();
+          const amigoUID = dadosAmigo.amigoUID;
+          const amigoUsername = dadosAmigo.amigoUsername;
+          const inicialAmigo = amigoUsername.charAt(0).toUpperCase();
+          htmlFinal += `
+            <div onclick="abrirConversaAtiva('${amigoUID}', '${amigoUsername}')" style="display:flex;align-items:center;justify-content:space-between;background-color:#1E2230;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;">
+              <div style="display:flex;align-items:center;gap:12px;overflow:hidden;flex:1;">
+                <div class="avatar-container">
+                  <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-weight:700;color:#FFF;">${inicialAmigo}</div>
+                  <div class="status-dot" id="status-dot-lista-${amigoUID}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#64748B" stroke="#1E2230" stroke-width="2"/></svg></div>
                 </div>
-                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
-                  <div id="hora-lista-${amigoUser}" style="font-size: 11px; color: #94A3B8;"></div>
-                  <div id="badge-nao-lidas-${amigoUser}" style="display: none; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: #FFFFFF; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; padding: 0 5px; align-items: center; justify-content: center;">0</div>
+                <div style="text-align:left;overflow:hidden;flex:1;">
+                  <div style="font-size:14px;font-weight:600;color:#FFF;">@${amigoUsername}</div>
+                  <div id="subtexto-lista-${amigoUID}" style="font-size:12px;color:#94A3B8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Toque para conversar</div>
                 </div>
               </div>
-            `;
-          });
-
-          container.innerHTML = html;
-
-          // Liga a escuta em tempo real do status, digitando e última mensagem
-          snapshot.forEach(doc => {
-            monitorarStatusListaAmigos(doc.id);
-            monitorarUltimaMensagemListaAmigos(doc.id);
-            monitorarDigitandoListaAmigos(doc.id);
-          });
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                <div id="hora-lista-${amigoUID}" style="font-size:11px;color:#94A3B8;"></div>
+                <div id="badge-nao-lidas-${amigoUID}" style="display:none;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);color:#FFF;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;padding:0 5px;align-items:center;justify-content:center;">0</div>
+              </div>
+            </div>
+          `;
         });
+        container.innerHTML = htmlFinal;
+        snapshot.forEach((docSnap2) => {
+          const dadosAmigo2 = docSnap2.data();
+          const uidAmigo2 = dadosAmigo2.amigoUID;
+          monitorarStatusListaAmigos(uidAmigo2);
+          monitorarDigitandoListaAmigos(uidAmigo2);
+          monitorarUltimaMensagemListaAmigos(uidAmigo2);
+        });
+      });
     }
 
     // FUNÇÃO DE ESCUTAR ONLINE NA LISTA DE AMIGOS
-    function monitorarStatusListaAmigos(username) {
-      const statusRef = rtdb.ref('status/' + username);
-      const dotLista = document.getElementById('status-dot-lista-' + username);
-
-      if (!dotLista) return;
-
+    function monitorarStatusListaAmigos(amigoUID) {
+      const statusRef = rtdb.ref('status/' + amigoUID);
+      const dotLista = document.getElementById('status-dot-lista-' + amigoUID);
+      if (!dotLista) {
+        return;
+      }
       statusRef.on('value', (snapshot) => {
         const dados = snapshot.val();
         if (dados && dados.state === 'online') {
-          // Bolinha Verde em SVG (Online)
           dotLista.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#10B981" stroke="#1E2230" stroke-width="2"/></svg>`;
         } else {
-          // Bolinha Cinza em SVG (Offline)
           dotLista.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#64748B" stroke="#1E2230" stroke-width="2"/></svg>`;
         }
       });
     }
 
-    //  FUÇÃO DE MOSTRAR DIGITANDO NA LISTA DE AMIGOS
-    function monitorarDigitandoListaAmigos(username) {
-      const usuarioAtual = window.nomeUsuario || nomeUsuario;
-      const digitandoRef = rtdb.ref('typing/' + username + '_' + usuarioAtual);
-      const subtextoEl = document.getElementById('subtexto-lista-' + username);
-
-      if (!subtextoEl) return;
-
-      digitandoRef.on('value', (snapshot) => {
-        const estaDigitando = snapshot.val();
-        if (estaDigitando) {
+    // FUNÇÃO DE MOSTRAR DIGITANDO NA LISTA DE AMIGOS
+    // FUNÇÃO DE MOSTRAR DIGITANDO NA LISTA DE AMIGOS (VERIFICA AS DUAS CHAVES)
+    function monitorarDigitandoListaAmigos(amigoUID) {
+      const uidLogado = meuUID;
+      if (!uidLogado) {
+        return;
+      }
+      const ref1 = rtdb.ref('typing/' + amigoUID + '_' + uidLogado);
+      const ref2 = rtdb.ref('typing/' + uidLogado + '_' + amigoUID);
+      ref1.off();
+      ref2.off();
+      let digitando1 = false;
+      let digitando2 = false;
+      function atualizarUI() {
+        const subtextoEl = document.getElementById('subtexto-lista-' + amigoUID);
+        if (!subtextoEl) {
+          return;
+        }
+        if (digitando1 || digitando2) {
           subtextoEl.style.color = '#7C3AED';
           subtextoEl.style.fontWeight = '600';
-          subtextoEl.innerText = `${username} está digitando...`;
+            subtextoEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span>digitando...</span>`;
         } else {
-          subtextoEl.style.color = '#94A3B8';
-          subtextoEl.style.fontWeight = '400';
-          // Dispara a atualização da última mensagem para restaurar o texto correto
-          monitorarUltimaMensagemListaAmigos(username);
+          monitorarUltimaMensagemListaAmigos(amigoUID);
         }
+      }
+      ref1.on('value', (snap) => {
+        digitando1 = !!snap.val();
+        atualizarUI();
+      });
+      ref2.on('value', (snap) => {
+        digitando2 = !!snap.val();
+        atualizarUI();
       });
     }
 
     //=================================
     //   FUNÇÃO DE MOSTRAR A ULTIMA MENSAGEM DIGITADA
     //=================================
-    function monitorarUltimaMensagemListaAmigos(username) {
-      const usuarioAtual = window.nomeUsuario || nomeUsuario;
-      if (!usuarioAtual) return;
-
-      const chatID = [usuarioAtual, username].sort().join('_');
-      const msgsRef = rtdb.ref('chats/' + chatID + '/mensagens');
-
-      msgsRef.on('value', (snapshot) => {
-        const subtextoEl = document.getElementById('subtexto-lista-' + username);
-        const horaEl = document.getElementById('hora-lista-' + username);
-        const badgeEl = document.getElementById('badge-nao-lidas-' + username);
-
-        if (!subtextoEl) return;
-
-        if (!snapshot.exists()) {
-          subtextoEl.innerText = 'Toque para conversar';
-          if (horaEl) horaEl.innerText = '';
-          if (badgeEl) badgeEl.style.display = 'none';
-          return;
-        }
-
-        let totalNaoLidas = 0;
-        let ultimaMsg = null;
-
-        snapshot.forEach(childSnap => {
-          const msg = childSnap.val();
-          ultimaMsg = msg;
-          if (msg.enviadoPor !== usuarioAtual && !msg.lida) {
-            totalNaoLidas++;
-          }
-        });
-
-        if (ultimaMsg) {
-          const souEu = ultimaMsg.enviadoPor === usuarioAtual;
-          const svgCheck = souEu ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>` : '';
-
-          subtextoEl.innerHTML = `${svgCheck}<span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ultimaMsg.texto}</span>`;
-
-          if (horaEl && ultimaMsg.timestamp) {
-            horaEl.innerText = calcularTempoDecorrido(ultimaMsg.timestamp);
-          }
-        }
-
-        if (badgeEl) {
-          if (totalNaoLidas > 0 && amigoAtivo !== username) {
-            badgeEl.innerText = totalNaoLidas;
-            badgeEl.style.display = 'flex';
-          } else {
-            badgeEl.style.display = 'none';
-          }
-        }
-      });
+    // FUNÇÃO DE MOSTRAR A ULTIMA MENSAGEM DIGITADA
+    function monitorarUltimaMensagemListaAmigos(amigoUID) {
+  const uidLogado = meuUID;
+  if (!uidLogado) {
+    return;
+  }
+  const chatID = [uidLogado, amigoUID].sort().join('_');
+  const msgsRef = rtdb.ref('chats/' + chatID + '/mensagens');
+  msgsRef.on('value', (snapshot) => {
+    const subtextoEl = document.getElementById('subtexto-lista-' + amigoUID);
+    const horaEl = document.getElementById('hora-lista-' + amigoUID);
+    const badgeEl = document.getElementById('badge-nao-lidas-' + amigoUID);
+    if (!subtextoEl) {
+      return;
     }
+    if (!snapshot.exists()) {
+      subtextoEl.innerText = 'Toque para conversar';
+      if (horaEl) {
+        horaEl.innerText = '';
+      }
+      if (badgeEl) {
+        badgeEl.style.display = 'none';
+      }
+      return;
+    }
+    let totalNaoLidas = 0;
+    let ultimaMsg = null;
+    snapshot.forEach((childSnap) => {
+      const msg = childSnap.val();
+      ultimaMsg = msg;
+      if (msg.enviadoPor !== uidLogado && !msg.lida) {
+        totalNaoLidas++;
+      }
+    });
+    if (ultimaMsg) {
+      const souEu = ultimaMsg.enviadoPor === uidLogado;
+      subtextoEl.style.color = !souEu && !ultimaMsg.lida ? '#7C3AED' : '#94A3B8';
+      subtextoEl.style.fontWeight = !souEu && !ultimaMsg.lida ? '700' : '400';
+      subtextoEl.innerHTML = `<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ultimaMsg.texto}</span>`;
+      if (horaEl && ultimaMsg.timestamp) {
+        horaEl.setAttribute('data-timestamp', ultimaMsg.timestamp);
+        horaEl.innerText = calcularTempoDecorrido(ultimaMsg.timestamp);
+      }
+    }
+    if (badgeEl) {
+      if (totalNaoLidas > 0 && amigoAtivoUID !== amigoUID) {
+        badgeEl.innerText = totalNaoLidas;
+        badgeEl.style.display = 'flex';
+      } else {
+        badgeEl.style.display = 'none';
+      }
+    }
+  });
+}
 
+    //   FUNÇÃO DE MARCAR TEMPO DA ULTIMA MENSAGEM RECEBIDA
     function calcularTempoDecorrido(timestamp) {
       const agora = Date.now();
       const difSegundos = Math.floor((agora - timestamp) / 1000);
@@ -1049,47 +1093,60 @@
       const difDias = Math.floor(difHoras / 24);
       return `${difDias} d`;
     }
+    // Atualiza automaticamente os tempos na tela a cada 10 segundos sem recarregar a página
+    setInterval(() => {
+      document.querySelectorAll('[id^="hora-lista-"]').forEach(horaEl => {
+        const ts = horaEl.getAttribute('data-timestamp');
+        if (ts) {
+          horaEl.innerText = calcularTempoDecorrido(parseInt(ts, 10));
+        }
+      });
+    }, 10000);
 
     // Inicializa as escutas ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
-    // Se não houver usuário logado/definido, não inicializa a presença nem escutas privadas
-    if (nomeUsuario) {
-      window.nomeUsuario = nomeUsuario;
-      gerenciarPresenca();
-      escutarConvitesRecebidos();
-      escutarAmigos();
-    }
-  });
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          meuUID = user.uid;
+          window.nomeUsuario = nomeUsuario;
+          gerenciarPresenca();
+          escutarConvitesRecebidos();
+          escutarAmigos();
+        }
+      });
+    });
 
     let amigoAtivo = null;
     let escutaMensagens = null;
 
     // FUNÇÃO PARA ABRIR A TELA DE CONVERSA INTERNA
-    function abrirConversaAtiva(username) {
-      amigoAtivo = username;
-      document.getElementById('chat-conversa-nome').innerText = '@' + username;
-      document.getElementById('chat-conversa-avatar').innerText = username.charAt(0).toUpperCase();
+    function abrirConversaAtiva(amigoUID, amigoUsername) {
+      amigoAtivoUID = amigoUID;
+      amigoAtivoUsername = amigoUsername;
+      amigoAtivo = amigoUID;
+      document.getElementById('chat-conversa-nome').innerText = '@' + amigoUsername;
+      document.getElementById('chat-conversa-avatar').innerText = amigoUsername.charAt(0).toUpperCase();
       document.getElementById('tela-conversa-ativa').style.display = 'flex';
-      
-      const badgeEl = document.getElementById('badge-nao-lidas-' + username);
-      if (badgeEl) badgeEl.style.display = 'none';
-
-      marcarMensagensComoLidas(username);
+      const badgeEl = document.getElementById('badge-nao-lidas-' + amigoUID);
+      if (badgeEl) {
+        badgeEl.style.display = 'none';
+      }
+      marcarMensagensComoLidas(amigoUID);
       carregarMensagens();
-      monitorarStatusAmigo(username);
+      monitorarStatusAmigo(amigoUID);
     }
 
-    function marcarMensagensComoLidas(username) {
-      const usuarioAtual = window.nomeUsuario || nomeUsuario;
-      if (!usuarioAtual || !username) return;
-
-      const chatID = [usuarioAtual, username].sort().join('_');
+    function marcarMensagensComoLidas(amigoUID) {
+      const uidLogado = meuUID;
+      if (!uidLogado || !amigoUID) {
+        return;
+      }
+      const chatID = [uidLogado, amigoUID].sort().join('_');
       const msgsRef = rtdb.ref('chats/' + chatID + '/mensagens');
-
       msgsRef.once('value', (snapshot) => {
-        snapshot.forEach(childSnap => {
+        snapshot.forEach((childSnap) => {
           const msg = childSnap.val();
-          if (msg.enviadoPor !== usuarioAtual && !msg.lida) {
+          if (msg.enviadoPor !== uidLogado && !msg.lida) {
             msgsRef.child(childSnap.key).update({ lida: true });
           }
         });
@@ -1097,19 +1154,27 @@
     }
 
     function fecharConversaAtiva() {
-      if (amigoAtivo) {
-        pararMonitorarStatusAmigo(amigoAtivo);
+      if (amigoAtivoUID) {
+        pararMonitorarStatusAmigo(amigoAtivoUID);
         if (escutaMensagens) {
-          const usuarioAtual = window.nomeUsuario || nomeUsuario;
-          const chatID = [usuarioAtual, amigoAtivo].sort().join('_');
+          const uidLogado = meuUID;
+          const chatID = [uidLogado, amigoAtivoUID].sort().join('_');
           rtdb.ref('chats/' + chatID + '/mensagens').off('child_added', escutaMensagens);
         }
       }
+      const amigoAnteriorUID = amigoAtivoUID;
+      amigoAtivoUID = null;
+      amigoAtivoUsername = null;
       amigoAtivo = null;
       document.getElementById('chat-mensagens-box').innerHTML = '';
       document.getElementById('chat-conversa-status-dot').innerHTML = '';
       document.getElementById('chat-conversa-status-texto').innerText = '';
       document.getElementById('tela-conversa-ativa').style.display = 'none';
+      if (amigoAnteriorUID) {
+        monitorarStatusListaAmigos(amigoAnteriorUID);
+        monitorarDigitandoListaAmigos(amigoAnteriorUID);
+        monitorarUltimaMensagemListaAmigos(amigoAnteriorUID);
+      }
     }
 
     //=====================================
@@ -1118,48 +1183,45 @@
     function enviarMensagem() {
       const input = document.getElementById('input-mensagem-chat');
       const texto = input.value.trim();
-      const usuarioAtual = window.nomeUsuario || nomeUsuario;
-
-      if (!texto || !amigoAtivo || !usuarioAtual) return;
-
-      const chatID = [usuarioAtual, amigoAtivo].sort().join('_');
+      const uidLogado = meuUID;
+      if (!texto || !amigoAtivoUID || !uidLogado) {
+        return;
+      }
+      const chatID = [uidLogado, amigoAtivoUID].sort().join('_');
       const novaMsgRef = rtdb.ref('chats/' + chatID + '/mensagens').push();
-
       novaMsgRef.set({
-        enviadoPor: usuarioAtual,
+        enviadoPor: uidLogado,
         texto: texto,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        lida: false
       });
-
       input.value = '';
     }
 
     function carregarMensagens() {
-      const usuarioAtual = window.nomeUsuario || nomeUsuario;
-      if (!usuarioAtual || !amigoAtivo) return;
-
-      const chatID = [usuarioAtual, amigoAtivo].sort().join('_');
+      const uidLogado = meuUID;
+      if (!uidLogado || !amigoAtivoUID) {
+        return;
+      }
+      const chatID = [uidLogado, amigoAtivoUID].sort().join('_');
       const box = document.getElementById('chat-mensagens-box');
       box.innerHTML = '';
-
       const msgsRef = rtdb.ref('chats/' + chatID + '/mensagens');
-
       escutaMensagens = msgsRef.on('child_added', (snapshot) => {
         const msg = snapshot.val();
-        const souEu = msg.enviadoPor === usuarioAtual;
-        
+        const souEu = msg.enviadoPor === uidLogado;
         const div = document.createElement('div');
         div.style.display = 'flex';
         div.style.justifyContent = souEu ? 'flex-end' : 'flex-start';
         div.style.marginBottom = '8px';
-
         const balao = document.createElement('div');
         balao.style.maxWidth = '75%';
-        balao.style.padding = '10px 14px';
+        balao.style.padding = '8px 12px';
         balao.style.borderRadius = '16px';
         balao.style.fontSize = '14px';
         balao.style.wordBreak = 'break-word';
-
+        balao.style.display = 'flex';
+        balao.style.flexDirection = 'column';
         if (souEu) {
           balao.style.background = 'linear-gradient(135deg, #0066FF 0%, #7C3AED 100%)';
           balao.style.color = '#FFFFFF';
@@ -1167,20 +1229,25 @@
         } else {
           balao.style.backgroundColor = '#1E2230';
           balao.style.color = '#FFFFFF';
-          balao.style.border = '1px solid rgba(255, 255, 255, 0.08)';
+          balao.style.border = '1px solid rgba(255,255,255,0.08)';
           balao.style.borderBottomLeftRadius = '4px';
         }
-
-        balao.innerText = msg.texto;
+        let horaFormatada = '';
+        if (msg.timestamp) {
+          const d = new Date(msg.timestamp);
+          const h = String(d.getHours()).padStart(2, '0');
+          const m = String(d.getMinutes()).padStart(2, '0');
+          horaFormatada = `${h}:${m}`;
+        }
+        const svgCheck = souEu ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : '';
+        balao.innerHTML = `<span>${msg.texto}</span><div style="align-self:flex-end;font-size:10px;opacity:0.7;margin-top:2px;display:flex;align-items:center;gap:3px;"><span>${horaFormatada}</span>${svgCheck}</div>`;
         div.appendChild(balao);
-
         const balaoDigitando = document.getElementById('balao-digitando-onda');
         if (balaoDigitando) {
           box.insertBefore(div, balaoDigitando);
         } else {
           box.appendChild(div);
         }
-
         box.scrollTop = box.scrollHeight;
       });
     }
@@ -1191,21 +1258,20 @@
     let conexaoRef = null;
 
     function gerenciarPresenca() {
-      const usuarioAtual = window.nomeUsuario || nomeUsuario;
-      if (!usuarioAtual) return;
-
-      const userStatusRef = rtdb.ref('status/' + usuarioAtual);
+      const uidLogado = meuUID;
+      if (!uidLogado) {
+        return;
+      }
+      const userStatusRef = rtdb.ref('status/' + uidLogado);
       const connectedRef = rtdb.ref('.info/connected');
-
       connectedRef.on('value', (snapshot) => {
-        if (snapshot.val() === false) return;
-
-        // Quando o usuário desconectar, salva o timestamp da saída no Firebase
+        if (snapshot.val() === false) {
+          return;
+        }
         userStatusRef.onDisconnect().set({
           state: 'offline',
           last_changed: firebase.database.ServerValue.TIMESTAMP
         }).then(() => {
-          // Define estado online no Firebase
           userStatusRef.set({
             state: 'online',
             last_changed: firebase.database.ServerValue.TIMESTAMP
@@ -1222,67 +1288,62 @@
       return `visto por último às ${horas}:${minutos}`;
     }
 
-    function monitorarStatusAmigo(username) {
-      const statusRef = rtdb.ref('status/' + username);
-      const digitandoRef = rtdb.ref('typing/' + username + '_' + (window.nomeUsuario || nomeUsuario));
-      const dotEl = document.getElementById('chat-conversa-status-dot');
-      const textoEl = document.getElementById('chat-conversa-status-texto');
-      const box = document.getElementById('chat-mensagens-box');
-
-      digitandoRef.on('value', (snapshot) => {
-        const estaDigitando = snapshot.val();
-        
-        // Remove qualquer balão de digitando anterior se existir
-        const balaoExistente = document.getElementById('balao-digitando-onda');
-        if (balaoExistente) {
-          balaoExistente.remove();
-        }
-
-        if (estaDigitando) {
-          if (textoEl) textoEl.innerText = '';
-          
-          // Cria o balão de mensagem no chat com as bolinhas em onda
-          const divContainer = document.createElement('div');
-          divContainer.id = 'balao-digitando-onda';
-          divContainer.className = 'balao-digitando-container';
-          divContainer.innerHTML = `
-            <div class="balao-digitando-box">
-              <div class="bolinha-onda"></div>
-              <div class="bolinha-onda"></div>
-              <div class="bolinha-onda"></div>
-            </div>
-          `;
-          
-          if (box) {
-            box.appendChild(divContainer);
-            box.scrollTop = box.scrollHeight;
+    //   FUNÇÃO PARA VERIFICAR SE AMIGO ESTÁ ONLINE
+    function monitorarStatusAmigo(amigoUID) {
+  const statusRef = rtdb.ref('status/' + amigoUID);
+  const digitandoRef = rtdb.ref('typing/' + amigoUID + '_' + meuUID);
+  const dotEl = document.getElementById('chat-conversa-status-dot');
+  const textoEl = document.getElementById('chat-conversa-status-texto');
+  const box = document.getElementById('chat-mensagens-box');
+  digitandoRef.on('value', (snapshot) => {
+    const estaDigitando = snapshot.val();
+    const balaoExistente = document.getElementById('balao-digitando-onda');
+    if (balaoExistente) {
+      balaoExistente.remove();
+    }
+    if (estaDigitando) {
+      if (textoEl) {
+        textoEl.innerText = '';
+      }
+      const divContainer = document.createElement('div');
+      divContainer.id = 'balao-digitando-onda';
+      divContainer.innerHTML = `<div class="balao-digitando-box"><div class="bolinha-onda"></div><div class="bolinha-onda"></div><div class="bolinha-onda"></div></div>`;
+      if (box) {
+        box.appendChild(divContainer);
+        box.scrollTop = box.scrollHeight;
+      }
+    } else {
+      statusRef.on('value', (statusSnap) => {
+        const dados = statusSnap.val();
+        if (dados && dados.state === 'online') {
+          if (dotEl) {
+            dotEl.style.display = 'flex';
+            dotEl.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#10B981" stroke="#1E2230" stroke-width="2"/></svg>`;
+          }
+          if (textoEl) {
+            textoEl.innerText = '';
           }
         } else {
-          statusRef.on('value', (statusSnap) => {
-            const dados = statusSnap.val();
-            if (dados && dados.state === 'online') {
-              if (dotEl) {
-                dotEl.style.display = 'flex';
-                dotEl.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#10B981" stroke="#1E2230" stroke-width="2"/></svg>`;
-              }
-              if (textoEl) textoEl.innerText = '';
-            } else {
-              if (dotEl) {
-                dotEl.style.display = 'flex';
-                dotEl.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#64748B" stroke="#1E2230" stroke-width="2"/></svg>`;
-              }
-              if (textoEl) textoEl.innerText = formatarVistoPorUltimo(dados ? dados.last_changed : null);
-            }
-          });
+          if (dotEl) {
+            dotEl.style.display = 'flex';
+            dotEl.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#64748B" stroke="#1E2230" stroke-width="2"/></svg>`;
+          }
+          if (textoEl) {
+            textoEl.innerText = formatarVistoPorUltimo(dados ? dados.last_changed : null);
+          }
         }
       });
     }
+  });
+}
 
-    function pararMonitorarStatusAmigo(username) {
-      if (!username) return;
-      const usuarioAtual = window.nomeUsuario || nomeUsuario;
-      rtdb.ref('status/' + username).off();
-      rtdb.ref('typing/' + username + '_' + usuarioAtual).off();
+    function pararMonitorarStatusAmigo(amigoUID) {
+      if (!amigoUID) {
+        return;
+      }
+      const uidLogado = meuUID;
+      rtdb.ref('status/' + amigoUID).off();
+      rtdb.ref('typing/' + amigoUID + '_' + uidLogado).off();
     }
 
     //=========================================================
@@ -1291,12 +1352,13 @@
     let tempoDigitando = null;
 
     function notificarDigitando() {
-      const usuarioAtual = window.nomeUsuario || nomeUsuario;
-      if (!usuarioAtual || !amigoAtivo) return;
-
-      const typingRef = rtdb.ref('typing/' + usuarioAtual + '_' + amigoAtivo);
+      const uidLogado = meuUID;
+      const uidAmigo = amigoAtivoUID;
+      if (!uidLogado || !uidAmigo) {
+        return;
+      }
+      const typingRef = rtdb.ref('typing/' + uidLogado + '_' + uidAmigo);
       typingRef.set(true);
-
       clearTimeout(tempoDigitando);
       tempoDigitando = setTimeout(() => {
         typingRef.set(false);
