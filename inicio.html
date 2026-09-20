@@ -120,6 +120,9 @@
     /* Ajuste de exibição da lista de conversas */
     #container-lista-amigos { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 480px; z-index: 5; }
     #card-sem-conversas { display: flex; width: 100%; max-width: 480px; }
+    /*ASTRONAUTA*/
+    .astro-box-aleatorio {width: 130px; height: 130px; animation: floatAstro 2.5s ease-in-out infinite;}
+    @keyframes floatAstro {0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-15px) rotate(3deg); } }
     /* Estilo do balão de digitando com onda */
     .balao-digitando-container {display: flex; justify-content: flex-start; margin-bottom: 8px;}
     .balao-digitando-box {background-color: #1E2230; border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px 16px; border-radius: 16px; border-bottom-left-radius: 4px; display: flex; align-items: center; gap: 5px; width: fit-content;}
@@ -139,6 +142,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
 
 <body>
 
@@ -300,6 +304,17 @@
     <!-- Mensagens do Chat vão aparecer aqui -->
   </div>
 
+          <!-- BARRA DE GRAVANDO AUDIO -->
+      <div id="barra-gravando-audio" style="display: none; background-color: #1E2230; padding: 10px 14px; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <svg onclick="cancelarGravacaoAudioChat()" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF4D4D" stroke-width="2" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        <div style="width: 10px; height: 10px; border-radius: 50%; background: #FF0000; animation: piscar 1s infinite;"></div>
+        <span id="tempo-audio-chat" style="color: #FFF; font-size: 14px; font-weight: 600;">00:00</span>
+        <div style="flex: 1;"></div>
+        <div onclick="pararGravacaoAudioChat()" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,#0066FF 0%,#7C3AED 100%); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </div>
+      </div>
+
   <!-- BARRA INFERIOR DE DIGITAÇÃO -->
   <div style="background-color: #1E2230; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
     
@@ -309,25 +324,58 @@
     </svg>
 
     <!-- Ícone Câmera -->
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;">
+    <svg onclick="abrirCameraChat()" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;">
       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
       <circle cx="12" cy="13" r="4"></circle>
     </svg>
 
     <!-- Campo de Digitar Mensagem -->
-    <input type="text" id="input-mensagem-chat" placeholder="Digite uma mensagem..." onkeypress="if(event.key === 'Enter') enviarMensagem()" oninput="notificarDigitando()" style="flex: 1; background-color: #0F1117; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 10px 16px; color: #FFFFFF; font-size: 14px; outline: none;">
+        <input type="text" id="input-mensagem-chat" placeholder="Digite uma mensagem..." onkeypress="if(event.key === 'Enter') enviarMensagem()" oninput="verificarTextoInputChat(); notificarDigitando()" style="flex: 1; background-color: #0F1117; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 10px 16px; color: #FFFFFF; font-size: 14px; outline: none;">
 
     <!-- Ícone de Enviar Mensagem -->
-    <div onclick="enviarMensagem()" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; cursor: pointer;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"></line>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-      </svg>
+    <div id="btn-acao-chat" onclick="acaoBotaoChat()" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+      <svg id="icone-enviar-chat" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      <svg id="icone-mic-chat" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
     </div>
 
   </div>
 
 </div>
+
+      <!-- ABRIR MODAL DE CAMERA DO CHAT INDIVIDUAL -->
+   <div id="modal-camera-chat" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; z-index: 3000; flex-direction: column;">
+    <div style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5);">
+      <svg onclick="fecharCameraChat()" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" style="cursor: pointer;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      <span id="tempo-gravacao-video" style="display: none; background: rgba(255,0,0,0.8); color: #FFF; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700;">00:00</span>
+      <div style="width: 24px;"></div>
+    </div>
+    <div style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+      <video id="video-camera-chat" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+      <canvas id="canvas-foto-chat" style="display: none;"></canvas>
+      <img id="preview-foto-chat" style="display: none; width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; background: #000;">
+      <video id="preview-video-chat" style="display: none; width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; background: #000;" controls></video>
+    </div>
+    <div style="padding: 20px; background: #1E2230; display: flex; justify-content: center; align-items: center; gap: 20px;">
+      <button id="btn-gravar-video" onclick="iniciarGravacaoVideoChat()" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,0,0,0.2); border: 2px solid #FF0000; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        <div style="width: 20px; height: 20px; border-radius: 50%; background: #FF0000;"></div>
+      </button>
+      <button id="btn-tirar-foto" onclick="tirarFotoChat()" style="width: 70px; height: 70px; border-radius: 50%; background: #FFF; border: 4px solid rgba(255,255,255,0.3); cursor: pointer;"></button>
+      <button id="btn-enviar-foto" onclick="enviarMidiaCameraChat()" style="display: none; background: linear-gradient(135deg,#0066FF 0%,#7C3AED 100%); color: #FFF; padding: 12px 24px; border-radius: 20px; border: none; font-weight: 700; cursor: pointer;">Enviar</button>
+      <button id="btn-refazer-foto" onclick="refazerMidiaChat()" style="display: none; background: rgba(255,255,255,0.1); color: #FFF; padding: 12px 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); font-weight: 600; cursor: pointer;">Refazer</button>
+    </div>
+  </div>
+
+  <!-- MODAL PARA ABRIR FOTO E VIDEO NO CHAT INDIVIDUAL -->
+  <div id="modal-visualizar-midia" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.95); z-index: 4000; flex-direction: column;" onclick="if(event.target.id==='modal-visualizar-midia') fecharVisualizadorImagem()">
+    <div style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+      <svg onclick="fecharVisualizadorImagem()" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" style="cursor: pointer;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      <svg id="btn-baixar-midia" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" style="cursor: pointer;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    </div>
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px;">
+      <img id="imagem-visualizador" style="display: none; max-width: 100%; max-height: 90vh; border-radius: 8px; object-fit: contain;">
+      <video id="video-visualizador" style="display: none; max-width: 100%; max-height: 90vh; border-radius: 8px;" controls></video>
+    </div>
+  </div>
 
       <div class="welcome-card" id="card-sem-conversas">
         <div class="icon-box">
@@ -340,23 +388,116 @@
       </div>
 
       <!-- CHAT ALEATORIO -->
-    <div id="modal-chat-aleatorio" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(15, 17, 23, 0.85); backdrop-filter: blur(8px); z-index: 3000; flex-direction: column; justify-content: center; align-items: center; padding: 20px;">
-      <div style="background-color: #1E2230; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 28px 20px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 15px 30px rgba(0,0,0,0.5);">
-        <div style="width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <div id="tela-chat-aleatorio-regras" style="display: none; width: 100%; max-width: 480px; flex-direction: column; gap: 12px;">
+        <div class="welcome-card" style="width: 100%; text-align: left; align-items: stretch; gap: 14px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+              <h3 style="font-size: 16px; font-weight: 700; color: #FFFFFF;">Chat Aleatório</h3>
+              <p style="font-size: 12px; color: #94A3B8;">Leia antes de entrar</p>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+            <div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.03);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span style="font-size: 13px; color: #E2E8F0;">Mantenha o respeito com todos</span></div>
+            <div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.03);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF4D4D" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span style="font-size: 13px; color: #E2E8F0;">Proibido nudez ou conteúdo sexual</span></div>
+            <div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.03);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg><span style="font-size: 13px; color: #E2E8F0;">Sem spam, divulgação ou flood</span></div>
+            <div style="display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.03);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span style="font-size: 13px; color: #E2E8F0;">Você pode ser banido por mau comportamento</span></div>
+          </div>
         </div>
-        <h3 style="text-align: center; font-size: 18px; font-weight: 700; color: #FFFFFF;">Antes de entrar no Chat Aleatório</h3>
-        <p style="font-size: 12px; color: #94A3B8; text-align: center;">Para manter um ambiente seguro e legal pra todos:</p>
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 4px;">
-          <div style="display: flex; gap: 10px; align-items: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span style="font-size: 13px; color: #E2E8F0;">Mantenha o respeito com todos</span></div>
-          <div style="display: flex; gap: 10px; align-items: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span style="font-size: 13px; color: #E2E8F0;">Proibido nudez ou conteúdo sexual</span></div>
-          <div style="display: flex; gap: 10px; align-items: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg><span style="font-size: 13px; color: #E2E8F0;">Sem spam, divulgação ou flood</span></div>
-          <div style="display: flex; gap: 10px; align-items: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span style="font-size: 13px; color: #E2E8F0;">Você pode ser banido por mau comportamento</span></div>
-        </div>
-        <button onclick="entrarChatAleatorio()" style="width: 100%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: #FFFFFF; border: none; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; margin-top: 8px;">Entrar</button>
-        <button onclick="fecharModalChatAleatorio()" style="background: none; border: none; color: #94A3B8; font-size: 12px; cursor: pointer; text-decoration: underline;">Voltar</button>
+        <button onclick="entrarChatAleatorio()" style="width: 100%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: #FFFFFF; border: none; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer;">Entrar</button>
       </div>
-    </div>
+
+      <!-- ASTRONAUTA -->
+      <div id="tela-chat-aleatorio-buscando" style="display: none; width: 100%; max-width: 480px; flex-direction: column; align-items: center; gap: 16px; padding-top: 30px;">
+        <div class="astro-box-aleatorio">
+          <svg viewBox="0 0 200 200" fill="none">
+            <path d="M 60 145 Q 40 160 50 175 Q 70 165 75 145 Z" fill="#FF3B30" />
+            <path d="M 62 148 Q 48 158 55 168 Q 68 160 72 148 Z" fill="#FFA100" />
+            <rect x="55" y="105" width="30" height="45" rx="10" fill="url(#gradAstro2)" transform="rotate(-25 55 105)" />
+            <ellipse cx="100" cy="125" rx="32" ry="38" fill="#E2E8F0" />
+            <ellipse cx="100" cy="125" rx="26" ry="32" fill="#FFFFFF" />
+            <rect x="80" y="150" width="16" height="25" rx="8" fill="#CBD5E1" />
+            <rect x="104" y="150" width="16" height="25" rx="8" fill="#CBD5E1" />
+            <rect x="76" y="168" width="20" height="12" rx="6" fill="#7C3AED" />
+            <rect x="104" y="168" width="20" height="12" rx="6" fill="#7C3AED" />
+            <path d="M 70 115 Q 55 125 65 140" stroke="#CBD5E1" stroke-width="12" stroke-linecap="round" fill="none" />
+            <path d="M 130 115 Q 150 110 155 95" stroke="#CBD5E1" stroke-width="12" stroke-linecap="round" fill="none" />
+            <circle cx="156" cy="92" r="8" fill="#0066FF" />
+            <circle cx="100" cy="75" r="38" fill="#FFFFFF" />
+            <circle cx="100" cy="75" r="34" fill="#1E2230" />
+            <ellipse cx="100" cy="75" rx="28" ry="20" fill="url(#gradAstro2)" />
+            <defs>
+              <linearGradient id="gradAstro2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0066FF" />
+                <stop offset="100%" stop-color="#7C3AED" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h2 style="font-size: 18px; font-weight: 700; color: #FFFFFF;">Chat Aleatório</h2>
+        <p id="texto-buscando-aleatorio" style="font-size: 14px; color: #94A3B8; text-align: center; min-height: 22px; transition: opacity 0.3s;">Procurando alguém para você conversar agora...</p>
+        <div style="display: flex; gap: 5px; margin-top: 4px;">
+          <div class="bolinha-onda"></div>
+          <div class="bolinha-onda"></div>
+          <div class="bolinha-onda"></div>
+        </div>
+        <button onclick="mudarSubAbaChat('amigos')" style="margin-top: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; padding: 10px 20px; border-radius: 20px; font-size: 13px; cursor: pointer;">Cancelar busca</button>
+      </div>
+
+      <!-- TELA CONVERSA CHAT ALEATORIO -->
+             <div id="tela-chat-aleatorio-conversa" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #0F1117; z-index: 2500; flex-direction: column;">
+        <div style="background-color: #1E2230; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg onclick="encerrarChatAleatorio()" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" style="cursor: pointer;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #FFF;">?</div>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-size: 15px; font-weight: 700; color: #FFF;">Anônimo</span>
+              <span style="font-size: 11px; color: #10B981;">conectado agora</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button onclick="abrirDenunciaAleatoria()" style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,193,7,0.12); border: 1px solid rgba(255,193,7,0.25); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFC107" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </button>
+            <button onclick="encerrarChatAleatorio()" style="background: rgba(255,77,77,0.15); border: 1px solid rgba(255,77,77,0.3); color: #FF4D4D; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF4D4D" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              Encerrar
+            </button>
+          </div>
+        </div>
+        <div id="chat-aleatorio-mensagens-box" style="flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
+
+        <div style="background-color: #1E2230; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
+          <input type="text" id="input-aleatorio-mensagem" placeholder="Digite uma mensagem..." onkeypress="if(event.key==='Enter') enviarMensagemAleatoria()" style="flex: 1; background-color: #0F1117; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 10px 16px; color: #FFFFFF; font-size: 14px; outline: none;">
+          <div onclick="enviarMensagemAleatoria()" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL DE FAZER DENUNCIA NO CHAT ALEATORIO -->
+             <div id="modal-denuncia-aleatorio" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); z-index: 2600; align-items: flex-end; justify-content: center;">
+        <div style="width: 100%; max-width: 480px; background: #1E2230; border-radius: 20px 20px 0 0; padding: 20px; display: flex; flex-direction: column; gap: 14px; border-top: 1px solid rgba(255,255,255,0.1);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,193,7,0.15); display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFC107" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+              <span style="font-size: 15px; font-weight: 700; color: #FFF;">Denunciar usuário</span>
+            </div>
+            <svg onclick="fecharDenunciaAleatoria()" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" style="cursor: pointer;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </div>
+          <p style="font-size: 12px; color: #94A3B8;">Selecione o motivo da denúncia. Sua identidade ficará anônima.</p>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button onclick="enviarDenunciaAleatoria('spam')" style="text-align: left; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; color: #E2E8F0; font-size: 13px; cursor: pointer;">Spam ou divulgação</button>
+            <button onclick="enviarDenunciaAleatoria('nudez')" style="text-align: left; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; color: #E2E8F0; font-size: 13px; cursor: pointer;">Nudez ou conteúdo sexual</button>
+            <button onclick="enviarDenunciaAleatoria('ofensa')" style="text-align: left; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; color: #E2E8F0; font-size: 13px; cursor: pointer;">Ofensa ou discurso de ódio</button>
+            <button onclick="enviarDenunciaAleatoria('outro')" style="text-align: left; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; color: #E2E8F0; font-size: 13px; cursor: pointer;">Outro motivo</button>
+          </div>
+        </div>
+      </div>
 
     </div>
     <!-- ========================================== -->
@@ -541,6 +682,11 @@
     const urlParams = new URLSearchParams(window.location.search);
     const nomeUsuario = urlParams.get('user');
     let meuUID = null;
+    let roomAleatorioId = null;
+    let escutaFilaAleatoriaRef = null;
+    let escutaSalaAleatoriaRef = null;
+    let escutaMensagensAleatoriasRef = null;
+    let escutaFilaAleatoria = null;
     let amigoAtivoUID = null;
     let amigoAtivoUsername = null;
     let totalConvitesPendentes = 0;
@@ -565,6 +711,21 @@
     window.db = db;
     const rtdb = firebase.database();
     window.rtdb = rtdb;
+    const storage = firebase.storage();
+    window.storage = storage;
+    let streamCamera = null;
+    let fotoBlobCamera = null;
+    let mediaRecorderVideo = null;
+    let chunksVideo = [];
+    let videoBlobCamera = null;
+    let timerVideo = null;
+    let segundosVideo = 0;
+    let tipoMidiaCamera = null;
+    let mediaRecorderAudio = null;
+    let chunksAudio = [];
+    let audioBlobChat = null;
+    let timerAudio = null;
+    let segundosAudio = 0;
 
     //  FUNÇÃO DE MUDANÇA DE ABAS
     function mudarAba(nomeAba) {
@@ -634,43 +795,201 @@
     //=========================================================
     // Função para alternar entre "Amigos" e "Chat Aleatório"
     //=========================================================
-    function mudarSubAbaChat(tipo) {
-      const tabAmigos = document.getElementById('chat-tab-amigos');
-      const tabAleatorio = document.getElementById('chat-tab-aleatorio');
-      const chatTitle = document.getElementById('chat-title');
-      const chatSubtitle = document.getElementById('chat-subtitle');
-      const containerBusca = document.getElementById('container-busca-chat');
-      const containerAmigos = document.getElementById('container-lista-amigos');
-      const modalAleatorio = document.getElementById('modal-chat-aleatorio');
-      if (tipo === 'amigos') {
-        tabAmigos.classList.add('active');
-        tabAleatorio.classList.remove('active');
-        chatTitle.innerText = 'Conversas de Amigos';
-        chatSubtitle.innerText = 'Selecione um amigo para começar a conversar.';
-        if (containerBusca) containerBusca.style.display = 'block';
-        if (containerAmigos) containerAmigos.style.display = 'flex';
-        if (modalAleatorio) modalAleatorio.style.display = 'none';
-      } else if (tipo === 'aleatorio') {
-        tabAleatorio.classList.add('active');
-        tabAmigos.classList.remove('active');
-        if (containerBusca) containerBusca.style.display = 'none';
-        if (containerAmigos) containerAmigos.style.display = 'none';
-        if (modalAleatorio) modalAleatorio.style.display = 'flex';
+      let intervaloBuscaAleatoria = null;
+      let indiceFraseBusca = 0;
+      function mudarSubAbaChat(tipo) {
+        const tabAmigos = document.getElementById('chat-tab-amigos');
+        const tabAleatorio = document.getElementById('chat-tab-aleatorio');
+        const containerBusca = document.getElementById('container-busca-chat');
+        const containerAmigos = document.getElementById('container-lista-amigos');
+        const cardSemConversas = document.getElementById('card-sem-conversas');
+        const telaRegras = document.getElementById('tela-chat-aleatorio-regras');
+        const telaBuscando = document.getElementById('tela-chat-aleatorio-buscando');
+        if (intervaloBuscaAleatoria) {
+          clearInterval(intervaloBuscaAleatoria);
+          intervaloBuscaAleatoria = null;
+        }
+        if (tipo === 'amigos') {
+          rtdb.ref('fila_chat_aleatorio/' + meuUID).remove();
+          if (escutaFilaAleatoriaRef) escutaFilaAleatoriaRef.off();
+          tabAmigos.classList.add('active');
+          tabAleatorio.classList.remove('active');
+          if (containerBusca) containerBusca.style.display = 'block';
+          if (containerAmigos) containerAmigos.style.display = 'flex';
+          if (cardSemConversas) cardSemConversas.style.display = 'flex';
+          if (telaRegras) telaRegras.style.display = 'none';
+          if (telaBuscando) telaBuscando.style.display = 'none';
+        } else if (tipo === 'aleatorio') {
+          tabAleatorio.classList.add('active');
+          tabAmigos.classList.remove('active');
+          if (containerBusca) containerBusca.style.display = 'none';
+          if (containerAmigos) containerAmigos.style.display = 'none';
+          if (cardSemConversas) cardSemConversas.style.display = 'none';
+          if (telaBuscando) telaBuscando.style.display = 'none';
+          if (telaRegras) telaRegras.style.display = 'flex';
+        }
       }
-    }
-    function fecharModalChatAleatorio() {
-      const modalAleatorio = document.getElementById('modal-chat-aleatorio');
-      if (modalAleatorio) modalAleatorio.style.display = 'none';
-      mudarSubAbaChat('amigos');
-    }
-    function entrarChatAleatorio() {
-      const modalAleatorio = document.getElementById('modal-chat-aleatorio');
-      if (modalAleatorio) modalAleatorio.style.display = 'none';
-      const chatTitle = document.getElementById('chat-title');
-      const chatSubtitle = document.getElementById('chat-subtitle');
-      if (chatTitle) chatTitle.innerText = 'Chat Aleatório';
-      if (chatSubtitle) chatSubtitle.innerText = 'Procurando alguém para você conversar agora...';
-    }
+      function entrarChatAleatorio() {
+        const telaRegras = document.getElementById('tela-chat-aleatorio-regras');
+        const telaBuscando = document.getElementById('tela-chat-aleatorio-buscando');
+        const textoBusca = document.getElementById('texto-buscando-aleatorio');
+        const frasesBusca = [
+          "Procurando alguém para você conversar agora...",
+          "Ainda estamos procurando...",
+          "Quase lá, buscando alguém legal...",
+          "Segura aí, já vamos te conectar..."
+        ];
+        if (telaRegras) telaRegras.style.display = 'none';
+        const uidFila = meuUID;
+        const refFilaMinha = rtdb.ref('fila_chat_aleatorio/' + uidFila);
+        refFilaMinha.set({
+          uid: uidFila,
+          nome: window.nomeUsuario || 'anon',
+          entrouEm: firebase.database.ServerValue.TIMESTAMP
+        });
+        refFilaMinha.onDisconnect().remove();
+        escutarFilaAleatoria();
+        if (telaBuscando) telaBuscando.style.display = 'flex';
+        indiceFraseBusca = 0;
+        if (textoBusca) textoBusca.innerText = frasesBusca[0];
+        if (intervaloBuscaAleatoria) clearInterval(intervaloBuscaAleatoria);
+        intervaloBuscaAleatoria = setInterval(() => {
+          indiceFraseBusca = (indiceFraseBusca + 1) % frasesBusca.length;
+          if (textoBusca) {
+            textoBusca.style.opacity = '0';
+            setTimeout(() => {
+              textoBusca.innerText = frasesBusca[indiceFraseBusca];
+              textoBusca.style.opacity = '1';
+            }, 200);
+          }
+        }, 4000);
+      }
+
+      //========================================
+      //     FUNÇÃO DE BUSCA DO CHAT ALEATORIO
+      //========================================
+      function escutarFilaAleatoria() {
+        if (escutaFilaAleatoriaRef) escutaFilaAleatoriaRef.off();
+        escutaFilaAleatoriaRef = rtdb.ref('fila_chat_aleatorio');
+        escutaFilaAleatoriaRef.on('child_added', (snap) => {
+          const outro = snap.val();
+          if (outro.uid === meuUID) return;
+          if (roomAleatorioId) return;
+          tentarMatchAleatorio(outro);
+        });
+      }
+      function tentarMatchAleatorio(outroUsuario) {
+        const uidA = meuUID;
+        const uidB = outroUsuario.uid;
+        const roomId = uidA < uidB ? uidA + '_' + uidB : uidB + '_' + uidA;
+        const refRoom = rtdb.ref('chats_aleatorios/' + roomId);
+        refRoom.once('value', (snapRoom) => {
+          if (snapRoom.exists()) return;
+          refRoom.set({
+            a: uidA,
+            b: uidB,
+            criadoEm: firebase.database.ServerValue.TIMESTAMP,
+            status: 'ativo'
+          });
+          rtdb.ref('fila_chat_aleatorio/' + uidA).remove();
+          rtdb.ref('fila_chat_aleatorio/' + uidB).remove();
+          abrirSalaAleatoria(roomId);
+        });
+      }
+      function abrirSalaAleatoria(roomIdParam) {
+        roomAleatorioId = roomIdParam;
+        if (escutaFilaAleatoriaRef) escutaFilaAleatoriaRef.off();
+        if (intervaloBuscaAleatoria) clearInterval(intervaloBuscaAleatoria);
+        const telaBuscando = document.getElementById('tela-chat-aleatorio-buscando');
+        const telaRegras = document.getElementById('tela-chat-aleatorio-regras');
+        const telaConversa = document.getElementById('tela-chat-aleatorio-conversa');
+        if (telaBuscando) telaBuscando.style.display = 'none';
+        if (telaRegras) telaRegras.style.display = 'none';
+        if (telaConversa) telaConversa.style.display = 'flex';
+        escutarMensagensAleatorias();
+        escutarEncerramentoSala();
+      }
+      function escutarMensagensAleatorias() {
+        if (!roomAleatorioId) return;
+        if (escutaMensagensAleatoriasRef) escutaMensagensAleatoriasRef.off();
+        escutaMensagensAleatoriasRef = rtdb.ref('chats_aleatorios/' + roomAleatorioId + '/mensagens');
+        escutaMensagensAleatoriasRef.on('child_added', (snap) => {
+          const msg = snap.val();
+          const box = document.getElementById('chat-aleatorio-mensagens-box');
+          if (!box || !msg) return;
+          const souEu = msg.uid === meuUID;
+          const balao = document.createElement('div');
+          balao.style.cssText = souEu ? 'align-self:flex-end;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);color:#FFF;padding:10px 14px;border-radius:16px;border-bottom-right-radius:4px;max-width:75%;font-size:14px;' : 'align-self:flex-start;background:#1E2230;border:1px solid rgba(255,255,255,0.08);color:#FFF;padding:10px 14px;border-radius:16px;border-bottom-left-radius:4px;max-width:75%;font-size:14px;';
+          balao.innerText = msg.texto;
+          box.appendChild(balao);
+          box.scrollTop = box.scrollHeight;
+        });
+      }
+      function enviarMensagemAleatoria() {
+        const input = document.getElementById('input-aleatorio-mensagem');
+        if (!input) return;
+        const texto = input.value.trim();
+        if (!texto || !roomAleatorioId) return;
+        rtdb.ref('chats_aleatorios/' + roomAleatorioId + '/mensagens').push({
+          uid: meuUID,
+          texto: texto,
+          enviadoEm: firebase.database.ServerValue.TIMESTAMP
+        });
+        input.value = '';
+      }
+      function escutarEncerramentoSala() {
+        if (!roomAleatorioId) return;
+        if (escutaSalaAleatoriaRef) escutaSalaAleatoriaRef.off();
+        escutaSalaAleatoriaRef = rtdb.ref('chats_aleatorios/' + roomAleatorioId);
+        escutaSalaAleatoriaRef.on('value', (snap) => {
+          if (!snap.exists()) {
+            encerrarChatAleatorioLocal();
+          }
+        });
+      }
+      function encerrarChatAleatorio() {
+        if (roomAleatorioId) {
+          rtdb.ref('chats_aleatorios/' + roomAleatorioId).remove();
+        }
+        encerrarChatAleatorioLocal();
+      }
+      function encerrarChatAleatorioLocal() {
+        rtdb.ref('fila_chat_aleatorio/' + meuUID).remove();
+        if (escutaMensagensAleatoriasRef) escutaMensagensAleatoriasRef.off();
+        if (escutaSalaAleatoriaRef) escutaSalaAleatoriaRef.off();
+        if (escutaFilaAleatoriaRef) escutaFilaAleatoriaRef.off();
+        if (intervaloBuscaAleatoria) clearInterval(intervaloBuscaAleatoria);
+        roomAleatorioId = null;
+        const box = document.getElementById('chat-aleatorio-mensagens-box');
+        if (box) box.innerHTML = '';
+        const telaConversa = document.getElementById('tela-chat-aleatorio-conversa');
+        if (telaConversa) telaConversa.style.display = 'none';
+        mudarSubAbaChat('aleatorio');
+        entrarChatAleatorio();
+      }
+
+      //    FUNÇÃO DE FAZER DENUNCIA NO CHAT ALEATORIO
+      function abrirDenunciaAleatoria() {
+        const modal = document.getElementById('modal-denuncia-aleatorio');
+        if (modal) modal.style.display = 'flex';
+      }
+      function fecharDenunciaAleatoria() {
+        const modal = document.getElementById('modal-denuncia-aleatorio');
+        if (modal) modal.style.display = 'none';
+      }
+      function enviarDenunciaAleatoria(motivo) {
+        if (!roomAleatorioId) return;
+        rtdb.ref('denuncias_aleatorio/' + roomAleatorioId).push({
+          denunciante: meuUID,
+          motivo: motivo,
+          criadoEm: firebase.database.ServerValue.TIMESTAMP
+        });
+        fecharDenunciaAleatoria();
+        encerrarChatAleatorio();
+      }
+      function sairChatAleatorio() {
+        encerrarChatAleatorio();
+      }
 
     //=========================================================
     // Função para deslogar da conta
@@ -1006,7 +1325,7 @@
           const amigoUsername = dadosAmigo.amigoUsername;
           const inicialAmigo = amigoUsername.charAt(0).toUpperCase();
           htmlFinal += `
-            <div onclick="abrirConversaAtiva('${amigoUID}', '${amigoUsername}')" style="display:flex;align-items:center;justify-content:space-between;background-color:#1E2230;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;">
+             <div id="card-lista-${amigoUID}" onclick="abrirConversaAtiva('${amigoUID}', '${amigoUsername}')" style="display:flex;align-items:center;justify-content:space-between;background-color:#1E2230;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;">
               <div style="display:flex;align-items:center;gap:12px;overflow:hidden;flex:1;">
                 <div class="avatar-container">
                   <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-weight:700;color:#FFF;">${inicialAmigo}</div>
@@ -1142,12 +1461,21 @@
     });
     if (ultimaMsg) {
       const souEu = ultimaMsg.enviadoPor === uidLogado;
+      let textoLista = ultimaMsg.texto || '';
+      if (ultimaMsg.tipo === 'imagem') textoLista = '📷 Foto';
+      if (ultimaMsg.tipo === 'video') textoLista = '🎥 Vídeo';
+      if (ultimaMsg.tipo === 'audio') textoLista = '🎤 Áudio';
       subtextoEl.style.color = !souEu && !ultimaMsg.lida ? '#7C3AED' : '#94A3B8';
       subtextoEl.style.fontWeight = !souEu && !ultimaMsg.lida ? '700' : '400';
-      subtextoEl.innerHTML = `<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ultimaMsg.texto}</span>`;
-      if (horaEl && ultimaMsg.timestamp) {
+      subtextoEl.innerHTML = `<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${textoLista}</span>`;
+      if (horaEl && ultimaMsg.timestamp && typeof ultimaMsg.timestamp === 'number') {
         horaEl.setAttribute('data-timestamp', ultimaMsg.timestamp);
         horaEl.innerText = calcularTempoDecorrido(ultimaMsg.timestamp);
+      }
+      const cardLista = document.getElementById('card-lista-' + amigoUID);
+      if (cardLista && ultimaMsg.timestamp && typeof ultimaMsg.timestamp === 'number') {
+        cardLista.setAttribute('data-ultimo-tempo', ultimaMsg.timestamp);
+        ordenarListaAmigosPorTempo();
       }
     }
     if (badgeEl) {
@@ -1167,6 +1495,21 @@
     }
   });
 }
+
+    //  FUNÇÃO DE ORGANIZAR AS CONVERSAS PELA MAIS RECENTE
+    function ordenarListaAmigosPorTempo() {
+      const containerLista = document.getElementById('container-lista-amigos');
+      if (!containerLista) return;
+      const cards = Array.from(containerLista.querySelectorAll('[id^="card-lista-"]'));
+      cards.sort((a, b) => {
+        const tempoA = parseInt(a.getAttribute('data-ultimo-tempo') || '0', 10);
+        const tempoB = parseInt(b.getAttribute('data-ultimo-tempo') || '0', 10);
+        return tempoB - tempoA;
+      });
+      cards.forEach((card) => {
+        containerLista.appendChild(card);
+      });
+    } 
 
     //   FUNÇÃO DE MARCAR TEMPO DA ULTIMA MENSAGEM RECEBIDA
     function calcularTempoDecorrido(timestamp) {
@@ -1333,9 +1676,7 @@
 
     function carregarMensagens() {
       const uidLogado = meuUID;
-      if (!uidLogado || !amigoAtivoUID) {
-        return;
-      }
+      if (!uidLogado || !amigoAtivoUID) return;
       const chatID = [uidLogado, amigoAtivoUID].sort().join('_');
       const box = document.getElementById('chat-mensagens-box');
       box.innerHTML = '';
@@ -1366,14 +1707,22 @@
           balao.style.borderBottomLeftRadius = '4px';
         }
         let horaFormatada = '';
-        if (msg.timestamp) {
+        if (msg.timestamp && typeof msg.timestamp === 'number') {
           const d = new Date(msg.timestamp);
           const h = String(d.getHours()).padStart(2, '0');
           const m = String(d.getMinutes()).padStart(2, '0');
           horaFormatada = `${h}:${m}`;
         }
-        const svgCheck = souEu ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : '';
-        balao.innerHTML = `<span>${msg.texto}</span><div style="align-self:flex-end;font-size:10px;opacity:0.7;margin-top:2px;display:flex;align-items:center;gap:3px;"><span>${horaFormatada}</span>${svgCheck}</div>`;
+          const svgCheck = souEu ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : '';
+        if (msg.tipo === 'imagem' && msg.url) {
+          balao.innerHTML = '<img src="' + msg.url + '" style="max-width:200px;border-radius:12px;cursor:pointer;" onclick="abrirVisualizadorImagem(\'' + msg.url + '\')"><div style="align-self:flex-end;font-size:10px;opacity:0.7;margin-top:4px;display:flex;align-items:center;gap:3px;"><span>' + horaFormatada + '</span>' + svgCheck + '</div>';
+        } else if (msg.tipo === 'video' && msg.url) {
+        balao.innerHTML = '<div style="position:relative;max-width:200px;border-radius:12px;overflow:hidden;cursor:pointer;" onclick="abrirVisualizadorVideo(\'' + msg.url + '\')"><video src="' + msg.url + '" style="width:100%;display:block;"></video><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#FFF"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div></div><div style="align-self:flex-end;font-size:10px;opacity:0.7;margin-top:4px;display:flex;align-items:center;gap:3px;"><span>' + horaFormatada + '</span>' + svgCheck + '</div>';
+        } else if (msg.tipo === 'audio' && msg.url) {
+          balao.innerHTML = '<div style="display:flex;align-items:center;gap:10px;min-width:180px"><div onclick="new Audio(\'' + msg.url + '\').play()" style="width:36px;height:36px;border-radius:50%;background:#ffffff33;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path></svg></div><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFF"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span style="font-size:12px">Audio</span></div><div style="font-size:10px;opacity:0.7;margin-top:4px;display:flex;gap:3px"><span>' + horaFormatada + '</span>' + svgCheck + '</div>';
+        } else {
+          balao.innerHTML = `<span>${msg.texto || ''}</span><div style="align-self:flex-end;font-size:10px;opacity:0.7;margin-top:2px;display:flex;align-items:center;gap:3px;"><span>${horaFormatada}</span>${svgCheck}</div>`;
+        }
         div.appendChild(balao);
         const balaoDigitando = document.getElementById('balao-digitando-onda');
         if (balaoDigitando) {
@@ -1496,6 +1845,306 @@
       tempoDigitando = setTimeout(() => {
         typingRef.set(false);
       }, 2000);
+    }
+
+    //====================================
+    //  FUNÇÃO DE ABRIR CAMERA NO CHAT INDIVIDUAL
+    //====================================
+    async function abrirCameraChat() {
+      const modal = document.getElementById('modal-camera-chat');
+      const video = document.getElementById('video-camera-chat');
+      modal.style.display = 'flex';
+      try {
+        streamCamera = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: true });
+        video.srcObject = streamCamera;
+      } catch (e) {
+        alert('Não foi possível acessar a câmera');
+        fecharCameraChat();
+      }
+    }
+    function fecharCameraChat() {
+      const modal = document.getElementById('modal-camera-chat');
+      const video = document.getElementById('video-camera-chat');
+      const previewFoto = document.getElementById('preview-foto-chat');
+      const previewVideo = document.getElementById('preview-video-chat');
+      const tempoEl = document.getElementById('tempo-gravacao-video');
+      if (streamCamera) {
+        streamCamera.getTracks().forEach(t => t.stop());
+        streamCamera = null;
+      }
+      if (timerVideo) {
+        clearInterval(timerVideo);
+        timerVideo = null;
+      }
+      video.style.display = 'block';
+      previewFoto.style.display = 'none';
+      previewVideo.style.display = 'none';
+      tempoEl.style.display = 'none';
+      document.getElementById('btn-tirar-foto').style.display = 'block';
+      document.getElementById('btn-gravar-video').style.display = 'flex';
+      document.getElementById('btn-enviar-foto').style.display = 'none';
+      document.getElementById('btn-refazer-foto').style.display = 'none';
+      fotoBlobCamera = null;
+      videoBlobCamera = null;
+      tipoMidiaCamera = null;
+      segundosVideo = 0;
+      modal.style.display = 'none';
+    }
+    function tirarFotoChat() {
+      const video = document.getElementById('video-camera-chat');
+      const canvas = document.getElementById('canvas-foto-chat');
+      const preview = document.getElementById('preview-foto-chat');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      canvas.toBlob((blob) => {
+        fotoBlobCamera = blob;
+        tipoMidiaCamera = 'imagem';
+        preview.src = URL.createObjectURL(blob);
+        preview.style.display = 'block';
+        video.style.display = 'none';
+        document.getElementById('btn-tirar-foto').style.display = 'none';
+        document.getElementById('btn-gravar-video').style.display = 'none';
+        document.getElementById('btn-enviar-foto').style.display = 'block';
+        document.getElementById('btn-refazer-foto').style.display = 'block';
+      }, 'image/jpeg', 0.8);
+    }
+    function iniciarGravacaoVideoChat() {
+      if (mediaRecorderVideo && mediaRecorderVideo.state === 'recording') {
+        pararGravacaoVideoChat();
+        return;
+      }
+      chunksVideo = [];
+      mediaRecorderVideo = new MediaRecorder(streamCamera);
+      mediaRecorderVideo.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksVideo.push(e.data);
+      };
+      mediaRecorderVideo.onstop = () => {
+        const blob = new Blob(chunksVideo, { type: 'video/webm' });
+        videoBlobCamera = blob;
+        tipoMidiaCamera = 'video';
+        const previewVideo = document.getElementById('preview-video-chat');
+        const videoCam = document.getElementById('video-camera-chat');
+        previewVideo.src = URL.createObjectURL(blob);
+        previewVideo.style.display = 'block';
+        videoCam.style.display = 'none';
+        document.getElementById('btn-tirar-foto').style.display = 'none';
+        document.getElementById('btn-gravar-video').style.display = 'none';
+        document.getElementById('btn-enviar-foto').style.display = 'block';
+        document.getElementById('btn-refazer-foto').style.display = 'block';
+      };
+      mediaRecorderVideo.start();
+      segundosVideo = 0;
+      const tempoEl = document.getElementById('tempo-gravacao-video');
+      tempoEl.style.display = 'block';
+      tempoEl.innerText = '00:00';
+      timerVideo = setInterval(() => {
+        segundosVideo++;
+        const min = String(Math.floor(segundosVideo / 60)).padStart(2, '0');
+        const sec = String(segundosVideo % 60).padStart(2, '0');
+        tempoEl.innerText = min + ':' + sec;
+        if (segundosVideo >= 60) {
+          pararGravacaoVideoChat();
+        }
+      }, 1000);
+      const btnGravar = document.getElementById('btn-gravar-video');
+      btnGravar.innerHTML = '<div style="width:14px;height:14px;background:#FFF;border-radius:2px;"></div>';
+    }
+    function pararGravacaoVideoChat() {
+      if (mediaRecorderVideo && mediaRecorderVideo.state === 'recording') {
+        mediaRecorderVideo.stop();
+      }
+      if (timerVideo) {
+        clearInterval(timerVideo);
+        timerVideo = null;
+      }
+      document.getElementById('tempo-gravacao-video').style.display = 'none';
+    }
+    function refazerMidiaChat() {
+      const video = document.getElementById('video-camera-chat');
+      const previewFoto = document.getElementById('preview-foto-chat');
+      const previewVideo = document.getElementById('preview-video-chat');
+      const tempoEl = document.getElementById('tempo-gravacao-video');
+      previewFoto.style.display = 'none';
+      previewVideo.style.display = 'none';
+      tempoEl.style.display = 'none';
+      video.style.display = 'block';
+      document.getElementById('btn-tirar-foto').style.display = 'block';
+      document.getElementById('btn-gravar-video').style.display = 'flex';
+      document.getElementById('btn-enviar-foto').style.display = 'none';
+      document.getElementById('btn-refazer-foto').style.display = 'none';
+      fotoBlobCamera = null;
+      videoBlobCamera = null;
+      tipoMidiaCamera = null;
+      segundosVideo = 0;
+    }
+    async function enviarMidiaCameraChat() {
+      if (!amigoAtivoUID) return;
+      const uidLogado = meuUID;
+      const chatID = [uidLogado, amigoAtivoUID].sort().join('_');
+      let blobEnviar = null;
+      let extensao = '';
+      let tipo = '';
+      if (tipoMidiaCamera === 'imagem' && fotoBlobCamera) {
+        blobEnviar = fotoBlobCamera;
+        extensao = '.jpg';
+        tipo = 'imagem';
+      }
+      if (tipoMidiaCamera === 'video' && videoBlobCamera) {
+        blobEnviar = videoBlobCamera;
+        extensao = '.webm';
+        tipo = 'video';
+      }
+      if (!blobEnviar) return;
+      const nomeArquivo = Date.now() + '_' + uidLogado + extensao;
+      const refStorage = storage.ref('chats_midias/' + chatID + '/' + nomeArquivo);
+      await refStorage.put(blobEnviar);
+      const urlDownload = await refStorage.getDownloadURL();
+      const novaMsgRef = rtdb.ref('chats/' + chatID + '/mensagens').push();
+      novaMsgRef.set({
+        enviadoPor: uidLogado,
+        tipo: tipo,
+        url: urlDownload,
+        texto: '',
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        lida: false
+      });
+      fecharCameraChat();
+    }
+    function abrirVisualizadorImagem(urlImagem) {
+      abrirVisualizadorMidia(urlImagem, 'imagem');
+    }
+    function abrirVisualizadorVideo(urlVideo) {
+      abrirVisualizadorMidia(urlVideo, 'video');
+    }
+    function abrirVisualizadorMidia(urlMidia, tipoMidia) {
+      const modal = document.getElementById('modal-visualizar-midia');
+      const img = document.getElementById('imagem-visualizador');
+      const vid = document.getElementById('video-visualizador');
+      const btnBaixar = document.getElementById('btn-baixar-midia');
+      if (tipoMidia === 'video') {
+        img.style.display = 'none';
+        vid.style.display = 'block';
+        vid.src = urlMidia;
+      } else {
+        vid.style.display = 'none';
+        img.style.display = 'block';
+        img.src = urlMidia;
+      }
+      btnBaixar.onclick = () => {
+        const a = document.createElement('a');
+        a.href = urlMidia;
+        a.download = tipoMidia === 'video' ? 'video.webm' : 'foto.jpg';
+        a.target = '_blank';
+        a.click();
+      };
+      modal.style.display = 'flex';
+    }
+    function fecharVisualizadorImagem() {
+      const modal = document.getElementById('modal-visualizar-midia');
+      const img = document.getElementById('imagem-visualizador');
+      const vid = document.getElementById('video-visualizador');
+      img.src = '';
+      vid.pause();
+      vid.src = '';
+      modal.style.display = 'none';
+    }
+
+    //=====================================
+    //    FUNÇÃO DE GRAVAÇÃO DE AUDIO
+    //=====================================
+    function verificarTextoInputChat() {
+      const input = document.getElementById('input-mensagem-chat');
+      const iconeEnviar = document.getElementById('icone-enviar-chat');
+      const iconeMic = document.getElementById('icone-mic-chat');
+      if (input.value.trim().length > 0) {
+        iconeEnviar.style.display = 'block';
+        iconeMic.style.display = 'none';
+      } else {
+        iconeEnviar.style.display = 'none';
+        iconeMic.style.display = 'block';
+      }
+    }
+    function acaoBotaoChat() {
+      const input = document.getElementById('input-mensagem-chat');
+      if (input.value.trim().length > 0) {
+        enviarMensagem();
+      } else {
+        iniciarGravacaoAudioChat();
+      }
+    }
+    async function iniciarGravacaoAudioChat() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        chunksAudio = [];
+        mediaRecorderAudio = new MediaRecorder(stream);
+        mediaRecorderAudio.ondataavailable = (e) => {
+          if (e.data.size > 0) chunksAudio.push(e.data);
+        };
+        mediaRecorderAudio.onstop = () => {
+          audioBlobChat = new Blob(chunksAudio, { type: 'audio/webm' });
+        };
+        mediaRecorderAudio.start();
+        segundosAudio = 0;
+        document.getElementById('barra-gravando-audio').style.display = 'flex';
+        document.getElementById('tempo-audio-chat').innerText = '00:00';
+        timerAudio = setInterval(() => {
+          segundosAudio++;
+          const min = String(Math.floor(segundosAudio / 60)).padStart(2, '0');
+          const sec = String(segundosAudio % 60).padStart(2, '0');
+          document.getElementById('tempo-audio-chat').innerText = min + ':' + sec;
+        }, 1000);
+      } catch (e) {
+        alert('Microfone não permitido');
+      }
+    }
+    function pararGravacaoAudioChat() {
+      if (mediaRecorderAudio && mediaRecorderAudio.state === 'recording') {
+        mediaRecorderAudio.stop();
+        mediaRecorderAudio.stream.getTracks().forEach(t => t.stop());
+      }
+      if (timerAudio) {
+        clearInterval(timerAudio);
+        timerAudio = null;
+      }
+      document.getElementById('barra-gravando-audio').style.display = 'none';
+      setTimeout(() => {
+        enviarAudioChat();
+      }, 200);
+    }
+    function cancelarGravacaoAudioChat() {
+      if (mediaRecorderAudio && mediaRecorderAudio.state === 'recording') {
+        mediaRecorderAudio.stop();
+        mediaRecorderAudio.stream.getTracks().forEach(t => t.stop());
+      }
+      if (timerAudio) {
+        clearInterval(timerAudio);
+        timerAudio = null;
+      }
+      chunksAudio = [];
+      audioBlobChat = null;
+      document.getElementById('barra-gravando-audio').style.display = 'none';
+    }
+    async function enviarAudioChat() {
+      if (!audioBlobChat || !amigoAtivoUID) return;
+      const uidLogado = meuUID;
+      const chatID = [uidLogado, amigoAtivoUID].sort().join('_');
+      const nomeArquivo = Date.now() + '_' + uidLogado + '.webm';
+      const refStorage = storage.ref('chats_audios/' + chatID + '/' + nomeArquivo);
+      await refStorage.put(audioBlobChat);
+      const urlDownload = await refStorage.getDownloadURL();
+      const novaMsgRef = rtdb.ref('chats/' + chatID + '/mensagens').push();
+      novaMsgRef.set({
+        enviadoPor: uidLogado,
+        tipo: 'audio',
+        url: urlDownload,
+        duracao: segundosAudio,
+        texto: '',
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        lida: false
+      });
+      audioBlobChat = null;
+      segundosAudio = 0;
     }
         
 
