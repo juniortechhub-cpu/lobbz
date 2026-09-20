@@ -119,7 +119,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U",
@@ -144,6 +144,12 @@
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, senha);
         const user = userCredential.user;
+        const uidLogadoLogin = user.uid;
+        const agoraLoginMs = Date.now();
+        localStorage.setItem('ultimo_login_' + uidLogadoLogin, agoraLoginMs.toString());
+        await setDoc(doc(db, "usuarios", uidLogadoLogin), {
+          ultimo_login: serverTimestamp()
+        }, { merge: true });
 
         // Busca o documento do usuário diretamente pela ID (UID)
         const userDocRef = doc(db, "usuarios", user.uid);

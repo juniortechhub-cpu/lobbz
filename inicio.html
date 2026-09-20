@@ -135,10 +135,10 @@
 
 </head>
 <!-- Firebase App e Firestore (SDKs Oficiais) -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
 
 <body>
 
@@ -244,7 +244,7 @@
       <div id="container-lista-amigos" style="width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
 
       <!-- TELA DE CONVERSA INTERNA (ESTILO WHATSAPP COM NOSSAS CORES) -->
-<div id="tela-conversa-ativa" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #0F1117; z-index: 2000; flex-direction: column;">
+      <div id="tela-conversa-ativa" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #0F1117; z-index: 2000; flex-direction: column;">
   
   <!-- BARRA SUPERIOR (HEADER) -->
   <div style="background-color: #1E2230; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
@@ -339,6 +339,25 @@
         <p id="chat-subtitle">Selecione um amigo para começar a conversar.</p>
       </div>
 
+      <!-- CHAT ALEATORIO -->
+    <div id="modal-chat-aleatorio" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(15, 17, 23, 0.85); backdrop-filter: blur(8px); z-index: 3000; flex-direction: column; justify-content: center; align-items: center; padding: 20px;">
+      <div style="background-color: #1E2230; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 28px 20px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 15px 30px rgba(0,0,0,0.5);">
+        <div style="width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+        <h3 style="text-align: center; font-size: 18px; font-weight: 700; color: #FFFFFF;">Antes de entrar no Chat Aleatório</h3>
+        <p style="font-size: 12px; color: #94A3B8; text-align: center;">Para manter um ambiente seguro e legal pra todos:</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 4px;">
+          <div style="display: flex; gap: 10px; align-items: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span style="font-size: 13px; color: #E2E8F0;">Mantenha o respeito com todos</span></div>
+          <div style="display: flex; gap: 10px; align-items: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span style="font-size: 13px; color: #E2E8F0;">Proibido nudez ou conteúdo sexual</span></div>
+          <div style="display: flex; gap: 10px; align-items: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg><span style="font-size: 13px; color: #E2E8F0;">Sem spam, divulgação ou flood</span></div>
+          <div style="display: flex; gap: 10px; align-items: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span style="font-size: 13px; color: #E2E8F0;">Você pode ser banido por mau comportamento</span></div>
+        </div>
+        <button onclick="entrarChatAleatorio()" style="width: 100%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: #FFFFFF; border: none; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; margin-top: 8px;">Entrar</button>
+        <button onclick="fecharModalChatAleatorio()" style="background: none; border: none; color: #94A3B8; font-size: 12px; cursor: pointer; text-decoration: underline;">Voltar</button>
+      </div>
+    </div>
+
     </div>
     <!-- ========================================== -->
     <!-- ABA 4: MEU CANAL  -->
@@ -429,6 +448,12 @@
         </div>
 
       </div>
+
+      <!-- VERSAO DO APP -->
+            <div id="app-versao-box" style="margin-top: 18px; display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+            <span id="app-versao-text" style="font-size: 11px; color: #94A3B8; font-weight: 600; letter-spacing: 0.5px;">•</span>
+          </div>
+
     </div>
 
   </div>
@@ -448,10 +473,11 @@
     </a>
 
     <!-- 2. Chat -->
-    <a href="#" id="btn-tab-chat" class="nav-item" onclick="mudarAba('chat'); return false;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-      </svg>
+    <a href="#" id="btn-tab-chat" class="nav-item" style="position:relative;" onclick="mudarAba('chat'); return false;">
+      <div style="position:relative;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span id="badge-aba-chat" style="display:none;position:absolute;top:-6px;right:-10px;background:linear-gradient(135deg,#7C3AED 0%,#FF2D55 100%);color:#FFF;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;padding:0 4px;align-items:center;justify-content:center;border:2px solid #1E2230;z-index:5;">0</span>
+      </div>
       <span>Chat</span>
     </a>
 
@@ -517,8 +543,10 @@
     let meuUID = null;
     let amigoAtivoUID = null;
     let amigoAtivoUsername = null;
-    // Se existir um nome de usuário na URL, define usuarioLogado como true
-    let usuarioLogado = nomeUsuario ? true : false;
+    let totalConvitesPendentes = 0;
+    let totalMensagensNaoLidas = 0;
+    let mapaNaoLidasPorAmigo = {};
+    let usuarioLogado = false;
 
   // CONFIGURAÇÕES DO PROJETO
     const firebaseConfig = {
@@ -613,7 +641,7 @@
       const chatSubtitle = document.getElementById('chat-subtitle');
       const containerBusca = document.getElementById('container-busca-chat');
       const containerAmigos = document.getElementById('container-lista-amigos');
-
+      const modalAleatorio = document.getElementById('modal-chat-aleatorio');
       if (tipo === 'amigos') {
         tabAmigos.classList.add('active');
         tabAleatorio.classList.remove('active');
@@ -621,22 +649,45 @@
         chatSubtitle.innerText = 'Selecione um amigo para começar a conversar.';
         if (containerBusca) containerBusca.style.display = 'block';
         if (containerAmigos) containerAmigos.style.display = 'flex';
+        if (modalAleatorio) modalAleatorio.style.display = 'none';
       } else if (tipo === 'aleatorio') {
         tabAleatorio.classList.add('active');
         tabAmigos.classList.remove('active');
-        chatTitle.innerText = 'Chat Aleatório';
-        chatSubtitle.innerText = 'Procurando alguém para você conversar agora...';
         if (containerBusca) containerBusca.style.display = 'none';
         if (containerAmigos) containerAmigos.style.display = 'none';
+        if (modalAleatorio) modalAleatorio.style.display = 'flex';
       }
+    }
+    function fecharModalChatAleatorio() {
+      const modalAleatorio = document.getElementById('modal-chat-aleatorio');
+      if (modalAleatorio) modalAleatorio.style.display = 'none';
+      mudarSubAbaChat('amigos');
+    }
+    function entrarChatAleatorio() {
+      const modalAleatorio = document.getElementById('modal-chat-aleatorio');
+      if (modalAleatorio) modalAleatorio.style.display = 'none';
+      const chatTitle = document.getElementById('chat-title');
+      const chatSubtitle = document.getElementById('chat-subtitle');
+      if (chatTitle) chatTitle.innerText = 'Chat Aleatório';
+      if (chatSubtitle) chatSubtitle.innerText = 'Procurando alguém para você conversar agora...';
     }
 
     //=========================================================
     // Função para deslogar da conta
     //=========================================================
     function fazerLogout() {
-      usuarioLogado = false;
-      window.location.href = 'inicio.html';
+      const uidLogado = meuUID;
+      if (uidLogado) {
+        rtdb.ref('status/' + uidLogado).set({
+          state: 'offline',
+          last_changed: firebase.database.ServerValue.TIMESTAMP
+        });
+      }
+      firebase.auth().signOut().then(() => {
+        meuUID = null;
+        usuarioLogado = false;
+        window.location.href = 'inicio.html';
+      });
     }
 
     //=========================================================
@@ -645,67 +696,80 @@
     //=========================================================
     async function buscarUsuarios(texto) {
       const boxResultados = document.getElementById('box-resultados-pesquisa');
+      const inputBusca = document.getElementById('input-busca-chat');
       const termo = texto.trim().toLowerCase().replace('@', '');
-
       if (termo === '') {
         boxResultados.style.display = 'none';
         boxResultados.innerHTML = '';
         return;
       }
-
       try {
-        const snapshot = await db.collection('usuarios').get();
+        const uidLogado = meuUID;
+        const termoBusca = termo;
+        const promessaUsuarios = db.collection('usuarios').get();
+        const promessaAmigos = uidLogado ? db.collection('usuarios').doc(uidLogado).collection('amigos').get() : Promise.resolve({ docs: [], empty: true });
+        const promessaConvites = uidLogado ? db.collection('usuarios').doc(uidLogado).collection('convites_enviados').get() : Promise.resolve({ docs: [], empty: true });
+        const resultadoUsuarios = await promessaUsuarios;
+        const resultadoAmigos = await promessaAmigos;
+        const resultadoConvites = await promessaConvites;
+        const inputAtual = inputBusca.value.trim().toLowerCase().replace('@', '');
+        if (inputAtual === '') {
+          boxResultados.style.display = 'none';
+          boxResultados.innerHTML = '';
+          return;
+        }
+        if (inputAtual !== termoBusca) {
+          return;
+        }
+        const setAmigos = new Set();
+        resultadoAmigos.docs.forEach((docAmigo) => {
+          setAmigos.add(docAmigo.id);
+        });
+        const setConvites = new Set();
+        resultadoConvites.docs.forEach((docConvite) => {
+          setConvites.add(docConvite.id);
+        });
         let html = '';
         let encontrados = 0;
-
-        if (!snapshot.empty) {
-          for (const doc of snapshot.docs) {
-            const u = doc.data();
-            const targetUID = doc.id;
-            
-            const usernameExibicao = (u.nomeUsuario || u.username || u.nome || '').toString();
-            const nomeExibicao = (u.nome || u.nomeUsuario || u.username || 'Usuário').toString();
-            const verificado = u.verificado || false;
-
-            const userLower = usernameExibicao.toLowerCase();
-            const nomeLower = nomeExibicao.toLowerCase();
-
-            if ((userLower.includes(termo) || nomeLower.includes(termo)) && encontrados < 5) {
-              if (encontrados === 0) {
-                html += '<p style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; text-align: left;">Sugestões</p>';
-              }
-
-              let statusRelacao = 'nenhum';
-              const usuarioAtual = window.nomeUsuario || nomeUsuario;
-              
-              if (usuarioAtual) {
-                const checagemAmigo = await db.collection('usuarios').doc(usuarioAtual).collection('amigos').doc(targetUID).get();
-                if (checagemAmigo.exists) {
-                  statusRelacao = 'amigo';
-                } else {
-                  const checagemConvite = await db.collection('usuarios').doc(meuUID).collection('convites_enviados').doc(targetUID).get();
-                  if (checagemConvite.exists) {
-                    statusRelacao = 'enviado';
-                  }
-                }
-              }
-
-              html += criarItemUsuarioHTML({
-                nome: nomeExibicao,
-                user: '@' + usernameExibicao,
-                verificado: verificado,
-                targetUID: targetUID
-              }, statusRelacao);
-
-              encontrados++;
+        for (const doc of resultadoUsuarios.docs) {
+          const valorInputAgora = inputBusca.value.trim();
+          if (valorInputAgora === '') {
+            boxResultados.style.display = 'none';
+            boxResultados.innerHTML = '';
+            return;
+          }
+          const u = doc.data();
+          const targetUID = doc.id;
+          if (targetUID === uidLogado) {
+            continue;
+          }
+          const usernameExibicao = (u.nomeUsuario || u.username || u.nome || '').toString();
+          const nomeExibicao = (u.nome || u.nomeUsuario || u.username || 'Usuário').toString();
+          const verificado = u.verificado || false;
+          const userLower = usernameExibicao.toLowerCase();
+          const nomeLower = nomeExibicao.toLowerCase();
+          if ((userLower.includes(termoBusca) || nomeLower.includes(termoBusca)) && encontrados < 5) {
+            if (encontrados === 0) {
+              html += '<p style="font-size:11px;color:#94A3B8;font-weight:700;text-transform:uppercase;margin-bottom:8px;text-align:left;">Sugestões</p>';
             }
+            let statusRelacao = 'nenhum';
+            if (setAmigos.has(targetUID)) {
+              statusRelacao = 'amigo';
+            } else if (setConvites.has(targetUID)) {
+              statusRelacao = 'enviado';
+            }
+            html += criarItemUsuarioHTML({
+              nome: nomeExibicao,
+              user: '@' + usernameExibicao,
+              verificado: verificado,
+              targetUID: targetUID
+            }, statusRelacao);
+            encontrados++;
           }
         }
-
         if (encontrados === 0) {
-          html = '<p style="font-size: 13px; color: #94A3B8; padding: 8px 0; text-align: center;">Nenhum usuário encontrado</p>';
+          html = '<p style="font-size:13px;color:#94A3B8;padding:8px 0;text-align:center;">Nenhum usuário encontrado</p>';
         }
-
         boxResultados.innerHTML = html;
         boxResultados.style.display = 'block';
       } catch (erro) {
@@ -837,6 +901,8 @@
         const badge = document.getElementById('badge-convites');
         const lista = document.getElementById('lista-convites-recebidos');
         const qtd = snapshot.size;
+        totalConvitesPendentes = qtd;
+        atualizarBadgeAbaChat();
         if (qtd > 0) {
           badge.style.display = 'block';
           badge.innerText = qtd;
@@ -969,6 +1035,21 @@
       });
     }
 
+    //  FUNÇÃO DO PONTO NA ABA DE CHAT - CONVERSAS E SOLICITAÇÕES RECEBIDAS
+    function atualizarBadgeAbaChat() {
+      const badgeAba = document.getElementById('badge-aba-chat');
+      if (!badgeAba) {
+        return;
+      }
+      const totalGeral = totalConvitesPendentes + totalMensagensNaoLidas;
+      if (totalGeral > 0) {
+        badgeAba.style.display = 'flex';
+        badgeAba.innerText = totalGeral > 99? '99+' : totalGeral;
+      } else {
+        badgeAba.style.display = 'none';
+      }
+    }
+
     // FUNÇÃO DE ESCUTAR ONLINE NA LISTA DE AMIGOS
     function monitorarStatusListaAmigos(amigoUID) {
       const statusRef = rtdb.ref('status/' + amigoUID);
@@ -1070,6 +1151,13 @@
       }
     }
     if (badgeEl) {
+      mapaNaoLidasPorAmigo[amigoUID] = totalNaoLidas;
+      let somaNaoLidas = 0;
+      for (const uid in mapaNaoLidasPorAmigo) {
+        somaNaoLidas += mapaNaoLidasPorAmigo[uid];
+      }
+      totalMensagensNaoLidas = somaNaoLidas;
+      atualizarBadgeAbaChat();
       if (totalNaoLidas > 0 && amigoAtivoUID !== amigoUID) {
         badgeEl.innerText = totalNaoLidas;
         badgeEl.style.display = 'flex';
@@ -1105,13 +1193,52 @@
 
     // Inicializa as escutas ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
-      firebase.auth().onAuthStateChanged((user) => {
+      firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
           meuUID = user.uid;
-          window.nomeUsuario = nomeUsuario;
+          usuarioLogado = true;
+          const trintaDiasMs = 30 * 24 * 60 * 60 * 1000;
+          const agoraMs = Date.now();
+          const chaveUltimoLogin = 'ultimo_login_' + user.uid;
+          const ultimoLoginStr = localStorage.getItem(chaveUltimoLogin);
+          const ultimoLoginMs = ultimoLoginStr ? parseInt(ultimoLoginStr, 10) : 0;
+          if (ultimoLoginMs === 0) {
+            localStorage.setItem(chaveUltimoLogin, agoraMs.toString());
+          } else if ((agoraMs - ultimoLoginMs) > trintaDiasMs) {
+            rtdb.ref('status/' + user.uid).set({
+              state: 'offline',
+              last_changed: firebase.database.ServerValue.TIMESTAMP
+            });
+            firebase.auth().signOut().then(() => {
+              meuUID = null;
+              usuarioLogado = false;
+              window.location.href = 'login.html?motivo=sessao_expirada';
+            });
+            return;
+          }
+          let nomeUsuarioFinal = nomeUsuario;
+          if (!nomeUsuarioFinal) {
+            try {
+              const docUsuario = await db.collection('usuarios').doc(user.uid).get();
+              if (docUsuario.exists) {
+                const dadosUsuarioBuscado = docUsuario.data();
+                nomeUsuarioFinal = dadosUsuarioBuscado.nomeUsuario || '';
+                window.nomeUsuario = nomeUsuarioFinal;
+                if (nomeUsuarioFinal) {
+                  const novaUrl = 'inicio.html?user=' + encodeURIComponent(nomeUsuarioFinal);
+                  window.history.replaceState({}, '', novaUrl);
+                }
+              }
+            } catch (e) {}
+          } else {
+            window.nomeUsuario = nomeUsuarioFinal;
+          }
           gerenciarPresenca();
           escutarConvitesRecebidos();
           escutarAmigos();
+        } else {
+          meuUID = null;
+          usuarioLogado = false;
         }
       });
     });
@@ -1124,6 +1251,12 @@
       amigoAtivoUID = amigoUID;
       amigoAtivoUsername = amigoUsername;
       amigoAtivo = amigoUID;
+      mapaNaoLidasPorAmigo[amigoUID] = 0;
+      totalMensagensNaoLidas = 0;
+      for (const uid in mapaNaoLidasPorAmigo) {
+        totalMensagensNaoLidas += mapaNaoLidasPorAmigo[uid];
+      }
+      atualizarBadgeAbaChat();
       document.getElementById('chat-conversa-nome').innerText = '@' + amigoUsername;
       document.getElementById('chat-conversa-avatar').innerText = amigoUsername.charAt(0).toUpperCase();
       document.getElementById('tela-conversa-ativa').style.display = 'flex';
