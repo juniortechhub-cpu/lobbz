@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Canal - Lobbz</title>
+  <link id="app-favicon" rel="icon" type="image/png" href="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
+
+  <style>
+    * {box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif;}
+    body {background-color: #0F172A; color: #FFFFFF; min-height: 100vh; padding-bottom: 90px;}
+    .banner-canal {width: 100%; height: 140px; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); position: relative;}
+    .perfil-container {max-width: 800px; margin: 0 auto; padding: 0 16px; position: relative;}
+    .foto-perfil-wrapper {position: absolute; top: -40px; left: 16px;}
+    .foto-perfil {width: 80px; height: 80px; border-radius: 50%; background: #1E2230; border: 4px solid #0F172A; display: flex; align-items: center; justify-content: center;}
+    .info-canal {padding-top: 50px;}
+    .nome-canal {font-size: 20px; font-weight: 700; color: #FFFFFF;}
+    .handle-canal {font-size: 13px; color: #94A3B8; margin-top: 2px;}
+    .estats-canal {font-size: 13px; color: #64748B; margin-top: 6px;}
+    .botoes-acao {display: flex; gap: 10px; margin-top: 14px;}
+    .btn-acao {background: #1E2230; border: 1px solid rgba(255, 255, 255, 0.08); color: #FFFFFF; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;}
+    .tabs-canal {display: flex; gap: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-top: 20px;}
+    .tab-item {padding: 10px 0; font-size: 14px; font-weight: 600; color: #94A3B8; cursor: pointer; position: relative;}
+    .tab-item.active {color: #FFFFFF;}
+    .tab-item.active::after {content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #0066FF;}
+    .grid-videos {display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 20px;}
+    .card-video {background: #1E2230; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08);}
+    .thumb-video {width: 100%; height: 120px; background: #0F172A; position: relative; display: flex; align-items: center; justify-content: center;}
+    .duracao-video {position: absolute; bottom: 8px; right: 8px; background: rgba(0, 0, 0, 0.8); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 500;}
+    .detalhes-video {padding: 12px;}
+    .titulo-video { font-size: 14px; font-weight: 600; line-height: 1.3; color: #FFFFFF;}
+    .meta-video {font-size: 12px; color: #94A3B8; margin-top: 6px;}
+    .nav-bottom {position: fixed; bottom: 0; left: 0; width: 100%; background: #1E2230; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-around; padding: 10px 0; z-index: 999;}
+    .nav-item {display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94A3B8; text-decoration: none; font-size: 10px;}
+    .nav-item.active {color: #0066FF;}
+    .btn-voltar-canal{position:absolute;top:14px;left:14px;width:36px;height:36px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(6px);z-index:10;}
+
+    /* PAGINA DE EDITAR DADOS DO MEU CANAL */
+    #tela-editar-canal{display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#0F172A;z-index:1000;overflow-y:auto;padding-bottom:90px;}
+    .header-editar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;background:#0F172A;}
+    .input-edit{width:100%;background:#1E2230;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#FFF;font-size:14px;outline:none;}
+    .label-edit{font-size:12px;color:#94A3B8;margin:12px 0 6px;display:block;}
+    /* AVIAOZINHO DE SALVAMENTO */
+    #loading-screen{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,17,23,0.85);backdrop-filter:blur(8px);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;}
+    .paper-box{width:80px;height:80px;display:flex;align-items:center;justify-content:center;animation:flyPaper 1.8s ease-in-out infinite;}
+    .loading-text{color:#94A3B8;font-size:14px;font-weight:600;letter-spacing:0.5px;}
+    @keyframes flyPaper{0%{transform:translate(-10px,10px) rotate(-10deg);}50%{transform:translate(10px,-10px) rotate(5deg);}100%{transform:translate(-10px,10px) rotate(-10deg);}}
+  </style>
+</head>
+<body>
+
+    <div class="banner-canal" id="banner-canal-main">
+    <button class="btn-voltar-canal" onclick="voltarParaInicioLogado()" aria-label="Voltar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="M12 19L5 12L12 5"></path></svg>
+    </button>
+    </div>
+
+  <div class="perfil-container">
+    <div class="foto-perfil-wrapper">
+       <div class="foto-perfil" id="canal-foto">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+    </div>
+
+    <div class="info-canal">
+      <h1 class="nome-canal" id="canal-nome">Seu Nome</h1>
+      <p class="handle-canal" id="canal-handle">@seuUsuario</p>
+      <p class="estats-canal" id="canal-estats">0 seguidores • 0 vídeos</p>
+
+      <div class="botoes-acao">
+        <button class="btn-acao" onclick="abrirEdicaoCanalPage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Editar perfil
+        </button>
+        <button class="btn-acao">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          Compartilhar
+        </button>
+      </div>
+
+      <div class="tabs-canal">
+        <div class="tab-item active">Vídeos</div>
+      </div>
+
+      <div class="grid-videos">
+        <div class="card-video">
+          <div class="thumb-video">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span class="duracao-video">10:25</span>
+          </div>
+          <div class="detalhes-video">
+            <h2 class="titulo-video">Meu primeiro vídeo no Credtech</h2>
+            <p class="meta-video">120 visualizações • há 2 dias</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA DE EDIÇÃO DOS DADOS DO CANAL -->
+     <div id="tela-editar-canal">
+    <div class="header-editar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div onclick="fecharEdicaoCanalPage()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </div>
+        <span style="font-weight:700;">Editar canal</span>
+      </div>
+      <button onclick="salvarEdicaoCanalPage()" style="background:#0066FF;border:none;border-radius:20px;padding:8px 16px;color:#FFF;font-weight:600;font-size:13px;cursor:pointer;">Salvar</button>
+    </div>
+    <div style="max-width:600px;margin:0 auto;padding:16px;">
+      <label class="label-edit">Banner</label>
+        <div id="preview-banner-edit" onclick="document.getElementById('file-banner-edit').click()" style="width:100%;height:110px;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);border-radius:12px;position:relative;cursor:pointer;overflow:hidden;">
+        <div onclick="document.getElementById('file-banner-edit').click()" style="position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10;cursor:pointer;border:1px solid rgba(255,255,255,0.3);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        </div>
+        </div>
+      <input id="file-banner-edit" type="file" accept="image/*" style="display:none" onchange="trocarBannerCanal(event)">
+      <label class="label-edit">Foto de perfil</label>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="preview-foto-edit" onclick="document.getElementById('file-foto-edit').click()" style="width:72px;height:72px;border-radius:50%;background:#1E2230;border:2px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:24px;cursor:pointer;overflow:hidden;">N</div>
+        <span onclick="document.getElementById('file-foto-edit').click()" style="font-size:13px;color:#3EA6FF;cursor:pointer;">Alterar foto</span>
+      </div>
+      <input id="file-foto-edit" type="file" accept="image/*" style="display:none" onchange="trocarFotoCanal(event)">
+      <label class="label-edit">Nome do canal</label>
+      <input id="input-nome-edit" class="input-edit" type="text" placeholder="Nome do Canal">
+      <label class="label-edit">@Username</label>
+      <input id="input-handle-edit" class="input-edit" type="text" placeholder="Username">
+      <label class="label-edit">Descrição</label>
+      <textarea id="input-desc-edit" class="input-edit" rows="4" placeholder="Fale sobre seu canal..."></textarea>
+      <p id="msg-edit-canal" style="font-size:12px;color:#FF2D55;margin-top:8px;display:none;"></p>
+    </div>
+  </div>
+
+  <div id="loading-screen">
+    <div class="paper-box"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
+    </div>
+    <div class="loading-text">Salvando...</div>
+  </div>
+
+
+  <script>
+const cfgMeuCanal = {
+    apiKey:"AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U",
+    authDomain:"lobbz-a2e5b.firebaseapp.com",
+    databaseURL:"https://lobbz-a2e5b-default-rtdb.firebaseio.com",
+    projectId:"lobbz-a2e5b",storageBucket:"lobbz-a2e5b.firebasestorage.app",
+    messagingSenderId:"540689991558",
+    appId:"1:540689991558:web:c4ccbe7ac3d53de0d80e07"
+};
+firebase.initializeApp(cfgMeuCanal);
+const dbCanalPage = firebase.firestore();
+const storageCanalPage = firebase.storage();
+let fileFotoCanal = null;
+let fileBannerCanal = null;
+const paramsCanalPage = new URLSearchParams(window.location.search);
+const uidCanalPage = paramsCanalPage.get('uid');
+async function carregarDadosCanalPage(){
+  if(!uidCanalPage) return;
+  const docCanalPage = await dbCanalPage.collection('canais').doc(uidCanalPage).get();
+  if(!docCanalPage.exists) return;
+  const dadosCanalPage = docCanalPage.data();
+  const nomeCanalEl = document.getElementById('canal-nome');
+  const handleCanalEl = document.getElementById('canal-handle');
+  const statsCanalEl = document.getElementById('canal-estats');
+  const fotoCanalEl = document.getElementById('canal-foto');
+  const bannerCanalMainEl = document.getElementById('banner-canal-main');
+  if(nomeCanalEl) nomeCanalEl.innerText = dadosCanalPage.nomeCanal;
+  if(handleCanalEl) handleCanalEl.innerText = '@' + dadosCanalPage.handle;
+  if(statsCanalEl) statsCanalEl.innerText = (dadosCanalPage.inscritos||0) + ' seguidores • ' + (dadosCanalPage.videos||0) + ' vídeos';
+  if(fotoCanalEl){
+    if(dadosCanalPage.fotoURL){
+      fotoCanalEl.innerHTML = '<img src="' + dadosCanalPage.fotoURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    } else {
+      fotoCanalEl.innerText = dadosCanalPage.nomeCanal.charAt(0).toUpperCase();
+    }
+  }
+  if(bannerCanalMainEl){
+    if(dadosCanalPage.bannerURL){
+      bannerCanalMainEl.style.backgroundImage = 'url(' + dadosCanalPage.bannerURL + ')';
+      bannerCanalMainEl.style.backgroundPosition = 'center';
+      bannerCanalMainEl.style.backgroundSize = 'cover';
+    }
+  }
+}
+carregarDadosCanalPage();
+
+//===============================================
+//  FUNÇÃO DE EDITAR DADOS DO CANAL
+//===============================================
+async function abrirEdicaoCanalPage(){
+  const telaEditCanal = document.getElementById('tela-editar-canal');
+  if(telaEditCanal) telaEditCanal.style.display = 'block';
+  const nomeAtualCanal = document.getElementById('canal-nome').innerText;
+  const handleAtualCanal = document.getElementById('canal-handle').innerText.replace('@','');
+  document.getElementById('input-nome-edit').value = nomeAtualCanal;
+  document.getElementById('input-handle-edit').value = handleAtualCanal;
+  document.getElementById('preview-foto-edit').innerText = nomeAtualCanal.charAt(0).toUpperCase();
+  if(!uidCanalPage) return;
+  const docDescCanal = await dbCanalPage.collection('canais').doc(uidCanalPage).get();
+  if(!docDescCanal.exists) return;
+  const dadosDescCanal = docDescCanal.data();
+  document.getElementById('input-desc-edit').value = dadosDescCanal.descricao;
+
+  //   CARREGAR FOTO QUE JÁ EXISTE
+    if(dadosDescCanal.fotoURL){
+    document.getElementById('preview-foto-edit').innerHTML = '<img src="' + dadosDescCanal.fotoURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  }
+    if(dadosDescCanal.bannerURL){
+    const bannerEditEl = document.getElementById('preview-banner-edit');
+    bannerEditEl.style.backgroundImage = 'url(' + dadosDescCanal.bannerURL + ')';
+    bannerEditEl.style.backgroundPosition = 'center';
+    bannerEditEl.style.backgroundSize = 'cover';
+    }
+}
+
+//===========================================
+//  FUNÇÃO PARA ALTERAR FOTO DE PERFIL E BANNER DO CANAL
+//===========================================
+function trocarFotoCanal(e){
+  fileFotoCanal = e.target.files[0];
+  if(!fileFotoCanal) return;
+  const readerFotoCanal = new FileReader();
+  readerFotoCanal.onload = function(){
+    document.getElementById('preview-foto-edit').innerHTML = '<img src="' + readerFotoCanal.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  };
+  readerFotoCanal.readAsDataURL(fileFotoCanal);
+}
+function trocarBannerCanal(e){
+  fileBannerCanal = e.target.files[0];
+  if(!fileBannerCanal) return;
+  const readerBannerCanal = new FileReader();
+    readerBannerCanal.onload = function(){
+    const bannerPreviewEl = document.getElementById('preview-banner-edit');
+    bannerPreviewEl.style.backgroundImage = 'url(' + readerBannerCanal.result + ')';
+    bannerPreviewEl.style.backgroundPosition = 'center';
+    bannerPreviewEl.style.backgroundSize = 'cover';
+    };
+  readerBannerCanal.readAsDataURL(fileBannerCanal);
+}
+
+function fecharEdicaoCanalPage(){
+  const telaEditCanal2 = document.getElementById('tela-editar-canal');
+  if(telaEditCanal2) telaEditCanal2.style.display = 'none';
+}
+
+//==========================================
+//   FUNÇÃO DE SALVAR ALTERAÇÕES NO PERFIL DO CANAL
+//==========================================
+async function salvarEdicaoCanalPage(){
+    document.getElementById('loading-screen').style.display='flex';
+  const nomeEditCanal = document.getElementById('input-nome-edit').value.trim();
+  const handleEditCanal = document.getElementById('input-handle-edit').value.trim().toLowerCase().replace('@','');
+  const descEditCanal = document.getElementById('input-desc-edit').value.trim();
+  const msgEditCanal = document.getElementById('msg-edit-canal');
+  if(!nomeEditCanal ||!handleEditCanal){ msgEditCanal.style.display='block'; msgEditCanal.innerText='Preencha nome e @handle'; return; }
+  let fotoUrlEditCanal = null;
+  let bannerUrlEditCanal = null;
+  if(fileFotoCanal){
+    const refFotoEditCanal = storageCanalPage.ref('canais/' + uidCanalPage + '/foto.jpg');
+    try{ await refFotoEditCanal.delete(); }catch(e){}
+    await refFotoEditCanal.put(fileFotoCanal);
+    fotoUrlEditCanal = await refFotoEditCanal.getDownloadURL();
+  }
+  if(fileBannerCanal){
+    const refBannerEditCanal = storageCanalPage.ref('canais/' + uidCanalPage + '/banner.jpg');
+    try{ await refBannerEditCanal.delete(); }catch(e){}
+    await refBannerEditCanal.put(fileBannerCanal);
+    bannerUrlEditCanal = await refBannerEditCanal.getDownloadURL();
+  }
+  const dadosUpdateCanal = {nomeCanal:nomeEditCanal,handle:handleEditCanal,descricao:descEditCanal};
+  if(fotoUrlEditCanal) dadosUpdateCanal.fotoURL = fotoUrlEditCanal;
+  if(bannerUrlEditCanal) dadosUpdateCanal.bannerURL = bannerUrlEditCanal;
+  await dbCanalPage.collection('canais').doc(uidCanalPage).update(dadosUpdateCanal);
+  location.reload();
+}
+
+//=================================
+//   FUNÇÃO PARA VOLTAR A PAGINA INICIO COM USER
+//=================================
+function voltarParaInicioLogado(){
+  const handleVoltar = document.getElementById('canal-handle').innerText.replace('@','');
+  if(handleVoltar){
+    window.location.href = 'inicio.html?user=' + encodeURIComponent(handleVoltar);
+  } else {
+    window.location.href = 'inicio.html';
+  }
+}
+
+
+</script>
+
+<script type="module" src="appinfo.js"></script>
+</body>
+</html>

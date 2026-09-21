@@ -38,6 +38,13 @@ function iniciarEscutaAppInfo() {
         location.href = 'manutencao.html';
       }
     }
+
+        if (data.versao) {
+      const elVersao = document.getElementById('app-versao-text');
+      if (elVersao) {
+        elVersao.innerText = '• Versão ' + data.versao + ' •';
+      }
+    }
   });
 }
 
