@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurações - Lobbz</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background-color:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;display:flex;height:100vh;overflow:hidden;justify-content:center;align-items:center;}
+.main-content{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 16px 140px 16px;max-width:480px;width:100%;height:100vh;overflow-y:auto;}
+.welcome-card{background-color:#1E2230;border-radius:24px;padding:32px;max-width:480px;width:100%;border:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;gap:0;text-align:left;}
+.bottom-nav{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background-color:#1E2230;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:8px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 10px 25px rgba(0,0,0,0.4);}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;padding:8px 14px;width:72px;border-radius:12px;color:#94A3B8;text-decoration:none;font-size:11px;font-weight:600;cursor:pointer;}
+.nav-item.active{color:#FFF;background:linear-gradient(135deg,rgba(0,102,255,0.2) 0%,rgba(124,58,237,0.2) 100%);border:1px solid rgba(0,102,255,0.4);}
+.nav-item.live-item{color:#FFF;background:linear-gradient(135deg,#FF2D55 0%,#FF3B30 100%);border-radius:14px;padding:10px 14px;box-shadow:0 4px 15px rgba(255,45,85,0.4);transform:translateY(-4px);}
+.item-config{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer;}
+@keyframes spinConfig { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- ABA 5: MENU DE CONFIGURAÇÕES -->
+    <!-- ========================================== -->
+    <div id="tab-menu-content" style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 480px; height: calc(100vh - 80px); overflow-y: auto; padding-bottom: 140px; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="welcome-card" style="width: 100%; text-align: left; align-items: stretch;">
+        
+        <!-- BOTÃO VOLTAR COM SVG PROFISSIONAL -->
+        <div onclick="irParaInicioComUidConfig()" style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; cursor: pointer; width: fit-content;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </div>
+          <span style="font-size: 14px; font-weight: 600; color: #FFFFFF;">Voltar ao Início</span>
+        </div>
+
+        <h2 style="font-size: 20px; text-align: center; margin-bottom: 10px;">Configurações</h2>
+        
+        <!-- Opção 1: Minhas Informações -->
+        <div onclick="abrirMinhasInformacoes()" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span style="font-size: 14px; font-weight: 600;">Minhas Informações</span>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- Opção 2: Notificações -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span style="font-size: 14px; font-weight: 600;">Notificações</span>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- Opção 3: Privacidade e Segurança -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span style="font-size: 14px; font-weight: 600;">Privacidade e Segurança</span>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- Opção 4: Ajuda e Suporte -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span style="font-size: 14px; font-weight: 600;">Ajuda e Suporte</span>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- Opção 5: Sair da Conta -->
+        <div onclick="fazerLogoutConfig()" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; cursor: pointer; color: #FF2D55;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF2D55" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span style="font-size: 14px; font-weight: 600;">Sair</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- VERSAO DO APP -->
+            <div id="app-versao-box" style="margin-top: 18px; display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+            <span id="app-versao-text" style="font-size: 11px; color: #94A3B8; font-weight: 600; letter-spacing: 0.5px;">•</span>
+          </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TELA: MINHAS INFORMAÇÕES -->
+    <!-- ========================================== -->
+    <div id="subtela-minhas-informacoes" style="display: none; flex-direction: column; align-items: center; width: 100%; max-width: 480px; height: calc(100vh - 80px); overflow-y: auto; padding-bottom: 140px; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="welcome-card" style="width: 100%; text-align: left; align-items: stretch;">
+        
+    <!-- CABEÇALHO COM BOTÃO VOLTAR E BOTÃO SALVAR -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; width: 100%;">
+          <div onclick="fecharMinhasInformacoes()" style="display: flex; align-items: center; gap: 10px; cursor: pointer; width: fit-content;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </div>
+            <span style="font-size: 14px; font-weight: 600; color: #FFFFFF;">Voltar</span>
+          </div>
+
+          <!-- BOTÃO SALVAR (APARECE APENAS QUANDO O NOME FOR VÁLIDO E NOVO) -->
+          <div id="btn-salvar-username-config" onclick="salvarNovoNomeUsuarioConfig()" style="display: none; align-items: center; gap: 6px; background: #10B981; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 700; color: #FFFFFF;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Salvar</span>
+          </div>
+        </div>
+
+        <h2 style="font-size: 20px; text-align: center; margin-bottom: 24px;">Minhas Informações</h2>
+        
+<!-- CIRCULO FOTO DE PERFIL E CAMPO NOME DE USUARIO -->
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
+          
+          <!-- FOTO COM BOTAO DE ALTERAR NA PARTE INFERIOR -->
+          <div style="position: relative; width: 84px; height: 84px;">
+            <div id="info-foto-circulo" style="width: 80px; height: 80px; border-radius: 50%; background: #1E2230; border: 2px solid rgba(0, 102, 255, 0.5); display: flex; align-items: center; justify-content: center; overflow: hidden; background-size: cover; background-position: center;">
+              <svg id="info-foto-placeholder" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <!-- ICONE DE CAMERA NA PARTE INFERIOR -->
+            <div id="btn-alterar-foto" onclick="clicarFotoPerfil()" style="position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; border-radius: 50%; background: #0066FF; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #1E2230;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <!-- INPUT OCULTO PARA SELEÇÃO DE FOTO -->
+        <input type="file" id="input-foto-oculto" accept="image/*" style="display: none;" onchange="processarSelecaoFoto(event)">
+
+        <!-- TEXTO DE LIMITE DE MUDANÇA DE NOME DE USUARIO E CONTADOR -->
+            <div style="display: flex; align-items: flex-start; gap: 6px; margin-top: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span id="texto-regra-limite-nome" style="font-size: 11px; color: #94A3B8; font-weight: 500; line-height: 1.4;">Você pode alterar seu nome de usuário duas vezes a cada 14 dias.</span>
+            </div>
+
+
+
+        <!-- SUBMENU MODAL PARA OPÇÕES DA FOTO DE PERFIL -->
+        <div id="modal-opcao-foto" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 999; justify-content: center; align-items: center;">
+        <div style="background-color: #1E2230; border-radius: 20px; padding: 20px; width: 280px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 12px; text-align: center;">
+            <span style="font-size: 15px; font-weight: 700; color: #FFFFFF;">Foto de Perfil</span>
+            <button onclick="escolherNovaFoto()" style="background: rgba(0, 102, 255, 0.2); border: 1px solid #0066FF; color: #FFFFFF; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            Alterar Foto
+            </button>
+            <button onclick="confirmarExclusaoFoto()" style="background: rgba(255, 45, 85, 0.2); border: 1px solid #FF2D55; color: #FF2D55; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF2D55" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            Excluir Foto
+            </button>
+            <button onclick="fecharModalOpcaoFoto()" style="background: transparent; border: none; color: #94A3B8; padding: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Cancelar</button>
+        </div>
+        </div>
+
+<!-- CAMPO NOME DE USUARIO COM VERIFICAÇÃO AO VIVO -->
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-size: 12px; color: #94A3B8; font-weight: 600;">Nome de usuário</label>
+            <div style="position: relative; width: 100%; display: flex; align-items: center;">
+              <input type="text" id="input-nome-usuario" disabled oninput="checarUsernameLiveConfig()" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 70px 12px 14px; color: #FFFFFF; font-size: 14px; font-weight: 600; outline: none;" value="Carregando...">
+              
+              <!-- ÁREA DE ÍCONES (SPINNER, CHECK E LÁPIS) -->
+              <div style="position: absolute; right: 12px; display: flex; align-items: center; gap: 8px;">
+                <!-- SPINNER CARREGANDO -->
+                <div id="loading-username-config" style="display: none; width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.2); border-top-color: #0066FF; border-radius: 50%; animation: spinConfig 0.8s linear infinite;"></div>
+                
+                <!-- ÍCONE CHECK SUCESSO -->
+                <svg id="icon-username-check-config" style="display: none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+
+                <!-- ÍCONE LÁPIS PARA EDITAR -->
+                <div onclick="habilitarEdicaoNomeUsuario()" style="cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 2px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <!-- MENSAGEM DE STATUS DO USUÁRIO -->
+            <span id="username-msg-config" style="display: none; font-size: 11px; font-weight: 600; margin-top: 2px; color: #FF4D4D;"></span>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+
+<script>
+const firebaseConfig = {
+    apiKey:"AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U",
+    authDomain:"lobbz-a2e5b.firebaseapp.com",
+    databaseURL:"https://lobbz-a2e5b-default-rtdb.firebaseio.com",
+    projectId:"lobbz-a2e5b",
+    storageBucket:"lobbz-a2e5b.firebasestorage.app",
+    messagingSenderId:"540689991558",
+    appId:"1:540689991558:web:c4ccbe7ac3d53de0d80e07"
+};
+firebase.initializeApp(firebaseConfig);
+
+
+const rtdbConfig = firebase.database();
+let meuUIDConfig = null;
+firebase.auth().onAuthStateChanged(function(userConfig){
+if(!userConfig){ window.location.href='login.html'; return; }
+meuUIDConfig = userConfig.uid;
+});
+
+
+async function irParaInicioComUidConfig(){
+  const uidVoltarConfig = meuUIDConfig;
+  if(!uidVoltarConfig){
+    window.location.href = 'inicio.html';
+    return;
+  }
+  try{
+    const docVoltarConfig = await firebase.firestore().collection('usuarios').doc(uidVoltarConfig).get();
+    if(docVoltarConfig.exists){
+      const dadosVoltarConfig = docVoltarConfig.data();
+      let nomeVoltarConfig = null;
+      if(dadosVoltarConfig.handle){
+        nomeVoltarConfig = dadosVoltarConfig.handle;
+      } else if(dadosVoltarConfig.nomeUsuario){
+        nomeVoltarConfig = dadosVoltarConfig.nomeUsuario;
+      }
+      if(nomeVoltarConfig){
+        window.location.href = 'inicio.html?user=' + encodeURIComponent(nomeVoltarConfig);
+        return;
+      }
+    }
+    window.location.href = 'inicio.html?uid=' + uidVoltarConfig;
+  } catch(e){
+    window.location.href = 'inicio.html?uid=' + uidVoltarConfig;
+  }
+}
+
+
+function fazerLogoutConfig(){
+const uidLogoutConfig = meuUIDConfig;
+if(uidLogoutConfig){ rtdbConfig.ref('status/' + uidLogoutConfig).set({state:'offline',last_changed:firebase.database.ServerValue.TIMESTAMP}); }
+firebase.auth().signOut().then(function(){ window.location.href='inicio.html'; });
+}
+
+//========================================
+//    FUNÇÃO DE ABRIR A TELA MINHAS INFORMAÇÕES
+//========================================
+function abrirMinhasInformacoes() {
+  const menuPrincipal = document.getElementById('tab-menu-content');
+  const subtelaInfo = document.getElementById('subtela-minhas-informacoes');
+  
+  if (menuPrincipal && subtelaInfo) {
+    menuPrincipal.style.display = 'none';
+    subtelaInfo.style.display = 'flex';
+    carregarDadosUsuarioInfo();
+  }
+}
+
+function fecharMinhasInformacoes() {
+  const menuPrincipal = document.getElementById('tab-menu-content');
+  const subtelaInfo = document.getElementById('subtela-minhas-informacoes');
+  
+  if (menuPrincipal && subtelaInfo) {
+    subtelaInfo.style.display = 'none';
+    menuPrincipal.style.display = 'flex';
+  }
+}
+
+//====================================
+//  FUNÇÃO DE CARREGAR E EDITAR INFORMAÇÕES DO USUARIO - FOTO E NOME DE USUARIO
+//====================================
+async function carregarDadosUsuarioInfo() {
+  const uidUsuario = meuUIDConfig;
+  if (!uidUsuario) return;
+
+  try {
+    const docUsuario = await firebase.firestore().collection('usuarios').doc(uidUsuario).get();
+    if (docUsuario.exists) {
+      const dadosUsuario = docUsuario.data();
+      
+      let valorNomeUsuario = '';
+      if (dadosUsuario.nomeUsuario) {
+        valorNomeUsuario = dadosUsuario.nomeUsuario;
+      }
+//   CALCULAR TEMPO PARA ALTERAÇÃO DE NOME DE USUARIO
+      nomeUsuarioAtualDoBanco = valorNomeUsuario;
+      try {
+        const docConfigGeral = await firebase.firestore()
+          .collection('usuarios')
+          .doc(uidUsuario)
+          .collection('configuracoes')
+          .doc('geral')
+          .get();
+
+        if (docConfigGeral.exists) {
+          const dadosConfig = docConfigGeral.data();
+          historicoAlteracoesNome = dadosConfig.historicoAlteracoesNome;
+          
+          const agora = Date.now();
+          const limite14DiasEmMs = 14 * 24 * 60 * 60 * 1000;
+          
+          const historicoRecente = historicoAlteracoesNome.filter(timestamp => (agora - timestamp) < limite14DiasEmMs);
+          quantidadeAlteracoes14Dias = historicoRecente.length;
+        } else {
+          historicoAlteracoesNome = [];
+          quantidadeAlteracoes14Dias = 0;
+        }
+      } catch (eConfig) {
+        console.error('Erro ao ler subcoleção configuracoes:', eConfig);
+      }
+
+      const campoInput = document.getElementById('input-nome-usuario');
+      if (campoInput) {
+        campoInput.value = valorNomeUsuario;
+      }
+
+      if (dadosUsuario.fotoUrl || dadosUsuario.avatarUrl || dadosUsuario.foto) {
+        const urlFoto = dadosUsuario.fotoUrl || dadosUsuario.avatarUrl || dadosUsuario.foto;
+        const circuloFoto = document.getElementById('info-foto-circulo');
+        const placeholderIcon = document.getElementById('info-foto-placeholder');
+        
+        if (circuloFoto) {
+          circuloFoto.style.backgroundImage = 'url("' + urlFoto + '")';
+        }
+        if (placeholderIcon) {
+          placeholderIcon.style.display = 'none';
+        }
+      }
+    }
+  } catch (erro) {
+    console.error('Erro ao buscar informações do usuário:', erro);
+  }
+}
+
+// EDITAR NOME DE USUARIO
+function habilitarEdicaoNomeUsuario() {
+  const campoInput = document.getElementById('input-nome-usuario');
+  const msg = document.getElementById('username-msg-config');
+
+  if (quantidadeAlteracoes14Dias >= 2) {
+    if (msg) {
+      msg.textContent = 'Você atingiu o limite de 2 alterações a cada 14 dias.';
+      msg.style.display = 'block';
+    }
+    return;
+  }
+
+  if (campoInput) {
+    campoInput.disabled = false;
+    campoInput.focus();
+    checarUsernameLiveConfig();
+  }
+}
+
+//====================================================
+//    FUNÇÃO DE ALTERAÇÃO DE FOTO DE PERFIL
+//====================================================
+// VARIÁVEL PARA GUARDAR A URL DA FOTO ATUAL DO USUÁRIO
+let urlFotoAtualPerfil = null;
+
+// RENDERIZA A FOTO OU A LETRA INICIAL DO NOME
+function renderizarFotoOuInicial(urlFoto, nomeUsuario) {
+  const circuloFoto = document.getElementById('info-foto-circulo');
+  const placeholderIcon = document.getElementById('info-foto-placeholder');
+  
+  if (!circuloFoto) return;
+
+  if (urlFoto) {
+    urlFotoAtualPerfil = urlFoto;
+    circuloFoto.style.backgroundImage = 'url("' + urlFoto + '")';
+    if (placeholderIcon) placeholderIcon.style.display = 'none';
+    circuloFoto.innerText = '';
+  } else {
+    urlFotoAtualPerfil = null;
+    circuloFoto.style.backgroundImage = 'none';
+    if (placeholderIcon) placeholderIcon.style.display = 'none';
+    
+    let letraInicial = 'U';
+    if (nomeUsuario && nomeUsuario.length > 0) {
+      letraInicial = nomeUsuario.charAt(0).toUpperCase();
+    }
+    
+    circuloFoto.style.color = '#FFFFFF';
+    circuloFoto.style.fontSize = '28px';
+    circuloFoto.style.fontWeight = '700';
+    circuloFoto.innerText = letraInicial;
+  }
+}
+
+let historicoAlteracoesNome = [];
+let quantidadeAlteracoes14Dias = 0;
+
+// SUBTITUI O MÉTODO DE EXIBIÇÃO DENTRO DA FUNÇÃO EXISTENTE
+const funcaoOriginalCarregarDados = carregarDadosUsuarioInfo;
+carregarDadosUsuarioInfo = async function() {
+  const uidUsuario = meuUIDConfig;
+  if (!uidUsuario) return;
+
+  try {
+    const docUsuario = await firebase.firestore().collection('usuarios').doc(uidUsuario).get();
+    if (docUsuario.exists) {
+      const dadosUsuario = docUsuario.data();
+      let valorNomeUsuario = dadosUsuario.nomeUsuario || '';
+      nomeUsuarioAtualDoBanco = valorNomeUsuario;
+
+      const campoInput = document.getElementById('input-nome-usuario');
+      if (campoInput) campoInput.value = valorNomeUsuario;
+
+      const urlFoto = dadosUsuario.fotoUrl || dadosUsuario.avatarUrl || dadosUsuario.foto || null;
+      renderizarFotoOuInicial(urlFoto, valorNomeUsuario);
+    }
+  } catch (erro) {
+    console.error('Erro ao buscar informações do usuário:', erro);
+  }
+};
+
+// CONTROLE DE CLIQUE NO ÍCONE DE FOTO
+function clicarFotoPerfil() {
+  if (urlFotoAtualPerfil) {
+    document.getElementById('modal-opcao-foto').style.display = 'flex';
+  } else {
+    escolherNovaFoto();
+  }
+}
+
+function fecharModalOpcaoFoto() {
+  document.getElementById('modal-opcao-foto').style.display = 'none';
+}
+
+function escolherNovaFoto() {
+  fecharModalOpcaoFoto();
+  document.getElementById('input-foto-oculto').click();
+}
+
+// PROCESSAR SELEÇÃO DA NOVA FOTO E ENVIAR PARA O FIREBASE STORAGE
+async function processarSelecaoFoto(event) {
+  const arquivo = event.target.files[0];
+  if (!arquivo || !meuUIDConfig) return;
+
+  const uidUsuario = meuUIDConfig;
+  const storageRef = firebase.storage().ref();
+
+  try {
+    // 1. Se já tiver foto salva, exclui a foto antiga no Storage
+    if (urlFotoAtualPerfil) {
+      try {
+        const fotoAntigaRef = firebase.storage().refFromURL(urlFotoAtualPerfil);
+        await fotoAntigaRef.delete();
+      } catch (eErroDelete) {
+        console.warn('Foto antiga não encontrada no Storage ou já removida.');
+      }
+    }
+
+    // 2. Salva na estrutura: usuarios > uid > nome_do_arquivo
+    const caminhoStorage = 'usuarios/' + uidUsuario + '/' + Date.now() + '_' + arquivo.name;
+    const refNovaFoto = storageRef.child(caminhoStorage);
+    
+    const snapshot = await refNovaFoto.put(arquivo);
+    const downloadURL = await snapshot.ref.getDownloadURL();
+
+    // 3. Atualiza o documento no Firestore
+    await firebase.firestore().collection('usuarios').doc(uidUsuario).update({
+      fotoUrl: downloadURL
+    });
+
+    // 4. Atualiza a interface da página com a nova foto
+    renderizarFotoOuInicial(downloadURL, nomeUsuarioAtualDoBanco);
+
+  } catch (erro) {
+    console.error('Erro ao enviar foto de perfil:', erro);
+  } finally {
+    event.target.value = '';
+  }
+}
+
+// CONFIRMAR E EXCLUIR A FOTO DE PERFIL
+async function confirmarExclusaoFoto() {
+  fecharModalOpcaoFoto();
+  if (!meuUIDConfig || !urlFotoAtualPerfil) return;
+
+  const uidUsuario = meuUIDConfig;
+
+  try {
+    // 1. Apaga do Firebase Storage
+    try {
+      const fotoAntigaRef = firebase.storage().refFromURL(urlFotoAtualPerfil);
+      await fotoAntigaRef.delete();
+    } catch (eErroDelete) {
+      console.warn('Foto não encontrada no Storage para exclusão.');
+    }
+
+    // 2. Apaga a referência no Firestore
+    await firebase.firestore().collection('usuarios').doc(uidUsuario).update({
+      fotoUrl: firebase.firestore.FieldValue.delete(),
+      avatarUrl: firebase.firestore.FieldValue.delete(),
+      foto: firebase.firestore.FieldValue.delete()
+    });
+
+    // 3. Atualiza a tela exibindo a letra inicial do nome
+    renderizarFotoOuInicial(null, nomeUsuarioAtualDoBanco);
+
+  } catch (erro) {
+    console.error('Erro ao excluir foto de perfil:', erro);
+  }
+}
+
+//====================================
+//   FUNÇÃO QUE BUSCA DISPONIBILIDADE DE USUARIO
+//====================================
+let usernameTimeoutConfig = null;
+let nomeUsuarioAtualDoBanco = '';
+
+async function checarUsernameLiveConfig() {
+  clearTimeout(usernameTimeoutConfig);
+
+  const inputUsuario = document.getElementById('input-nome-usuario');
+  const loader = document.getElementById('loading-username-config');
+  const msg = document.getElementById('username-msg-config');
+  const checkIcon = document.getElementById('icon-username-check-config');
+  const btnSalvar = document.getElementById('btn-salvar-username-config');
+
+  if (!inputUsuario) return;
+
+  const usernameDigitado = inputUsuario.value.trim().toLowerCase();
+
+  msg.style.display = 'none';
+  if (checkIcon) checkIcon.style.display = 'none';
+  if (btnSalvar) btnSalvar.style.display = 'none';
+
+  if (usernameDigitado.length === 0) {
+    if (loader) loader.style.display = 'none';
+    return;
+  }
+
+  // SE FOR O MESMO NOME QUE JÁ PERTENCE AO USUÁRIO LOGADO
+  if (usernameDigitado === nomeUsuarioAtualDoBanco.toLowerCase()) {
+    if (loader) loader.style.display = 'none';
+    if (checkIcon) checkIcon.style.display = 'block';
+    if (btnSalvar) btnSalvar.style.display = 'none';
+    return;
+  }
+
+  const regexPermitido = /^[a-z0-9._]+$/;
+  if (!regexPermitido.test(usernameDigitado)) {
+    if (loader) loader.style.display = 'none';
+    msg.textContent = 'Os nomes de usuário só podem incluir letras, números, pontos e sublinhados.';
+    msg.style.display = 'block';
+    if (btnSalvar) btnSalvar.style.display = 'none';
+    return;
+  }
+
+  if (usernameDigitado.length < 3) {
+    if (loader) loader.style.display = 'none';
+    if (btnSalvar) btnSalvar.style.display = 'none';
+    return;
+  }
+
+  if (loader) loader.style.display = 'block';
+
+  usernameTimeoutConfig = setTimeout(async () => {
+    try {
+      const snapshot = await firebase.firestore()
+        .collection('usuarios')
+        .where('nomeUsuario', '==', usernameDigitado)
+        .get();
+
+      if (loader) loader.style.display = 'none';
+
+      if (!snapshot.empty) {
+        msg.textContent = 'Este nome de usuário já está em uso.';
+        msg.style.display = 'block';
+        if (checkIcon) checkIcon.style.display = 'none';
+        if (btnSalvar) btnSalvar.style.display = 'none';
+      } else {
+        msg.style.display = 'none';
+        if (checkIcon) checkIcon.style.display = 'block';
+        if (btnSalvar) btnSalvar.style.display = 'flex';
+      }
+    } catch (erro) {
+      if (loader) loader.style.display = 'none';
+      if (btnSalvar) btnSalvar.style.display = 'none';
+      console.error('Erro ao verificar nome de usuário:', erro);
+    }
+  }, 500);
+}
+
+//====================================================
+// FUNÇÃO PARA SALVAR O NOVO NOME DE USUÁRIO
+//====================================================
+async function salvarNovoNomeUsuarioConfig() {
+  const inputUsuario = document.getElementById('input-nome-usuario');
+  const btnSalvar = document.getElementById('btn-salvar-username-config');
+  const msg = document.getElementById('username-msg-config');
+  const uidUsuario = meuUIDConfig;
+
+  if (!inputUsuario || !uidUsuario) return;
+
+  if (quantidadeAlteracoes14Dias >= 2) {
+    if (msg) {
+      msg.textContent = 'Você atingiu o limite de 2 alterações a cada 14 dias.';
+      msg.style.display = 'block';
+    }
+    return;
+  }
+
+  const novoNome = inputUsuario.value.trim().toLowerCase();
+  if (!novoNome) return;
+
+  try {
+    if (btnSalvar) btnSalvar.style.opacity = '0.5';
+
+    const timestampAtual = Date.now();
+    historicoAlteracoesNome.push(timestampAtual);
+
+    const limite14DiasEmMs = 14 * 24 * 60 * 60 * 1000;
+    const historicoRecente = historicoAlteracoesNome.filter(timestamp => (timestampAtual - timestamp) < limite14DiasEmMs);
+    quantidadeAlteracoes14Dias = historicoRecente.length;
+
+    // 1. Atualiza a coleção principal do usuário
+    await firebase.firestore().collection('usuarios').doc(uidUsuario).update({
+      nomeUsuario: novoNome
+    });
+
+    // 2. Registra o histórico e o contador na subcoleção: usuarios > uid > configuracoes > geral
+    await firebase.firestore()
+      .collection('usuarios')
+      .doc(uidUsuario)
+      .collection('configuracoes')
+      .doc('geral')
+      .set({
+        historicoAlteracoesNome: historicoAlteracoesNome,
+        quantidadeAlteracoes14Dias: quantidadeAlteracoes14Dias
+      }, { merge: true });
+
+    nomeUsuarioAtualDoBanco = novoNome;
+    inputUsuario.disabled = true;
+
+    if (btnSalvar) btnSalvar.style.display = 'none';
+    if (btnSalvar) btnSalvar.style.opacity = '1';
+
+  } catch (erro) {
+    console.error('Erro ao salvar nome de usuário:', erro);
+    if (btnSalvar) btnSalvar.style.opacity = '1';
+  }
+}
+
+
+
+
+
+</script>
+<script type="module" src="appinfo.js"></script>
+</body>
+</html>

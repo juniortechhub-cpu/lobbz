@@ -161,6 +161,17 @@ let fileFotoCanal = null;
 let fileBannerCanal = null;
 const paramsCanalPage = new URLSearchParams(window.location.search);
 const uidCanalPage = paramsCanalPage.get('uid');
+  firebase.auth().onAuthStateChanged(function(userTravaCanal){
+    if(!userTravaCanal){
+      window.location.href = 'login.html';
+      return;
+    }
+    if(!uidCanalPage){
+      window.location.href = 'meucanal.html?uid=' + userTravaCanal.uid;
+      return;
+    }
+    carregarDadosCanalPage();
+  });
 async function carregarDadosCanalPage(){
   if(!uidCanalPage) return;
   const docCanalPage = await dbCanalPage.collection('canais').doc(uidCanalPage).get();
@@ -189,7 +200,6 @@ async function carregarDadosCanalPage(){
     }
   }
 }
-carregarDadosCanalPage();
 
 //===============================================
 //  FUNÇÃO DE EDITAR DADOS DO CANAL

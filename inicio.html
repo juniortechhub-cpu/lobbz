@@ -197,8 +197,9 @@
 
             <div id="box-ola-superior">
               <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <div id="container-foto-ola-superior" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                  <img id="img-foto-ola-superior" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                  <svg id="svg-icone-ola-superior" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
                 <span id="texto-ola-superior" style="font-size: 14px; font-weight: 600; color: #FFF;">Olá, Faça seu login.</span>
               </div>
@@ -314,8 +315,9 @@
 
       <!-- Avatar do Amigo com a Bolinha sobreposta -->
       <div style="position: relative; width: 38px; height: 38px;">
-        <div id="chat-conversa-avatar" style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #FFF;">
-          A
+        <div id="chat-conversa-avatar" style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #FFF; overflow: hidden;">
+          <img id="img-conversa-avatar" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
+          <span id="span-conversa-avatar-inicial">A</span>
         </div>
         <div id="chat-conversa-status-dot" style="position: absolute; bottom: -1px; right: -1px; width: 12px; height: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"></div>
       </div>
@@ -562,7 +564,7 @@
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
           </div>
           <h2 style="font-size:20px;font-weight:700;">Crie seu canal</h2>
-          <p style="font-size:13px;color:#94A3B8;margin-top:8px;">Transmita ao vivo, salve vídeos e ganhe inscritos como no YouTube.</p>
+          <p style="font-size:13px;color:#94A3B8;margin-top:8px;">Transmita ao vivo, salve vídeos e ganhe seguidores.</p>
           <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0;text-align:left;">
             <div style="display:flex;gap:12px;align-items:center;background:#1E2230;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
@@ -570,14 +572,14 @@
             </div>
             <div style="display:flex;gap:12px;align-items:center;background:#1E2230;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              <div><strong style="font-size:13px;">Vídeos salvos no seu canal</strong><p style="font-size:11px;color:#94A3B8;margin:0;">Assistem depois</p></div>
+              <div><strong style="font-size:13px;">Vídeos salvos no seu canal</strong><p style="font-size:11px;color:#94A3B8;margin:0;">Seus seguidores assistem depois</p></div>
             </div>
           </div>
           <div style="text-align:left;display:flex;flex-direction:column;gap:8px;">
             <label style="font-size:12px;color:#94A3B8;">Nome do canal</label>
-            <input id="input-nome-canal-pro" type="text" placeholder="Ex: Novato Gaming" style="width:100%;background:#0F1117;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#FFF;font-size:14px;">
-            <label style="font-size:12px;color:#94A3B8;margin-top:4px;">@handle</label>
-            <input id="input-handle-canal-pro" type="text" placeholder="novatogamingg" style="width:100%;background:#0F1117;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#FFF;font-size:14px;">
+            <input id="input-nome-canal-pro" type="text" placeholder="Ex: Nome do Canal" style="width:100%;background:#0F1117;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#FFF;font-size:14px;">
+            <label style="font-size:12px;color:#94A3B8;margin-top:4px;">@Username</label>
+            <input id="input-handle-canal-pro" type="text" placeholder="Username" style="width:100%;background:#0F1117;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#FFF;font-size:14px;">
           </div>
           <button onclick="criarCanalPro()" style="width:100%;margin-top:20px;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);border:none;border-radius:12px;padding:14px;color:#FFF;font-weight:700;font-size:14px;cursor:pointer;">Criar meu canal</button>
           <p id="msg-canal-pro" style="font-size:12px;color:#FF2D55;margin-top:8px;display:none;"></p>
@@ -618,66 +620,6 @@
         </div>
       </div>
       </div>
-
-    <!-- ========================================== -->
-    <!-- ABA 5: MENU DE CONFIGURAÇÕES -->
-    <!-- ========================================== -->
-    <div id="tab-menu-content" style="display: none; flex-direction: column; align-items: center; width: 100%; max-width: 480px; height: calc(100vh - 80px); overflow-y: auto; padding-bottom: 140px; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none;">
-      <div class="welcome-card" style="width: 100%; text-align: left; align-items: stretch;">
-        <h2 style="font-size: 20px; text-align: center; margin-bottom: 10px;">Configurações</h2>
-        
-        <!-- Opção 1: Dados do Cadastro -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span style="font-size: 14px; font-weight: 600;">Minhas Informações</span>
-          </div>
-          <span style="color: #94A3B8;">›</span>
-        </div>
-
-        <!-- Opção 2: Notificações -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            <span style="font-size: 14px; font-weight: 600;">Notificações</span>
-          </div>
-          <span style="color: #94A3B8;">›</span>
-        </div>
-
-        <!-- Opção 3: Privacidade e Segurança -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span style="font-size: 14px; font-weight: 600;">Privacidade e Segurança</span>
-          </div>
-          <span style="color: #94A3B8;">›</span>
-        </div>
-
-        <!-- Opção 4: Ajuda e Suporte -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <span style="font-size: 14px; font-weight: 600;">Ajuda e Suporte</span>
-          </div>
-          <span style="color: #94A3B8;">›</span>
-        </div>
-
-        <!-- Opção 5: Sair da Conta -->
-        <div onclick="fazerLogout()" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; cursor: pointer; color: #FF2D55;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF2D55" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            <span style="font-size: 14px; font-weight: 600;">Sair</span>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- VERSAO DO APP -->
-            <div id="app-versao-box" style="margin-top: 18px; display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
-            <span id="app-versao-text" style="font-size: 11px; color: #94A3B8; font-weight: 600; letter-spacing: 0.5px;">•</span>
-          </div>
-
-    </div>
 
   </div>
 
@@ -723,8 +665,7 @@
     </a>
 
     <!-- 5. Menu -->
-    <a href="#" id="btn-tab-menu" class="nav-item" onclick="mudarAba('menu'); return false;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <a href="#" id="btn-tab-menu" class="nav-item" onclick="irParaConfiguracoesComUid()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -756,6 +697,15 @@
     </button>
   </div>
 
+    <!-- SUBMENU SEM CANAL -->
+  <div id="live-submenu-sem-canal" style="display: none; position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background-color: #1E2230; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 16px; z-index: 1000; flex-direction: column; gap: 10px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); min-width: 240px; text-align:center;">
+    <p style="font-size:13px;color:#FFFFFF;font-weight:600;margin-top:4px;">Você ainda não tem um canal.</p>
+    <p style="font-size:11px;color:#94A3B8;">Crie seu canal para fazer lives.</p>
+    <button onclick="irParaCriarCanalLive()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);border:none;border-radius:10px;padding:10px 14px;color:#FFF;font-weight:600;font-size:13px;cursor:pointer;width:100%;margin-top:4px;"<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Criar Canal
+    </button>
+  </div>
+
       <!-- TELA DE CHAMADA DE VIDEO OU AUDIO -->
 <div id="tela-chamada-voz-pro" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#0F1117;z-index:9999;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px;">
   <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:40px;">
@@ -765,7 +715,7 @@
   </div>
   <div style="position:relative;display:flex;align-items:center;justify-content:center;">
     <div style="position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(0,102,255,0.15);animation:pulseChamada 1.8s infinite;"></div>
-    <div id="avatar-chamada-voz-pro" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#FFF;z-index:2;">A</div>
+    <div id="avatar-chamada-voz-pro" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#FFF;z-index:2;overflow:hidden;"><img id="img-chamada-voz-pro" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"><span id="span-chamada-voz-pro">A</span></div>
   </div>
 
   <!-- CHAMADA DE VIDEO -->
@@ -862,7 +812,7 @@
   </div>
   <div style="position:relative;display:flex;align-items:center;justify-content:center;z-index:2;">
     <div style="position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(0,102,255,0.15);animation:pulseChamada 1.8s infinite;"></div>
-    <div id="avatar-chamada-entrando-pro" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#FFF;z-index:2;">A</div>
+    <div id="avatar-chamada-entrando-pro" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#FFF;z-index:2;overflow:hidden;"><img id="img-chamada-entrando-pro" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"><span id="span-chamada-entrando-pro">A</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:24px;">
     <div onclick="recusarChamadaEntrantePro()" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#FF2D55 0%,#FF3B30 100%);display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -879,7 +829,10 @@
   <source src="audio/toque_tech_pulse.wav" type="audio/wav">
 </audio>
 <audio id="audio-chamando-pro" loop preload="auto" style="display:none;">
-  <source src="audio/toque_tech_pulse.wav" type="audio/wav">
+  <source src="audio/chamando_classic.wav" type="audio/wav">
+</audio>
+<audio id="audio-notificacao-pro" preload="auto" style="display:none;">
+  <source src="audio/notificacao.wav" type="audio/wav">
 </audio>
 
 
@@ -904,6 +857,8 @@
     let totalConvitesPendentes = 0;
     let totalMensagensNaoLidas = 0;
     let mapaNaoLidasPorAmigo = {};
+    let mapaUltimoTempoNotificadoListaAmigos = {};
+    let mapaPrimeiroCarregamentoListaAmigos = {};
     let usuarioLogado = false;
 
   // CONFIGURAÇÕES DO PROJETO
@@ -963,13 +918,11 @@
       document.getElementById('tab-inicio-content').style.display = 'none';
       document.getElementById('tab-chat-content').style.display = 'none';
       document.getElementById('tab-canal-content').style.display = 'none';
-      document.getElementById('tab-menu-content').style.display = 'none';
 
       // 2. Remove o destaque visual de todos os botões
       document.getElementById('btn-tab-inicio').classList.remove('active');
       document.getElementById('btn-tab-chat').classList.remove('active');
       document.getElementById('btn-tab-canal').classList.remove('active');
-      document.getElementById('btn-tab-menu').classList.remove('active');
 
       // 3. Exibe a aba solicitada e ativa o botão correspondente
       if (nomeAba === 'inicio') {
@@ -982,25 +935,58 @@
         document.getElementById('tab-canal-content').style.display = 'flex';
         verificarCanalPro();
         document.getElementById('btn-tab-canal').classList.add('active');
-      } else if (nomeAba === 'menu') {
-        document.getElementById('tab-menu-content').style.display = 'flex';
-        document.getElementById('btn-tab-menu').classList.add('active');
       }
     }
     //=========================================================
     // Função para abrir ou fechar o submenu do botão Ao Vivo
     //=========================================================
-    function alternarSubmenuLive() {
+    function irParaCriarCanalLive(){
+      const menuLiveSemCanalIr = document.getElementById('live-submenu-sem-canal');
+      const menuLiveComCanalIr = document.getElementById('live-submenu');
+      if(menuLiveSemCanalIr){ menuLiveSemCanalIr.style.display = 'none'; }
+      if(menuLiveComCanalIr){ menuLiveComCanalIr.style.display = 'none'; }
+      mudarAba('canal');
+    }
+    async function alternarSubmenuLive() {
       if (!usuarioLogado) {
         window.location.href = 'login.html';
         return;
       }
-
-      const menu = document.getElementById('live-submenu');
-      if (menu.style.display === 'none' || menu.style.display === '') {
-        menu.style.display = 'flex';
-      } else {
-        menu.style.display = 'none';
+      const uidLiveTrava = meuUID;
+      if(!uidLiveTrava){
+        window.location.href = 'login.html';
+        return;
+      }
+      const menuLiveComCanalTrava = document.getElementById('live-submenu');
+      const menuLiveSemCanalTrava = document.getElementById('live-submenu-sem-canal');
+      try {
+        const docUsuarioLiveTrava = await db.collection('usuarios').doc(uidLiveTrava).get();
+        if(docUsuarioLiveTrava.exists){
+          const dadosUsuarioLiveTrava = docUsuarioLiveTrava.data();
+          const temCanalLiveTrava = dadosUsuarioLiveTrava.canalCriado;
+          if(temCanalLiveTrava === true){
+            if(menuLiveSemCanalTrava){ menuLiveSemCanalTrava.style.display = 'none'; }
+            if(menuLiveComCanalTrava){
+              if(menuLiveComCanalTrava.style.display === 'none' || menuLiveComCanalTrava.style.display === ''){
+                menuLiveComCanalTrava.style.display = 'flex';
+              } else {
+                menuLiveComCanalTrava.style.display = 'none';
+              }
+            }
+            return;
+          }
+        }
+        if(menuLiveComCanalTrava){ menuLiveComCanalTrava.style.display = 'none'; }
+        if(menuLiveSemCanalTrava){
+          if(menuLiveSemCanalTrava.style.display === 'none' || menuLiveSemCanalTrava.style.display === ''){
+            menuLiveSemCanalTrava.style.display = 'flex';
+          } else {
+            menuLiveSemCanalTrava.style.display = 'none';
+          }
+        }
+      } catch (e) {
+        if(menuLiveComCanalTrava){ menuLiveComCanalTrava.style.display = 'none'; }
+        if(menuLiveSemCanalTrava){ menuLiveSemCanalTrava.style.display = 'flex'; }
       }
     }
 
@@ -1253,6 +1239,25 @@
         iconeOlaAcao.innerHTML = '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>';
         iconeOlaAcao.setAttribute('stroke','#FF2D55');
         btnOlaAcao.style.background = 'rgba(255,45,85,0.15)';
+      }
+    }
+
+    //====================================================
+    //    FUNÇÃO DE CARREGAR FOTO DE PERFIL NA ABA INICIO
+    //====================================================
+    async function carregarFotoOlaSuperior(uidFotoOlaSuperior){
+      const imgFotoOlaSuperiorElemento = document.getElementById('img-foto-ola-superior');
+      const svgIconeOlaSuperiorElemento = document.getElementById('svg-icone-ola-superior');
+      const docFotoOlaSuperior = await db.collection('usuarios').doc(uidFotoOlaSuperior).get();
+      if(!docFotoOlaSuperior.exists){ return; }
+      const dadosFotoOlaSuperior = docFotoOlaSuperior.data();
+      const urlFotoOlaSuperiorFirestore = dadosFotoOlaSuperior.fotoUrl;
+      if(urlFotoOlaSuperiorFirestore){
+        if(urlFotoOlaSuperiorFirestore !== ''){
+          imgFotoOlaSuperiorElemento.src = urlFotoOlaSuperiorFirestore;
+          imgFotoOlaSuperiorElemento.style.display = 'block';
+          svgIconeOlaSuperiorElemento.style.display = 'none';
+        }
       }
     }
 
@@ -1575,7 +1580,7 @@
              <div id="card-lista-${amigoUID}" onclick="abrirConversaAtiva('${amigoUID}', '${amigoUsername}')" style="display:flex;align-items:center;justify-content:space-between;background-color:#1E2230;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;">
               <div style="display:flex;align-items:center;gap:12px;overflow:hidden;flex:1;">
                 <div class="avatar-container">
-                  <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-weight:700;color:#FFF;">${inicialAmigo}</div>
+                  <div id="container-avatar-${amigoUID}" style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-weight:700;color:#FFF;overflow:hidden;"><img id="img-avatar-${amigoUID}" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"><span id="span-inicial-${amigoUID}">${inicialAmigo}</span></div>
                   <div class="status-dot" id="status-dot-lista-${amigoUID}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#64748B" stroke="#1E2230" stroke-width="2"/></svg></div>
                 </div>
                 <div style="text-align:left;overflow:hidden;flex:1;">
@@ -1597,8 +1602,29 @@
           monitorarStatusListaAmigos(uidAmigo2);
           monitorarDigitandoListaAmigos(uidAmigo2);
           monitorarUltimaMensagemListaAmigos(uidAmigo2);
+          carregarFotoAmigoLista(uidAmigo2);
         });
       });
+    }
+
+    //=========================================
+    //    FUNÇÃO DE CARREGAR FOTO DE PERFIL NAS CONVERSAS
+    //=========================================
+    async function carregarFotoAmigoLista(uidAmigoFotoLista){
+      const imgAmigoFotoListaElemento = document.getElementById('img-avatar-' + uidAmigoFotoLista);
+      const spanInicialAmigoFotoListaElemento = document.getElementById('span-inicial-' + uidAmigoFotoLista);
+      if(!imgAmigoFotoListaElemento){ return; }
+      const docAmigoFotoLista = await db.collection('usuarios').doc(uidAmigoFotoLista).get();
+      if(!docAmigoFotoLista.exists){ return; }
+      const dadosAmigoFotoLista = docAmigoFotoLista.data();
+      const urlFotoAmigoFotoLista = dadosAmigoFotoLista.fotoUrl;
+      if(urlFotoAmigoFotoLista){
+        if(urlFotoAmigoFotoLista !== ''){
+          imgAmigoFotoListaElemento.src = urlFotoAmigoFotoLista;
+          imgAmigoFotoListaElemento.style.display = 'block';
+          spanInicialAmigoFotoListaElemento.style.display = 'none';
+        }
+      }
     }
 
     //  FUNÇÃO DO PONTO NA ABA DE CHAT - CONVERSAS E SOLICITAÇÕES RECEBIDAS
@@ -1708,6 +1734,22 @@
     });
     if (ultimaMsg) {
       const souEu = ultimaMsg.enviadoPor === uidLogado;
+      const tempoUltimaMsgListaAmigos = ultimaMsg.timestamp;
+      const jaNotificouTempoListaAmigos = mapaUltimoTempoNotificadoListaAmigos[amigoUID];
+      const primeiroCarregamentoListaAmigos = mapaPrimeiroCarregamentoListaAmigos[amigoUID];
+      if(primeiroCarregamentoListaAmigos === undefined){
+        mapaPrimeiroCarregamentoListaAmigos[amigoUID] = true;
+        mapaUltimoTempoNotificadoListaAmigos[amigoUID] = tempoUltimaMsgListaAmigos;
+      } else {
+        if(tempoUltimaMsgListaAmigos!== jaNotificouTempoListaAmigos){
+          if(!souEu){
+            if(amigoAtivoUID!== amigoUID){
+              tocarNotificacaoMensagemPro();
+            }
+          }
+          mapaUltimoTempoNotificadoListaAmigos[amigoUID] = tempoUltimaMsgListaAmigos;
+        }
+      }
       let textoLista = ultimaMsg.texto || '';
       if (ultimaMsg.tipo === 'imagem') textoLista = '📷 Foto';
       if (ultimaMsg.tipo === 'video') textoLista = '🎥 Vídeo';
@@ -1788,6 +1830,7 @@
           meuUID = user.uid;
           usuarioLogado = true;
           atualizarIconeOlaSuperior();
+          carregarFotoOlaSuperior(user.uid);
           const trintaDiasMs = 30 * 24 * 60 * 60 * 1000;
           const agoraMs = Date.now();
           const chaveUltimoLogin = 'ultimo_login_' + user.uid;
@@ -1858,7 +1901,17 @@
       }
       atualizarBadgeAbaChat();
       document.getElementById('chat-conversa-nome').innerText = '@' + amigoUsername;
-      document.getElementById('chat-conversa-avatar').innerText = amigoUsername.charAt(0).toUpperCase();
+      const spanConversaAvatarInicialAtual = document.getElementById('span-conversa-avatar-inicial');
+      const imgConversaAvatarAtual = document.getElementById('img-conversa-avatar');
+      if(spanConversaAvatarInicialAtual){
+        spanConversaAvatarInicialAtual.innerText = amigoUsername.charAt(0).toUpperCase();
+        spanConversaAvatarInicialAtual.style.display = 'block';
+      }
+      if(imgConversaAvatarAtual){
+        imgConversaAvatarAtual.style.display = 'none';
+        imgConversaAvatarAtual.src = '';
+      }
+      carregarFotoConversaAvatar(amigoUID);
       document.getElementById('tela-conversa-ativa').style.display = 'flex';
       const badgeEl = document.getElementById('badge-nao-lidas-' + amigoUID);
       if (badgeEl) {
@@ -1867,6 +1920,26 @@
       marcarMensagensComoLidas(amigoUID);
       carregarMensagens();
       monitorarStatusAmigo(amigoUID);
+    }
+
+    //==============================================
+    //   FUNÇÃO DE CARREGAR FOTO NA ABA DE CONVERSA
+    //==============================================
+    async function carregarFotoConversaAvatar(uidConversaAvatar){
+      const imgConversaAvatarElemento = document.getElementById('img-conversa-avatar');
+      const spanConversaAvatarInicialElemento = document.getElementById('span-conversa-avatar-inicial');
+      if(!imgConversaAvatarElemento){ return; }
+      const docConversaAvatar = await db.collection('usuarios').doc(uidConversaAvatar).get();
+      if(!docConversaAvatar.exists){ return; }
+      const dadosConversaAvatar = docConversaAvatar.data();
+      const urlFotoConversaAvatar = dadosConversaAvatar.fotoUrl;
+      if(urlFotoConversaAvatar){
+        if(urlFotoConversaAvatar !== ''){
+          imgConversaAvatarElemento.src = urlFotoConversaAvatar;
+          imgConversaAvatarElemento.style.display = 'block';
+          spanConversaAvatarInicialElemento.style.display = 'none';
+        }
+      }
     }
 
     function marcarMensagensComoLidas(amigoUID) {
@@ -2100,7 +2173,23 @@
           const avatarEntrandoPro = document.getElementById('avatar-chamada-entrando-pro');
           const tipoEntrandoPro = document.getElementById('tipo-chamada-entrando-pro');
           nomeEntrandoPro.innerText = dadosEntrante.deNome || 'Amigo';
-          avatarEntrandoPro.innerText = (dadosEntrante.deNome || 'A').charAt(0).toUpperCase();
+          const spanEntrandoProElemento = document.getElementById('span-chamada-entrando-pro');
+          const imgEntrandoProElemento = document.getElementById('img-chamada-entrando-pro');
+          if(spanEntrandoProElemento){
+            spanEntrandoProElemento.innerText = (dadosEntrante.deNome || 'A').charAt(0).toUpperCase();
+            spanEntrandoProElemento.style.display = 'block';
+          }
+          if(imgEntrandoProElemento){
+            imgEntrandoProElemento.style.display = 'none';
+            imgEntrandoProElemento.src = '';
+          }
+          if(dadosEntrante.deFotoUrl){
+            if(dadosEntrante.deFotoUrl !== ''){
+              imgEntrandoProElemento.src = dadosEntrante.deFotoUrl;
+              imgEntrandoProElemento.style.display = 'block';
+              spanEntrandoProElemento.style.display = 'none';
+            }
+          }
           tipoEntrandoPro.innerText = dadosEntrante.tipo === 'video' ? 'Chamada de vídeo...' : 'Chamada de voz...';
           telaEntrandoPro.style.display = 'flex';
           tocarToquePro('audio-toque-pro');
@@ -2467,7 +2556,7 @@
     //=======================================
     //   FUNÇÃO DA TELA DE CHAMADA DE VIDEO
     //========================================
-    function abrirTelaChamadaVozPro() {
+   async function abrirTelaChamadaVozPro() {
       const telaChamadaVozPro = document.getElementById('tela-chamada-voz-pro');
       const nomeChamadaVozPro = document.getElementById('nome-chamada-voz-pro');
       const statusChamadaVozPro = document.getElementById('status-chamada-voz-pro');
@@ -2475,7 +2564,16 @@
       const nomeAmigoAtivo2 = document.getElementById('chat-conversa-nome') ? document.getElementById('chat-conversa-nome').innerText : 'Amigo';
       const letraAmigoAtivo2 = nomeAmigoAtivo2.charAt(0).toUpperCase();
       nomeChamadaVozPro.innerText = nomeAmigoAtivo2;
-      avatarChamadaVozPro.innerText = letraAmigoAtivo2;
+      const spanChamadaVozProElemento = document.getElementById('span-chamada-voz-pro');
+      const imgChamadaVozProElemento = document.getElementById('img-chamada-voz-pro');
+      if(spanChamadaVozProElemento){
+        spanChamadaVozProElemento.innerText = letraAmigoAtivo2;
+        spanChamadaVozProElemento.style.display = 'block';
+      }
+      if(imgChamadaVozProElemento){
+        imgChamadaVozProElemento.style.display = 'none';
+        imgChamadaVozProElemento.src = '';
+      }
       statusChamadaVozPro.innerText = 'Chamando...';
       telaChamadaVozPro.style.display = 'flex';
       telaChamadaVozPro.classList.add('show');
@@ -2483,14 +2581,25 @@
       const uidAmigoChamada = amigoAtivoUID;
       if (!uidLogadoChamada || !uidAmigoChamada) return;
       if (uidLogadoChamada === uidAmigoChamada) return;
+      carregarFotoChamadaSaida(uidAmigoChamada);
       const refChamadaEnvio = rtdb.ref('chamadas/' + uidAmigoChamada);
+      const docMeuUsuarioFotoChamada = await db.collection('usuarios').doc(uidLogadoChamada).get();
+      let minhaFotoUrlChamada = '';
+      if(docMeuUsuarioFotoChamada.exists){
+        const dadosMeuUsuarioFotoChamada = docMeuUsuarioFotoChamada.data();
+        const fotoUrlMeuUsuarioFotoChamada = dadosMeuUsuarioFotoChamada.fotoUrl;
+        if(fotoUrlMeuUsuarioFotoChamada){
+          minhaFotoUrlChamada = fotoUrlMeuUsuarioFotoChamada;
+        }
+      }
       refChamadaEnvio.set({
         de: uidLogadoChamada,
         deNome: window.nomeUsuario,
+        deFotoUrl: minhaFotoUrlChamada,
         tipo: 'voz',
         status: 'chamando',
         timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
+      });
         const canalDeterministicoVozPro = [uidLogadoChamada, uidAmigoChamada].sort().join('_');
         iniciarAgoraPro(canalDeterministicoVozPro, 'voz');
     
@@ -2517,26 +2626,113 @@
       pararToquePro('audio-toque-pro');
       pararToquePro('audio-chamando-pro');
       const telaFecharVozPro = document.getElementById('tela-chamada-voz-pro');
-      if (meuUID) { rtdb.ref('chamadas/' + meuUID).off(); rtdb.ref('chamadas/' + meuUID).remove(); }
-      if (amigoAtivoUID) { rtdb.ref('chamadas/' + amigoAtivoUID).off(); rtdb.ref('chamadas/' + amigoAtivoUID).remove(); }
+      if (meuUID) { 
+        rtdb.ref('chamadas/' + meuUID).off(); 
+        rtdb.ref('chamadas/' + meuUID).remove(); 
+        monitorarChamadasEntrantes(); 
+      }
+      if (amigoAtivoUID) { 
+        rtdb.ref('chamadas/' + amigoAtivoUID).off(); 
+        rtdb.ref('chamadas/' + amigoAtivoUID).remove(); 
+      }
       telaFecharVozPro.style.display = 'none';
       telaFecharVozPro.classList.remove('show');
     }
 
-    function abrirTelaChamadaVideoPro() {
+    //==============================================
+    //   FUNÇÃO DE CARREGAR FOTO NA CHAMADA RECEBIDA
+    //==============================================
+    async function carregarFotoChamadaSaida(uidFotoChamadaSaida){
+      const imgChamadaSaidaElemento = document.getElementById('img-chamada-voz-pro');
+      const spanChamadaSaidaElemento = document.getElementById('span-chamada-voz-pro');
+      if(!imgChamadaSaidaElemento){ return; }
+      const docChamadaSaida = await db.collection('usuarios').doc(uidFotoChamadaSaida).get();
+      if(!docChamadaSaida.exists){ return; }
+      const dadosChamadaSaida = docChamadaSaida.data();
+      const urlFotoChamadaSaida = dadosChamadaSaida.fotoUrl;
+      if(urlFotoChamadaSaida){
+        if(urlFotoChamadaSaida !== ''){
+          imgChamadaSaidaElemento.src = urlFotoChamadaSaida;
+          imgChamadaSaidaElemento.style.display = 'block';
+          spanChamadaSaidaElemento.style.display = 'none';
+        }
+      }
+    }
+
+    async function carregarFotoChamadaEntranteFoto(urlFotoChamadaEntrante){
+      const imgChamadaEntranteElemento = document.getElementById('img-chamada-entrando-pro');
+      const spanChamadaEntranteElemento = document.getElementById('span-chamada-entrando-pro');
+      if(!imgChamadaEntranteElemento){ return; }
+      if(urlFotoChamadaEntrante){
+        if(urlFotoChamadaEntrante !== ''){
+          imgChamadaEntranteElemento.src = urlFotoChamadaEntrante;
+          imgChamadaEntranteElemento.style.display = 'block';
+          spanChamadaEntranteElemento.style.display = 'none';
+        }
+      }
+    }
+
+    async function abrirTelaChamadaVideoPro() {
       const nomeAmigoVideoPro = document.getElementById('chat-conversa-nome') ? document.getElementById('chat-conversa-nome').innerText : 'Amigo';
-      document.getElementById('nome-chamada-voz-pro').innerText = nomeAmigoVideoPro;
-      document.getElementById('tela-chamada-voz-pro').style.display = 'flex';
-      document.getElementById('tela-chamada-voz-pro').classList.add('show');
+      const letraAmigoVideoPro = nomeAmigoVideoPro.charAt(0).toUpperCase();
+      const nomeChamadaVideoPro = document.getElementById('nome-chamada-voz-pro');
+      const statusChamadaVideoPro = document.getElementById('status-chamada-voz-pro');
+      const telaChamadaVideoPro = document.getElementById('tela-chamada-voz-pro');
       const uidLogadoVideoPro = meuUID;
       const uidAmigoVideoPro = amigoAtivoUID;
-      if (uidLogadoVideoPro === uidAmigoVideoPro) return;
+      if(!uidLogadoVideoPro){ return; }
+      if(!uidAmigoVideoPro){ return; }
+      if(uidLogadoVideoPro === uidAmigoVideoPro){ return; }
+      nomeChamadaVideoPro.innerText = nomeAmigoVideoPro;
+      const spanChamadaVideoProElemento = document.getElementById('span-chamada-voz-pro');
+      const imgChamadaVideoProElemento = document.getElementById('img-chamada-voz-pro');
+      if(spanChamadaVideoProElemento){
+        spanChamadaVideoProElemento.innerText = letraAmigoVideoPro;
+        spanChamadaVideoProElemento.style.display = 'block';
+      }
+      if(imgChamadaVideoProElemento){
+        imgChamadaVideoProElemento.style.display = 'none';
+        imgChamadaVideoProElemento.src = '';
+      }
+      carregarFotoChamadaSaida(uidAmigoVideoPro);
+      statusChamadaVideoPro.innerText = 'Chamando...';
+      telaChamadaVideoPro.style.display = 'flex';
+      telaChamadaVideoPro.classList.add('show');
+      const docMeuUsuarioFotoVideoPro = await db.collection('usuarios').doc(uidLogadoVideoPro).get();
+      let minhaFotoUrlVideoPro = '';
+      if(docMeuUsuarioFotoVideoPro.exists){
+        const dadosMeuUsuarioFotoVideoPro = docMeuUsuarioFotoVideoPro.data();
+        const fotoUrlMeuUsuarioFotoVideoPro = dadosMeuUsuarioFotoVideoPro.fotoUrl;
+        if(fotoUrlMeuUsuarioFotoVideoPro){
+          minhaFotoUrlVideoPro = fotoUrlMeuUsuarioFotoVideoPro;
+        }
+      }
       const canalVideoPro = [uidLogadoVideoPro, uidAmigoVideoPro].sort().join('_');
       const refVideoChamadaPro = rtdb.ref('chamadas/' + uidAmigoVideoPro);
-      refVideoChamadaPro.set({ de: uidLogadoVideoPro, deNome: window.nomeUsuario, tipo: 'video', status: 'chamando', timestamp: firebase.database.ServerValue.TIMESTAMP });
+      refVideoChamadaPro.set({
+        de: uidLogadoVideoPro,
+        deNome: window.nomeUsuario,
+        deFotoUrl: minhaFotoUrlVideoPro,
+        tipo: 'video',
+        status: 'chamando',
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      });
       iniciarAgoraPro(canalVideoPro, 'video');
       tocarToquePro('audio-chamando-pro');
-    }
+      refVideoChamadaPro.on('value', (snapVideoChamadaRetorno) => {
+        const dadosVideoChamadaRetorno = snapVideoChamadaRetorno.val();
+        if(!dadosVideoChamadaRetorno){
+          fecharTelaChamadaVozPro();
+        }
+        if(dadosVideoChamadaRetorno && dadosVideoChamadaRetorno.status === 'aceita'){
+          statusChamadaVideoPro.innerText = 'Conectado';
+        }
+        if(dadosVideoChamadaRetorno && dadosVideoChamadaRetorno.status === 'recusada'){
+          statusChamadaVideoPro.innerText = 'Recusada';
+          setTimeout(() => { refVideoChamadaPro.remove(); fecharTelaChamadaVozPro(); }, 1500);
+        }
+      });
+      }
 
 //==========================================
 //     FUNÇÃO DE CHAMAR AGORA.IO
@@ -2582,7 +2778,7 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
   }
 
   //====================================
-  //    FUNÇÃO DE TOQUE DE CHAMADA DE VIDEO OU AUDIO
+  //    FUNÇÃO DE TOQUE DE CHAMADA DE VIDEO OU AUDIO E NOTIFICAÇÕES
   //====================================
     function tocarToquePro(idAudioPro) {
     const audioToquePro = document.getElementById(idAudioPro);
@@ -2594,11 +2790,17 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     if (audioPararPro) { audioPararPro.pause(); audioPararPro.currentTime = 0; }
     if (navigator.vibrate) navigator.vibrate(0);
   }
+  function tocarNotificacaoMensagemPro(){
+  const audioNotificacaoPro = document.getElementById('audio-notificacao-pro');
+  if(!audioNotificacaoPro){ return; }
+  audioNotificacaoPro.currentTime = 0;
+  audioNotificacaoPro.play().catch(()=>{});
+}
 
   //====================================
   //   FUNÇÃO PARA VERIFICAR CANAL
   //====================================
-    async function verificarCanalPro() {
+  async function verificarCanalPro() {
     const uidCanalPro = meuUID;
     if (!uidCanalPro) return;
     const docCanalPro = await db.collection('canais').doc(uidCanalPro).get();
@@ -2610,7 +2812,22 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
       divExistePro.style.display = 'block';
       document.getElementById('nome-canal-existente-pro').innerText = dadosCanalPro.nomeCanal || 'Meu Canal';
       document.getElementById('handle-canal-existente-pro').innerText = '@' + (dadosCanalPro.handle || '');
-      document.getElementById('avatar-canal-existente-pro').innerText = (dadosCanalPro.nomeCanal || 'U').charAt(0).toUpperCase();
+      const avatarCanalProEl = document.getElementById('avatar-canal-existente-pro');
+      const bannerCanalProEl = document.getElementById('banner-canal-pro');
+      if(avatarCanalProEl){
+        if(dadosCanalPro.fotoURL){
+          avatarCanalProEl.innerHTML = '<img src="' + dadosCanalPro.fotoURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+        } else {
+          avatarCanalProEl.innerText = (dadosCanalPro.nomeCanal || 'U').charAt(0).toUpperCase();
+        }
+      }
+      if(bannerCanalProEl){
+        if(dadosCanalPro.bannerURL){
+          bannerCanalProEl.style.backgroundImage = 'url(' + dadosCanalPro.bannerURL + ')';
+          bannerCanalProEl.style.backgroundPosition = 'center';
+          bannerCanalProEl.style.backgroundSize = 'cover';
+        }
+      }
       const snapVideosPro = await db.collection('canais').doc(uidCanalPro).collection('videos').get();
       document.getElementById('num-videos-canal-pro').innerText = snapVideosPro.size;
     } else {
@@ -2732,6 +2949,24 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     }
     canalLiveAtualPro = null;
     canalAgoraLiveAtualPro = null;
+  }
+
+  //====================================
+  //   FUNÇÃO PARA IR PARA A PAGINA DECONFIGIRAÇÕES
+  //====================================
+  function irParaConfiguracoesComUid(){
+    const userAtualIr = firebase.auth().currentUser;
+    let uidIr = meuUID;
+    if(!uidIr){
+      if(userAtualIr){
+        uidIr = userAtualIr.uid;
+      }
+    }
+    if(uidIr){
+      window.location.href = 'configuracoes.html?uid=' + uidIr;
+    } else {
+      window.location.href = 'configuracoes.html';
+    }
   }
 
   //===============================
