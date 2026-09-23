@@ -18,7 +18,7 @@
     .input-group {width: 100%; display: flex; flex-direction: column; gap: 6px; text-align: left;}
     .input-group label { font-size: 12px; font-weight: 600; color: #94A3B8; }
     .input-wrapper {position: relative; display: flex; align-items: center;}
-    .input-wrapper svg {position: absolute; left: 14px; stroke: #94A3B8;}
+    .input-wrapper > svg:first-child {position: absolute; left: 14px; stroke: #94A3B8; pointer-events: none;}
     .input-wrapper input {width: 100%; background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px 14px 12px 42px; color: #FFFFFF; font-size: 14px; outline: none; font-family: inherit;}
     .input-wrapper input:focus {border-color: #0066FF;}
     .btn-login {width: 100%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); color: #FFFFFF; border: none; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; margin-top: 10px;}
@@ -35,6 +35,13 @@
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-15px) rotate(3deg); }
     }
+
+  /* ICONE DE OLHO NO CAMPO SENHA */
+  .btn-olho-senha-login-unico{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:4px;border-radius:6px;z-index:2}
+  .btn-olho-senha-login-unico:active{opacity:0.7}
+  #login-password{padding-right:44px !important}
+  .btn-olho-senha-login-unico svg{position: static !important; left: auto !important; stroke: #94A3B8;}
+
   </style>
 </head>
 <body>
@@ -71,6 +78,11 @@
         <div class="input-wrapper">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
           <input type="password" id="login-password" placeholder="••••••••" required>
+          <button type="button" id="btnOlhoSenhaLoginUnico" class="btn-olho-senha-login-unico" onclick="alternarVisibilidadeSenhaLoginUnico()" aria-label="Mostrar senha">
+            <span id="iconeOlhoSenhaLoginUnico">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </span>
+          </button>
         </div>
       </div>
 
@@ -83,7 +95,11 @@
     </div>
 
     <button class="btn-back" onclick="window.location.href='inicio.html'">Voltar para o Início sem login</button>
-  </div>
+
+  <!-- VERSAO -->
+       <div style="margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+      <span style="font-size: 11px; color: #94A3B8; font-weight: 600; letter-spacing: 0.5px;">• Versão: 1.4.0 •</span>
+    </div>
 
   <!-- TELA DE LOADING COM ASTRONAUTA -->
   <div id="loading-screen">
@@ -176,6 +192,24 @@
         alert("Erro ao fazer login: " + error.message);
       }
     }
+
+    //===========================================
+    //   FUNÇÃO DO OLHINHO NO CAMPO DA SENHA
+    //===========================================
+      window.alternarVisibilidadeSenhaLoginUnico = function(){
+      const inputSenhaOlhoLoginUnico = document.getElementById('login-password');
+      const spanIconeOlhoSenhaLoginUnico = document.getElementById('iconeOlhoSenhaLoginUnico');
+      const svgOlhoAbertoLoginUnico = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+      const svgOlhoFechadoLoginUnico = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.53 9.53a3 3 0 1 0 4.27 4.27"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+      if(inputSenhaOlhoLoginUnico.type === 'password'){
+        inputSenhaOlhoLoginUnico.type = 'text';
+        spanIconeOlhoSenhaLoginUnico.innerHTML = svgOlhoFechadoLoginUnico;
+      } else {
+        inputSenhaOlhoLoginUnico.type = 'password';
+        spanIconeOlhoSenhaLoginUnico.innerHTML = svgOlhoAbertoLoginUnico;
+      }
+    }
+
     //  FUNÇÃO DE ENTRAR COM ENTER
     const formLogin = document.getElementById('form-login');
     formLogin.addEventListener('submit', fazerLogin);

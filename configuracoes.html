@@ -20,6 +20,11 @@ body{background-color:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-se
 .nav-item.active{color:#FFF;background:linear-gradient(135deg,rgba(0,102,255,0.2) 0%,rgba(124,58,237,0.2) 100%);border:1px solid rgba(0,102,255,0.4);}
 .nav-item.live-item{color:#FFF;background:linear-gradient(135deg,#FF2D55 0%,#FF3B30 100%);border-radius:14px;padding:10px 14px;box-shadow:0 4px 15px rgba(255,45,85,0.4);transform:translateY(-4px);}
 .item-config{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer;}
+.item-privacidade-seguranca-unico{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer}
+.item-privacidade-esquerda-unico{display:flex;align-items:center;gap:12px}
+.item-privacidade-textos-unico{display:flex;flex-direction:column}
+.item-privacidade-titulo-unico{font-size:14px;font-weight:600;color:#FFF}
+.item-privacidade-desc-unico{font-size:11px;color:#94A3B8;margin-top:2px}
 @keyframes spinConfig { to { transform: rotate(360deg); } }
 </style>
 </head>
@@ -63,7 +68,7 @@ body{background-color:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-se
         </div>
 
         <!-- Opção 3: Privacidade e Segurança -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
+        <div onclick="abrirPrivacidadeSegurancaConfig()" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
           <div style="display: flex; align-items: center; gap: 12px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             <span style="font-size: 14px; font-weight: 600;">Privacidade e Segurança</span>
@@ -90,9 +95,9 @@ body{background-color:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-se
 
       </div>
 
-      <!-- VERSAO DO APP -->
-            <div id="app-versao-box" style="margin-top: 18px; display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
-            <span id="app-versao-text" style="font-size: 11px; color: #94A3B8; font-weight: 600; letter-spacing: 0.5px;">•</span>
+      <!-- VERSAO DO APP FIXA NO CODIGO -->
+            <div style="margin-top: 18px; display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+            <span style="font-size: 11px; color: #94A3B8; font-weight: 600; letter-spacing: 0.5px;">• Versão: 1.4.0 •</span>
           </div>
 
     </div>
@@ -207,6 +212,61 @@ body{background-color:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-se
             <span id="username-msg-config" style="display: none; font-size: 11px; font-weight: 600; margin-top: 2px; color: #FF4D4D;"></span>
           </div>
 
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TELA: PRIVACIDADE E SEGURANÇA -->
+    <!-- ========================================== -->
+    <div id="subtela-privacidade-seguranca" style="display: none; flex-direction: column; align-items: center; width: 100%; max-width: 480px; height: calc(100vh - 80px); overflow-y: auto; padding-bottom: 140px; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="welcome-card" style="width: 100%; text-align: left; align-items: stretch;">
+        
+        <!-- CABEÇALHO VOLTAR -->
+        <div onclick="fecharPrivacidadeSegurancaConfig()" style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; cursor: pointer; width: fit-content;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </div>
+          <span style="font-size: 14px; font-weight: 600; color: #FFFFFF;">Voltar</span>
+        </div>
+
+        <h2 style="font-size: 20px; text-align: center; margin-bottom: 24px;">Privacidade e Segurança</h2>
+
+        <!-- OPÇÃO 1: ALTERAR SENHA -->
+        <div onclick="abrirAlterarSenhaPrivacidadeSegurancaUnico()" class="item-privacidade-seguranca-unico">
+          <div class="item-privacidade-esquerda-unico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <div class="item-privacidade-textos-unico">
+              <span class="item-privacidade-titulo-unico">Alterar senha de acesso</span>
+              <span class="item-privacidade-desc-unico">Atualize sua senha periodicamente</span>
+            </div>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- OPÇÃO 2: 2FA -->
+        <div onclick="abrirDoisFatoresPrivacidadeSegurancaUnico()" class="item-privacidade-seguranca-unico">
+          <div class="item-privacidade-esquerda-unico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
+            <div class="item-privacidade-textos-unico">
+              <span class="item-privacidade-titulo-unico">Autenticação de dois fatores</span>
+              <span class="item-privacidade-desc-unico">Proteja sua conta com código extra</span>
+            </div>
+          </div>
+          <span style="color: #94A3B8;">›</span>
+        </div>
+
+        <!-- OPÇÃO 3: SELFIE -->
+        <div onclick="abrirSelfieVerificacaoPrivacidadeSegurancaUnico()" class="item-privacidade-seguranca-unico" style="border-bottom: none;">
+          <div class="item-privacidade-esquerda-unico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle><circle cx="12" cy="9" r="2" fill="none"></circle></svg>
+            <div class="item-privacidade-textos-unico">
+              <span class="item-privacidade-titulo-unico">Selfie de verificação</span>
+              <span class="item-privacidade-desc-unico">Confirme sua identidade com selfie</span>
+            </div>
+          </div>
+          <span style="color: #94A3B8;">›</span>
         </div>
 
       </div>
@@ -668,6 +728,35 @@ async function salvarNovoNomeUsuarioConfig() {
     console.error('Erro ao salvar nome de usuário:', erro);
     if (btnSalvar) btnSalvar.style.opacity = '1';
   }
+}
+
+//======================================
+//   FUNÇÃO DA OPÇÃO PRIVACIDADE E SEGURANÇA
+//=======================================
+function abrirPrivacidadeSegurancaConfig(){
+  const menuPrincipalPrivacidadeSegurancaUnico = document.getElementById('tab-menu-content');
+  const subtelaPrivacidadeSegurancaUnico = document.getElementById('subtela-privacidade-seguranca');
+  if(menuPrincipalPrivacidadeSegurancaUnico && subtelaPrivacidadeSegurancaUnico){
+    menuPrincipalPrivacidadeSegurancaUnico.style.display = 'none';
+    subtelaPrivacidadeSegurancaUnico.style.display = 'flex';
+  }
+}
+function fecharPrivacidadeSegurancaConfig(){
+  const menuPrincipalFecharPrivacidadeUnico = document.getElementById('tab-menu-content');
+  const subtelaFecharPrivacidadeUnico = document.getElementById('subtela-privacidade-seguranca');
+  if(menuPrincipalFecharPrivacidadeUnico && subtelaFecharPrivacidadeUnico){
+    subtelaFecharPrivacidadeUnico.style.display = 'none';
+    menuPrincipalFecharPrivacidadeUnico.style.display = 'flex';
+  }
+}
+function abrirAlterarSenhaPrivacidadeSegurancaUnico(){
+  window.location.href = 'alterar-senha.html?uid=' + meuUIDConfig;
+}
+function abrirDoisFatoresPrivacidadeSegurancaUnico(){
+  alert('Autenticação de dois fatores em breve');
+}
+function abrirSelfieVerificacaoPrivacidadeSegurancaUnico(){
+  alert('Selfie de verificação em breve');
 }
 
 
