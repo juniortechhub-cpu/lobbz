@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+<head> 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat App - Tela Inicial</title>
@@ -211,6 +211,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-functions-compat.js"></script>
 <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
 
 <body>
@@ -801,7 +802,7 @@
       <!-- TELA DE CHAMADA DE VIDEO OU AUDIO -->
 <div id="tela-chamada-voz-pro" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#0F1117;z-index:9999;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px;">
   <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:40px;">
-    <span style="font-size:13px;color:#94A3B8;letter-spacing:1px;text-transform:uppercase;">Chamada de voz</span>
+    <span id="label-tipo-chamada-saida-pro" style="font-size:13px;color:#94A3B8;letter-spacing:1px;text-transform:uppercase;">Chamada de voz</span>
     <h2 id="nome-chamada-voz-pro" style="font-size:22px;font-weight:700;color:#FFF;">Amigo</h2>
     <span id="status-chamada-voz-pro" style="font-size:13px;color:#94A3B8;">Chamando...</span>
   </div>
@@ -1033,6 +1034,7 @@
   // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true });
     window.db = db;
     //  FUNÇÃO DE POPUP DE BOAS VINDAS
         async function verificarPopup1AcessoUnico(){
@@ -1113,12 +1115,21 @@
     //  INFORMAÇÕES DA AGORA.IO
     const appIdAgoraPro = '8b963b94108946ccb96fdc3934bdfed2';
     AgoraRTC.setLogLevel(4);
-    const tokenTempAgoraPro = '007eJxTYHg8S3/m7gO/fHvrDjMXLrazu3d4Q/ObWHeGhFd/A40juaQUGCySLM2MkyxNDA0sLE3MkpOB3LSUZGNLY5OklLTUFKObrVuyGgIZGUrEAhkZGSAQxOdi8MlPSqrSdc5ILGFgAABelyIK';
+    //const tokenTempAgoraPro = '007eJxTYHg8S3/m7gO/fHvrDjMXLrazu3d4Q/ObWHeGhFd/A40juaQUGCySLM2MkyxNDA0sLE3MkpOB3LSUZGNLY5OklLTUFKObrVuyGgIZGUrEAhkZGSAQxOdi8MlPSqrSdc5ILGFgAABelyIK';
+    let tokenTempAgoraPro = null;
     let clienteAgoraRTCPro = null;
     let trilhaAudioAgoraPro = null;
     let trilhaVideoAgoraPro = null;
     let trilhaTelaAgoraPro = null;
     let canalAgoraAtualPro = null;
+    //   BUSCAR TOKEN DE CHAMADA DE VOZ E VIDEO
+    async function obterTokenAgoraUnico(channelNameAgoraUnico, uidAgoraUnico){
+      const funcaoGerarTokenAgoraUnico = firebase.functions().httpsCallable('gerarTokenAgora');
+      const objetoChannelUnico = { channelNameAgoraUnico: channelNameAgoraUnico, uidAgoraUnico: uidAgoraUnico };
+      const resultadoTokenAgoraUnico = await funcaoGerarTokenAgoraUnico(objetoChannelUnico);
+      const tokenGeradoUnico = resultadoTokenAgoraUnico.data.tokenAgoraGeradoUnico;
+      return tokenGeradoUnico;
+    }
 
     window.rtdb = rtdb;
     const storage = firebase.storage();
@@ -3000,6 +3011,8 @@
         imgChamadaVozProElemento.src = '';
       }
       statusChamadaVozPro.innerText = 'Chamando...';
+      document.getElementById('label-tipo-chamada-saida-pro').innerText = 'Chamada de voz';
+      tocarToquePro('audio-chamando-pro');
       telaChamadaVozPro.style.display = 'flex';
       telaChamadaVozPro.classList.add('show');
       const uidLogadoChamada = meuUID;
@@ -3035,6 +3048,7 @@
         }
         if (dadosRetorno && dadosRetorno.status === 'aceita') {
           statusChamadaVozPro.innerText = 'Conectado';
+          pararToquePro('audio-chamando-pro');
         }
         if (dadosRetorno && dadosRetorno.status === 'recusada') {
           statusChamadaVozPro.innerText = 'Recusada';
@@ -3121,6 +3135,7 @@
       }
       carregarFotoChamadaSaida(uidAmigoVideoPro);
       statusChamadaVideoPro.innerText = 'Chamando...';
+      document.getElementById('label-tipo-chamada-saida-pro').innerText = 'Chamada de vídeo...';
       telaChamadaVideoPro.style.display = 'flex';
       telaChamadaVideoPro.classList.add('show');
       const docMeuUsuarioFotoVideoPro = await db.collection('usuarios').doc(uidLogadoVideoPro).get();
@@ -3151,6 +3166,7 @@
         }
         if(dadosVideoChamadaRetorno && dadosVideoChamadaRetorno.status === 'aceita'){
           statusChamadaVideoPro.innerText = 'Conectado';
+          pararToquePro('audio-chamando-pro');
         }
         if(dadosVideoChamadaRetorno && dadosVideoChamadaRetorno.status === 'recusada'){
           statusChamadaVideoPro.innerText = 'Recusada';
@@ -3170,13 +3186,21 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     if (midiaAgoraPro === 'video') {
       const divRemotoPlayPro = document.getElementById('video-remoto-agora-pro');
       divRemotoPlayPro.style.display = 'block';
+      const avatarCentralPro = document.getElementById('avatar-chamada-voz-pro');
+      if(avatarCentralPro){ avatarCentralPro.style.display = 'none'; }
       userAgoraPro.videoTrack.play('video-remoto-agora-pro');
     }
     if (midiaAgoraPro === 'audio') {
       userAgoraPro.audioTrack.play();
     }
   });
-  await clienteAgoraRTCPro.join(appIdAgoraPro, canalNomeAgoraPro, tokenTempAgoraPro, null);
+
+  //   FUNÇÃO DE CONECTAR CHAMADA DE VIDEO E AUDIO
+    const uidNumericoAgoraUnico = Math.floor(Math.random() * 1000000);
+    const tokenDinamicoAgoraUnico = await obterTokenAgoraUnico(canalNomeAgoraPro, uidNumericoAgoraUnico);
+    await clienteAgoraRTCPro.join(appIdAgoraPro, canalNomeAgoraPro, tokenDinamicoAgoraUnico, uidNumericoAgoraUnico);
+
+
   trilhaAudioAgoraPro = await AgoraRTC.createMicrophoneAudioTrack();
   let trilhasAgoraPro = [trilhaAudioAgoraPro];
   if (tipoAgoraPro === 'video') {
@@ -3201,6 +3225,8 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     const divLocalAgoraPro = document.getElementById('video-local-agora-pro');
     if (divRemotoAgoraPro) divRemotoAgoraPro.style.display = 'none';
     if (divLocalAgoraPro) divLocalAgoraPro.style.display = 'none';
+    const avatarRestaurarPro = document.getElementById('avatar-chamada-voz-pro');
+    if(avatarRestaurarPro){ avatarRestaurarPro.style.display = 'flex'; }
   }
 
   //====================================
@@ -3209,12 +3235,14 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     function tocarToquePro(idAudioPro) {
     const audioToquePro = document.getElementById(idAudioPro);
     if (audioToquePro) { audioToquePro.currentTime = 0; audioToquePro.play().catch(()=>{}); }
-    if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
+    if (navigator.vibrate && document.hasFocus()) { try{ navigator.vibrate([500, 200, 500]);
+    }catch(e){} }
   }
   function pararToquePro(idAudioPro) {
     const audioPararPro = document.getElementById(idAudioPro);
     if (audioPararPro) { audioPararPro.pause(); audioPararPro.currentTime = 0; }
-    if (navigator.vibrate) navigator.vibrate(0);
+    if (navigator.vibrate) { try{ navigator.vibrate(0);
+    }catch(e){} }
   }
   function tocarNotificacaoMensagemPro(){
   const audioNotificacaoPro = document.getElementById('audio-notificacao-pro');
@@ -3327,7 +3355,7 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     const uidLiveComDadosPro = meuUID;
     const refLiveNovaUnica = db.collection('canais').doc(uidLiveComDadosPro).collection('lives').doc();
     const docLiveIdComDadosPro = refLiveNovaUnica.id;
-    const nomeCanalAgoraLiveComDadosPro = 'Lobbz-Chat'; //docLiveIdComDadosPro;
+    const nomeCanalAgoraLiveComDadosPro = docLiveIdComDadosPro;
     let urlThumbLivePro = '';
     if (arquivoThumbLivePro) {
       const refThumbPro = storage.ref('thumbs_lives/' + uidLiveComDadosPro + '/' + docLiveIdComDadosPro + '.jpg');
@@ -3347,7 +3375,9 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     clienteAgoraRTCPro = AgoraRTC.createClient({ mode: 'live', codec: 'h264' });
     await clienteAgoraRTCPro.setClientRole('host');
     canalAgoraAtualPro = canalNomeLiveCameraPro;
-    await clienteAgoraRTCPro.join(appIdAgoraPro, canalNomeLiveCameraPro, tokenTempAgoraPro, null);
+    const uidLiveCameraUnico = Math.floor(Math.random() * 1000000);
+    const tokenLiveCameraUnico = await obterTokenAgoraUnico(canalNomeLiveCameraPro, uidLiveCameraUnico);
+    await clienteAgoraRTCPro.join(appIdAgoraPro, canalNomeLiveCameraPro, tokenLiveCameraUnico, uidLiveCameraUnico);
     trilhaAudioAgoraPro = await AgoraRTC.createMicrophoneAudioTrack();
     trilhaVideoAgoraPro = await AgoraRTC.createCameraVideoTrack();
     trilhaVideoAgoraPro.play('video-live-camera-pro');
@@ -3409,7 +3439,7 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     const uidLiveComDadosTelaPro = meuUID;
     const refLiveNovaTelaUnica = db.collection('canais').doc(uidLiveComDadosTelaPro).collection('lives').doc();
     const docLiveIdComDadosTelaPro = refLiveNovaTelaUnica.id;
-    const nomeCanalAgoraLiveComDadosTelaPro = 'Lobbz-Chat'; //docLiveIdComDadosTelaPro;
+    const nomeCanalAgoraLiveComDadosTelaPro = docLiveIdComDadosTelaPro;
     let urlThumbLiveTelaPro = '';
     if (arquivoThumbLiveTelaPro) {
       const refThumbTelaPro = storage.ref('thumbs_lives/' + uidLiveComDadosTelaPro + '/' + docLiveIdComDadosTelaPro + '.jpg');
@@ -3429,8 +3459,21 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     clienteAgoraRTCPro = AgoraRTC.createClient({ mode: 'live', codec: 'h264' });
     await clienteAgoraRTCPro.setClientRole('host');
     canalAgoraAtualPro = canalNomeLiveTelaPro;
-    await clienteAgoraRTCPro.join(appIdAgoraPro, canalNomeLiveTelaPro, tokenTempAgoraPro, null);
+    const uidLiveTelaUnico = Math.floor(Math.random() * 1000000);
+    const tokenLiveTelaUnico = await obterTokenAgoraUnico(canalNomeLiveTelaPro, uidLiveTelaUnico);
+    await clienteAgoraRTCPro.join(appIdAgoraPro, canalNomeLiveTelaPro, tokenLiveTelaUnico, uidLiveTelaUnico);
     trilhaAudioAgoraPro = await AgoraRTC.createMicrophoneAudioTrack();
+    const ehApkTelaPro = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+    if(ehApkTelaPro){
+      const pluginScreenSharePro = window.Capacitor.Plugins.ScreenShare;
+      if(pluginScreenSharePro){
+        const resultadoScreenShareUnico = await pluginScreenSharePro.startScreenShare();
+        console.log('Screen share nativo iniciado', resultadoScreenShareUnico);
+      } else {
+        alert('Tela no APK precisa plugin nativo. Use câmera por enquanto.');
+      }
+      return;
+    }
     const resultadoTelaAgoraPro = await AgoraRTC.createScreenVideoTrack({ encoderConfig: "1080p_1", optimizationMode: "detail" }, "disable");
     if(Array.isArray(resultadoTelaAgoraPro)){
       trilhaTelaAgoraPro = resultadoTelaAgoraPro[0];
@@ -3487,7 +3530,7 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
   //====================================
   // VERIFICAÇÃO DE ATUALIZÇÃO DO APP - VERSAO
   //====================================
-  const versaoFixaIndexComparacaoUnica = "1.5.0";
+  const versaoFixaIndexComparacaoUnica = "1.5.1";
   function compararVersaoFixaIndexUnico(versaoInstaladaComparacaoUnica, versaoFirestoreComparacaoUnica){
     const partesInstaladaUnica = versaoInstaladaComparacaoUnica.split('.').map(Number);
     const partesFirestoreUnica = versaoFirestoreComparacaoUnica.split('.').map(Number);
