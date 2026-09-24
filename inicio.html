@@ -171,7 +171,8 @@
 .titulo-live-yt{font-size:13px;font-weight:600;color:#FFF;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3;}
 .nome-canal-live-yt{font-size:12px;color:#94A3B8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #estado-vazio-lives,#estado-carregando-lives{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:#1E2230;border-radius:16px;border:1px solid rgba(255,255,255,0.05);}
-  
+
+/*  POPUP DE PRIMEIRO ACESSO  */
 .overlay-popup1Acesso-unico{position:fixed;inset:0;background:rgba(15,17,23,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 0.3s}
 .overlay-popup1Acesso-unico.ativo-popup1Acesso-unico{display:flex;opacity:1}
 .card-popup1Acesso-unico{background:#1E2230;border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:32px 24px;max-width:380px;width:100%;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;transform:scale(0.9);transition:transform 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
@@ -182,6 +183,13 @@
 .desc-popup1Acesso-unico{font-size:13px;color:#94A3B8;line-height:1.6}
 .btn-entendi-popup1Acesso-unico{width:100%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);color:#FFF;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-entendi-popup1Acesso-unico:active{opacity:0.9}
+
+/*  POPUP DE GANHOS DE MOEDAS POR FAZE CADASTRO  */
+.overlay-moedas1Cadastro-unico{position:fixed;inset:0;background:rgba(15,17,23,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:9998;display:none;justify-content:center;align-items:flex-start;padding-top:70px;opacity:0;transition:opacity 0.3s}
+.overlay-moedas1Cadastro-unico.ativo-moedas1Cadastro-unico{display:flex;opacity:1}
+.card-moedas1Cadastro-unico{background:#1E2230;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px;max-width:320px;width:90%;position:relative;margin-top:8px;box-shadow:0 10px 30px rgba(0,0,0,0.4);display:flex;flex-direction:column;gap:12px}
+.card-moedas1Cadastro-unico::before{content:'';position:absolute;top:-7px;right:38px;width:14px;height:14px;background:#1E2230;border-left:1px solid rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.08);transform:rotate(45deg)}
+.btn-entendi-moedas1Cadastro-unico{width:100%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);color:#FFF;border:none;padding:12px;border-radius:12px;font-weight:700;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 
 /* POPUP DE ATUALIZAÇÃO DO APP */
 .popup-atualizacao-discreto-unico{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);width:90%;max-width:360px;background-color:#1E2230;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;display:none;flex-direction:column;gap:12px;z-index:9998;box-shadow:0 10px 25px rgba(0,0,0,0.4)}
@@ -206,7 +214,6 @@
 <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
 
 <body>
-  <!-- POPUP DE BOAS VINDA - 1 ACESSO -->
 <div id="overlayPopup1AcessoUnico" class="overlay-popup1Acesso-unico">
   <div class="card-popup1Acesso-unico">
     <div class="logo-popup1Acesso-unico">
@@ -222,6 +229,23 @@
     </button>
   </div>
 </div>
+
+  <!-- POPUP 2 - MOEDAS GANHAS NO CADASTRO -->
+  <div id="overlayMoedas1CadastroUnico" class="overlay-moedas1Cadastro-unico">
+    <div class="card-moedas1Cadastro-unico">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M9 13c.6 1 2 1 3 0c1-1 0-2-1-2s-2-1-1-2c.6-1 2-1 3 0"></path></svg>
+        </div>
+        <span style="font-weight:700;font-size:15px;color:#FFF;">Você ganhou 2.000 moedas!</span>
+      </div>
+      <p style="font-size:13px;color:#94A3B8;line-height:1.5;">Presente de boas-vindas do Lobbz. Use suas moedas para enviar presentes e apoiar seus streamings favoritos durante as lives.</p>
+      <button class="btn-entendi-moedas1Cadastro-unico" onclick="fecharPopupMoedas1CadastroUnico()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M20 6L9 17l-5-5"></path></svg>
+        Entendi
+      </button>
+    </div>
+  </div>
 
   <!-- Barra de Navegação Inferior -->
 <!-- Barra de Navegação Inferior -->
@@ -242,8 +266,15 @@
                 </div>
                 <span id="texto-ola-superior" style="font-size: 14px; font-weight: 600; color: #FFF;">Olá, Faça seu login.</span>
               </div>
-              <div id="btn-ola-acao" onclick="acaoBotaoOlaSuperior()" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              <div id="btn-ola-acao" onclick="acaoBotaoOlaSuperior()" style="width: auto; min-width: 32px; height: 32px; border-radius: 20px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 6px; padding: 0 10px;">
                 <svg id="icone-ola-acao" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                <div id="container-moedas-ola-logado" style="display:none; align-items:center; gap:6px;">
+                  <span id="icone-moeda-ola" style="display:flex;"></span>
+                  <span id="texto-saldo-moedas-ola" style="font-size:13px; font-weight:700; color:#FFF;">0</span>
+                  <div id="btn-mais-moedas-ola" onclick="irParaComprarMoedasInicioUnico(event)" style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%); display:flex; align-items:center; justify-content:center; margin-left:4px;">
+                    <span id="icone-mais-moedas-ola" style="display:flex;"></span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -820,6 +851,29 @@
     </div>
   </div>
 
+     <!-- TELA LIVE TELA DO CELULAR -->
+   <div id="tela-live-tela-pro" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#000;z-index:9999;flex-direction:column;">
+     <div style="position:absolute;top:0;left:0;width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px;z-index:5;background:linear-gradient(180deg,rgba(0,0,0,0.8) 0%,transparent 100%);">
+       <div style="display:flex;align-items:center;gap:8px;">
+         <div style="display:flex;align-items:center;gap:6px;background:#FF2D55;border-radius:6px;padding:4px 8px;">
+           <div style="width:6px;height:6px;background:#FFF;border-radius:50%;"></div>
+           <span style="font-size:11px;font-weight:700;color:#FFF;">AO VIVO</span>
+         </div>
+         <span id="titulo-live-tela-pro" style="font-size:13px;font-weight:600;color:#FFF;">Minha live</span>
+       </div>
+       <div onclick="encerrarLiveTelaPro()" style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(255,255,255,0.2);">
+         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+       </div>
+     </div>
+     <div id="video-live-tela-pro" style="width:100%;height:100%;background:#0F1117;"></div>
+     <div style="position:absolute;bottom:0;left:0;width:100%;padding:20px;display:flex;align-items:center;justify-content:center;gap:12px;z-index:5;background:linear-gradient(0deg,rgba(0,0,0,0.9) 0%,transparent 100%);">
+       <button onclick="encerrarLiveTelaPro()" style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FF2D55 0%,#FF3B30 100%);border:none;border-radius:24px;padding:12px 24px;color:#FFF;font-weight:700;font-size:14px;cursor:pointer;">
+         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+         Encerrar Live
+       </button>
+     </div>
+   </div>
+
   <!-- TELA DE CONFIGURAÇÃO DE LIVE -->
      <!-- TELA CONFIG LIVE ANTES DE COMEÇAR - ESTILO YT -->
   <div id="tela-config-live-pro" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#0F1117;z-index:9998;flex-direction:column;overflow-y:auto;scrollbar-width:none;">
@@ -863,6 +917,49 @@
       <p id="msg-config-live-pro" style="font-size:12px;color:#FF2D55;display:none;text-align:center;"></p>
     </div>
   </div>
+
+     <!-- TELA CONFIG LIVE TELA - ANTES DE COMEÇAR -->
+   <div id="tela-config-live-tela-pro" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#0F1117;z-index:9998;flex-direction:column;overflow-y:auto;scrollbar-width:none;">
+     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;background:#0F1117;z-index:2;">
+       <div style="display:flex;align-items:center;gap:12px;">
+         <div onclick="fecharConfigLiveTelaPro()" style="width:36px;height:36px;border-radius:50%;background:#1E2230;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+         </div>
+         <span style="font-size:15px;font-weight:700;color:#FFF;">Configurar transmissão</span>
+       </div>
+       <div style="display:flex;align-items:center;gap:6px;background:rgba(0,102,255,0.15);border-radius:6px;padding:4px 8px;">
+         <div style="width:6px;height:6px;background:#0066FF;border-radius:50%;"></div>
+         <span style="font-size:11px;font-weight:700;color:#0066FF;">TELA</span>
+       </div>
+     </div>
+     <div style="padding:20px;display:flex;flex-direction:column;gap:20px;max-width:480px;width:100%;margin:0 auto;padding-bottom:120px;">
+       <div>
+         <label style="font-size:12px;color:#94A3B8;font-weight:600;">MINIATURA</label>
+         <div id="area-thumb-live-tela-pro" onclick="document.getElementById('input-thumb-live-tela-pro').click()" style="margin-top:8px;width:100%;aspect-ratio:16/9;background:#1E2230;border:1px dashed rgba(255,255,255,0.15);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;">
+           <img id="preview-thumb-live-tela-pro" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;"/>
+           <div id="placeholder-thumb-live-tela-pro" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+             <span style="font-size:12px;color:#94A3B8;">Toque para enviar capa</span>
+           </div>
+         </div>
+         <input id="input-thumb-live-tela-pro" type="file" accept="image/*" style="display:none;" onchange="previewThumbLiveTelaPro(this)"/>
+       </div>
+       <div style="display:flex;flex-direction:column;gap:8px;">
+         <label style="font-size:12px;color:#94A3B8;font-weight:600;">TÍTULO DO VÍDEO *</label>
+         <input id="input-titulo-live-tela-pro" type="text" maxlength="100" placeholder="Ex: Mostrando minha tela jogando!" style="width:100%;background:#1E2230;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#FFF;font-size:14px;"/>
+         <span style="font-size:10px;color:#94A3B8;text-align:right;" id="contador-titulo-live-tela-pro">0/100</span>
+       </div>
+       <div style="display:flex;flex-direction:column;gap:8px;">
+         <label style="font-size:12px;color:#94A3B8;font-weight:600;">DESCRIÇÃO</label>
+         <textarea id="input-desc-live-tela-pro" rows="4" maxlength="500" placeholder="Fale sobre sua live de tela..." style="width:100%;background:#1E2230;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#FFF;font-size:13px;resize:none;"></textarea>
+       </div>
+       <button onclick="iniciarLiveComDadosTelaPro()" style="width:100%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);border:none;border-radius:12px;padding:14px;color:#FFF;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+         Começar transmissão de tela
+       </button>
+       <p id="msg-config-live-tela-pro" style="font-size:12px;color:#FF2D55;display:none;text-align:center;"></p>
+     </div>
+   </div>
 
   <!-- TELA DE ENTRADA DE CHAMADA DE VIDEO OU AUDIO -->
  <div id="tela-chamada-entrando-pro" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#0F1117;z-index:9999;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px;">
@@ -939,45 +1036,88 @@
     window.db = db;
     //  FUNÇÃO DE POPUP DE BOAS VINDAS
         async function verificarPopup1AcessoUnico(){
-      const uidVerificarPopup1AcessoUnico = meuUID;
-      if(!uidVerificarPopup1AcessoUnico) return;
-      const refUsuarioPopup1AcessoUnico = db.collection('usuarios').doc(uidVerificarPopup1AcessoUnico);
-      const docUsuarioPopup1AcessoUnico = await refUsuarioPopup1AcessoUnico.get();
-      let mostrarPopup1AcessoUnico = true;
-      if(docUsuarioPopup1AcessoUnico.exists){
-        const dadosUsuarioPopup1AcessoUnico = docUsuarioPopup1AcessoUnico.data();
-        if(dadosUsuarioPopup1AcessoUnico.popup1Acesso === true){
-          mostrarPopup1AcessoUnico = false;
+          const uidVerificarPopup1AcessoUnico = meuUID;
+          if(!uidVerificarPopup1AcessoUnico) return;
+          const refPopup1AcessoSubcolecaoUnico = db.collection('usuarios').doc(uidVerificarPopup1AcessoUnico).collection('instrucoes').doc('popup1Acesso');
+          const refMoedas1CadastroSubcolecaoVerificarUnico = db.collection('usuarios').doc(uidVerificarPopup1AcessoUnico).collection('instrucoes').doc('moedas1Cadastro');
+          const docPopup1AcessoSubcolecaoUnico = await refPopup1AcessoSubcolecaoUnico.get();
+          const docMoedas1CadastroSubcolecaoVerificarUnico = await refMoedas1CadastroSubcolecaoVerificarUnico.get();
+          let mostrarPopup1AcessoUnico = true;
+          let mostrarPopupMoedas1CadastroSegundoUnico = false;
+          if(docPopup1AcessoSubcolecaoUnico.exists){
+            mostrarPopup1AcessoUnico = false;
+            if(!docMoedas1CadastroSubcolecaoVerificarUnico.exists){
+              mostrarPopupMoedas1CadastroSegundoUnico = true;
+            }
+          }
+          if(mostrarPopup1AcessoUnico){
+            mostrarOverlayPopup1AcessoUnico();
+          } else if(mostrarPopupMoedas1CadastroSegundoUnico){
+            mostrarOverlayMoedas1CadastroUnico();
+          }
         }
-      }
-      if(mostrarPopup1AcessoUnico){
-        mostrarOverlayPopup1AcessoUnico();
-      }
-    }
-    function mostrarOverlayPopup1AcessoUnico(){
-      const overlayMostrarPopup1AcessoUnico = document.getElementById('overlayPopup1AcessoUnico');
-      overlayMostrarPopup1AcessoUnico.style.display = 'flex';
-      setTimeout(function(){ overlayMostrarPopup1AcessoUnico.classList.add('ativo-popup1Acesso-unico'); }, 10);
-    }
-    async function fecharPopup1AcessoUnico(){
+
+          function mostrarOverlayPopup1AcessoUnico(){
+          const overlayMostrarPopup1AcessoUnico = document.getElementById('overlayPopup1AcessoUnico');
+          overlayMostrarPopup1AcessoUnico.style.display = 'flex';
+          setTimeout(function(){ overlayMostrarPopup1AcessoUnico.classList.add('ativo-popup1Acesso-unico'); }, 10);
+        }
+
+
+      async function fecharPopup1AcessoUnico(){
       const uidFecharPopup1AcessoUnico = meuUID;
       const overlayFecharPopup1AcessoUnico = document.getElementById('overlayPopup1AcessoUnico');
       overlayFecharPopup1AcessoUnico.classList.remove('ativo-popup1Acesso-unico');
       setTimeout(function(){ overlayFecharPopup1AcessoUnico.style.display = 'none'; }, 300);
       if(uidFecharPopup1AcessoUnico){
-        const refSalvarPopup1AcessoUnico = db.collection('usuarios').doc(uidFecharPopup1AcessoUnico);
-        await refSalvarPopup1AcessoUnico.set({ popup1Acesso: true }, { merge: true });
+        const refSalvarPopup1AcessoSubcolecaoUnico = db.collection('usuarios').doc(uidFecharPopup1AcessoUnico).collection('instrucoes').doc('popup1Acesso');
+        await refSalvarPopup1AcessoSubcolecaoUnico.set({ visto: true, criadoEm: firebase.firestore.FieldValue.serverTimestamp() });
+        setTimeout(function(){ verificarPopupMoedas1CadastroUnico(); }, 400);
       }
     }
+
+    //  VERIFICA SE APARECEU POPUP DE GANHO DE MOEDAS
+        async function verificarPopupMoedas1CadastroUnico(){
+          const uidVerificarMoedas1CadastroUnico = meuUID;
+          if(!uidVerificarMoedas1CadastroUnico) return;
+          const refUsuarioMoedas1CadastroSubcolecaoUnico = db.collection('usuarios').doc(uidVerificarMoedas1CadastroUnico).collection('instrucoes').doc('moedas1Cadastro');
+          const docUsuarioMoedas1CadastroSubcolecaoUnico = await refUsuarioMoedas1CadastroSubcolecaoUnico.get();
+          let mostrarMoedas1CadastroUnico = true;
+          if(docUsuarioMoedas1CadastroSubcolecaoUnico.exists){
+            mostrarMoedas1CadastroUnico = false;
+          }
+          if(mostrarMoedas1CadastroUnico){
+            mostrarOverlayMoedas1CadastroUnico();
+          }
+        }
+
+        function mostrarOverlayMoedas1CadastroUnico(){
+          const overlayMostrarMoedas1CadastroUnico = document.getElementById('overlayMoedas1CadastroUnico');
+          overlayMostrarMoedas1CadastroUnico.style.display = 'flex';
+          setTimeout(function(){ overlayMostrarMoedas1CadastroUnico.classList.add('ativo-moedas1Cadastro-unico'); }, 10);
+        }
+
+        async function fecharPopupMoedas1CadastroUnico(){
+          const uidFecharMoedas1CadastroUnico = meuUID;
+          const overlayFecharMoedas1CadastroUnico = document.getElementById('overlayMoedas1CadastroUnico');
+          overlayFecharMoedas1CadastroUnico.classList.remove('ativo-moedas1Cadastro-unico');
+          setTimeout(function(){ overlayFecharMoedas1CadastroUnico.style.display = 'none'; }, 300);
+          if(uidFecharMoedas1CadastroUnico){
+            const refSalvarMoedas1CadastroSubcolecaoUnico = db.collection('usuarios').doc(uidFecharMoedas1CadastroUnico).collection('instrucoes').doc('moedas1Cadastro');
+            await refSalvarMoedas1CadastroSubcolecaoUnico.set({ visto: true, criadoEm: firebase.firestore.FieldValue.serverTimestamp() });
+          }
+        }
+
 
     const rtdb = firebase.database();
     //  INFORMAÇÕES DA AGORA.IO
     const appIdAgoraPro = '8b963b94108946ccb96fdc3934bdfed2';
     AgoraRTC.setLogLevel(4);
-    const tokenTempAgoraPro = '007eJxTYJj283fV6tNv6u5nzA5uYnn1j3fNrKusLkV1C2f9U9+6xWKNAoNFkqWZcZKliaGBhaWJWXIykJuWkmxsaWySlJKWmmJ0S2VDVkMgI0NhjT4zIwMEgvisDD75SUlVDAwAeKUiuA==';
+    const tokenTempAgoraPro = '007eJxTYHg8S3/m7gO/fHvrDjMXLrazu3d4Q/ObWHeGhFd/A40juaQUGCySLM2MkyxNDA0sLE3MkpOB3LSUZGNLY5OklLTUFKObrVuyGgIZGUrEAhkZGSAQxOdi8MlPSqrSdc5ILGFgAABelyIK';
     let clienteAgoraRTCPro = null;
     let trilhaAudioAgoraPro = null;
     let trilhaVideoAgoraPro = null;
+    let trilhaTelaAgoraPro = null;
     let canalAgoraAtualPro = null;
 
     window.rtdb = rtdb;
@@ -1090,7 +1230,7 @@
       if (tipoLiveEscolhidoPro === 'camera') {
         abrirConfigLiveCameraPro();
       } else if (tipoLiveEscolhidoPro === 'tela') {
-        alert('Tela do celular vamos fazer depois da câmera');
+        abrirConfigLiveTelaPro();
       }
     }
 
@@ -1319,8 +1459,42 @@
 
     //  FAZER LOGOUT NA ABA INICIO
         function acaoBotaoOlaSuperior(){
-      if(!usuarioLogado){ window.location.href = 'login.html'; } else { fazerLogout(); }
-    }
+          if(!usuarioLogado){ window.location.href = 'login.html'; }
+        }
+
+        //=======================================================
+        //  FUNÇÃO DE MOSTRAR SALDO DE MOEDAS E COMPRAR MOEDAS
+        //=======================================================
+        const svgCoinDouradoInicioUnico = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v3"></path><path d="M9 10c1-1 3-1 4 0c1 1 1 2 0 3c-1 1-3 1-4 0c-1-1-1-2 0-3z"></path></svg>';
+        const svgPlusBrancoInicioUnico = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
+
+
+        function irParaComprarMoedasInicioUnico(eventoClickMaisMoedasInicioUnico){
+          eventoClickMaisMoedasInicioUnico.stopPropagation();
+          window.location.href = 'compramoedas.html';
+        }
+
+        function formatarSaldoComPontoInicioUnico(valorNumericoSaldoInicioUnico){
+        const numeroConvertidoSaldoInicioUnico = Number(valorNumericoSaldoInicioUnico);
+        const valorFormatadoSaldoInicioUnico = numeroConvertidoSaldoInicioUnico.toLocaleString('pt-BR');
+        return valorFormatadoSaldoInicioUnico;
+      }
+
+        function buscarSaldoMoedasUsuarioInicioUnico(uidBuscarSaldoInicioUnico){
+          const refUsuarioSaldoInicioUnico = db.collection('usuarios').doc(uidBuscarSaldoInicioUnico);
+          refUsuarioSaldoInicioUnico.onSnapshot(function(docSaldoInicioUnico){
+            if(docSaldoInicioUnico.exists){
+              const dadosUsuarioSaldoInicioUnico = docSaldoInicioUnico.data();
+              const valorSaldoMoedasInicioUnico = dadosUsuarioSaldoInicioUnico.saldoMoedas;
+              const elementoTextoSaldoInicioUnico = document.getElementById('texto-saldo-moedas-ola');
+              if(elementoTextoSaldoInicioUnico){
+                const valorFormatadoPontoInicioUnico = formatarSaldoComPontoInicioUnico(valorSaldoMoedasInicioUnico);
+                elementoTextoSaldoInicioUnico.innerText = valorFormatadoPontoInicioUnico;
+              }
+            }
+          });
+        }
+
 //============================================
 //   FUNÇÃO DE ATUALIZAÇÃO DO CARD NA ABA INICIO
 //============================================
@@ -1328,16 +1502,25 @@
       const iconeOlaAcaoUnica = document.getElementById('icone-ola-acao');
       const btnOlaAcaoUnica = document.getElementById('btn-ola-acao');
       const containerFotoOlaSuperiorUnica = document.getElementById('container-foto-ola-superior');
+      const containerMoedasLogadoUnica = document.getElementById('container-moedas-ola-logado');
+      const iconeMoedaOlaUnica = document.getElementById('icone-moeda-ola');
+      const iconeMaisMoedasOlaUnica = document.getElementById('icone-mais-moedas-ola');
       if(!iconeOlaAcaoUnica || !btnOlaAcaoUnica) return;
       if(!usuarioLogado){
+        iconeOlaAcaoUnica.style.display = 'flex';
         iconeOlaAcaoUnica.innerHTML = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>';
         iconeOlaAcaoUnica.setAttribute('stroke','#FFFFFF');
         btnOlaAcaoUnica.style.background = 'rgba(255,255,255,0.08)';
+        btnOlaAcaoUnica.style.padding = '0 10px';
+        if(containerMoedasLogadoUnica){ containerMoedasLogadoUnica.style.display = 'none'; }
         if(containerFotoOlaSuperiorUnica){ containerFotoOlaSuperiorUnica.style.display = 'none'; }
       } else {
-        iconeOlaAcaoUnica.innerHTML = '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>';
-        iconeOlaAcaoUnica.setAttribute('stroke','#FF2D55');
-        btnOlaAcaoUnica.style.background = 'rgba(255,45,85,0.15)';
+        iconeOlaAcaoUnica.style.display = 'none';
+        btnOlaAcaoUnica.style.background = 'rgba(255,255,255,0.08)';
+        btnOlaAcaoUnica.style.padding = '0 10px 0 6px';
+        if(containerMoedasLogadoUnica){ containerMoedasLogadoUnica.style.display = 'flex'; }
+        if(iconeMoedaOlaUnica){ iconeMoedaOlaUnica.innerHTML = svgCoinDouradoInicioUnico; }
+        if(iconeMaisMoedasOlaUnica){ iconeMaisMoedasOlaUnica.innerHTML = svgPlusBrancoInicioUnico; }
         if(containerFotoOlaSuperiorUnica){ containerFotoOlaSuperiorUnica.style.display = 'flex'; }
       }
       atualizarVisibilidadeAbasInferiorPro();
@@ -2069,6 +2252,7 @@
           setTimeout(function(){ verificarPopup1AcessoUnico(); }, 800);
           usuarioLogado = true;
           atualizarIconeOlaSuperior();
+          buscarSaldoMoedasUsuarioInicioUnico(user.uid);
           carregarFotoOlaSuperior(user.uid);
           const trintaDiasMs = 30 * 24 * 60 * 60 * 1000;
           const agoraMs = Date.now();
@@ -3011,6 +3195,7 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
   async function sairAgoraPro() {
     if (trilhaAudioAgoraPro) { trilhaAudioAgoraPro.close(); trilhaAudioAgoraPro = null; }
     if (trilhaVideoAgoraPro) { trilhaVideoAgoraPro.close(); trilhaVideoAgoraPro = null; }
+    if (trilhaTelaAgoraPro) { trilhaTelaAgoraPro.close(); trilhaTelaAgoraPro = null; }
     if (clienteAgoraRTCPro) { await clienteAgoraRTCPro.leave(); clienteAgoraRTCPro = null; }
     const divRemotoAgoraPro = document.getElementById('video-remoto-agora-pro');
     const divLocalAgoraPro = document.getElementById('video-local-agora-pro');
@@ -3142,7 +3327,7 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     const uidLiveComDadosPro = meuUID;
     const refLiveNovaUnica = db.collection('canais').doc(uidLiveComDadosPro).collection('lives').doc();
     const docLiveIdComDadosPro = refLiveNovaUnica.id;
-    const nomeCanalAgoraLiveComDadosPro = docLiveIdComDadosPro;
+    const nomeCanalAgoraLiveComDadosPro = 'Lobbz-Chat'; //docLiveIdComDadosPro;
     let urlThumbLivePro = '';
     if (arquivoThumbLivePro) {
       const refThumbPro = storage.ref('thumbs_lives/' + uidLiveComDadosPro + '/' + docLiveIdComDadosPro + '.jpg');
@@ -3181,13 +3366,89 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
     canalAgoraLiveAtualPro = null;
   }
 
-  async function encerrarLiveCameraPro() {
-    const uidEncerrarPro = meuUID;
-    const docIdEncerrarPro = canalLiveAtualPro;
+  let arquivoThumbLiveTelaPro = null;
+
+  function abrirConfigLiveTelaPro() {
+    document.getElementById('tela-config-live-tela-pro').style.display = 'flex';
+    document.getElementById('input-titulo-live-tela-pro').value = '';
+    document.getElementById('input-desc-live-tela-pro').value = '';
+    document.getElementById('contador-titulo-live-tela-pro').innerText = '0/100';
+    arquivoThumbLiveTelaPro = null;
+    document.getElementById('preview-thumb-live-tela-pro').style.display = 'none';
+    document.getElementById('placeholder-thumb-live-tela-pro').style.display = 'flex';
+  }
+
+  function fecharConfigLiveTelaPro() {
+    document.getElementById('tela-config-live-tela-pro').style.display = 'none';
+  }
+
+  function previewThumbLiveTelaPro(inputThumbTelaPro) {
+    const fileThumbTelaPro = inputThumbTelaPro.files[0];
+    if (!fileThumbTelaPro) return;
+    arquivoThumbLiveTelaPro = fileThumbTelaPro;
+    const readerThumbTelaPro = new FileReader();
+    readerThumbTelaPro.onload = (e) => {
+      const imgPreviewTelaPro = document.getElementById('preview-thumb-live-tela-pro');
+      imgPreviewTelaPro.src = e.target.result;
+      imgPreviewTelaPro.style.display = 'block';
+      document.getElementById('placeholder-thumb-live-tela-pro').style.display = 'none';
+    };
+    readerThumbTelaPro.readAsDataURL(fileThumbTelaPro);
+  }
+
+  document.getElementById('input-titulo-live-tela-pro').addEventListener('input', (e) => {
+    document.getElementById('contador-titulo-live-tela-pro').innerText = e.target.value.length + '/100';
+  });
+
+  async function iniciarLiveComDadosTelaPro() {
+    const tituloLiveComDadosTelaPro = document.getElementById('input-titulo-live-tela-pro').value.trim();
+    const descLiveComDadosTelaPro = document.getElementById('input-desc-live-tela-pro').value.trim();
+    const msgConfigLiveTelaPro = document.getElementById('msg-config-live-tela-pro');
+    if (!tituloLiveComDadosTelaPro) { msgConfigLiveTelaPro.style.display='block'; msgConfigLiveTelaPro.innerText='Digite o título da live'; return; }
+    msgConfigLiveTelaPro.style.display='none';
+    const uidLiveComDadosTelaPro = meuUID;
+    const refLiveNovaTelaUnica = db.collection('canais').doc(uidLiveComDadosTelaPro).collection('lives').doc();
+    const docLiveIdComDadosTelaPro = refLiveNovaTelaUnica.id;
+    const nomeCanalAgoraLiveComDadosTelaPro = 'Lobbz-Chat'; //docLiveIdComDadosTelaPro;
+    let urlThumbLiveTelaPro = '';
+    if (arquivoThumbLiveTelaPro) {
+      const refThumbTelaPro = storage.ref('thumbs_lives/' + uidLiveComDadosTelaPro + '/' + docLiveIdComDadosTelaPro + '.jpg');
+      await refThumbTelaPro.put(arquivoThumbLiveTelaPro);
+      urlThumbLiveTelaPro = await refThumbTelaPro.getDownloadURL();
+    }
+    await refLiveNovaTelaUnica.set({ titulo: tituloLiveComDadosTelaPro, descricao: descLiveComDadosTelaPro, thumbUrl: urlThumbLiveTelaPro, tipo: 'tela', canalAgora: nomeCanalAgoraLiveComDadosTelaPro, status: 'ao_vivo', donoUID: uidLiveComDadosTelaPro, criadoEm: firebase.firestore.FieldValue.serverTimestamp() });
+    canalLiveAtualPro = docLiveIdComDadosTelaPro;
+    canalAgoraLiveAtualPro = nomeCanalAgoraLiveComDadosTelaPro;
+    document.getElementById('tela-config-live-tela-pro').style.display = 'none';
+    document.getElementById('tela-live-tela-pro').style.display = 'flex';
+    document.getElementById('titulo-live-tela-pro').innerText = tituloLiveComDadosTelaPro;
+    await iniciarAgoraLiveTelaPro(nomeCanalAgoraLiveComDadosTelaPro);
+  }
+
+  async function iniciarAgoraLiveTelaPro(canalNomeLiveTelaPro) {
+    clienteAgoraRTCPro = AgoraRTC.createClient({ mode: 'live', codec: 'h264' });
+    await clienteAgoraRTCPro.setClientRole('host');
+    canalAgoraAtualPro = canalNomeLiveTelaPro;
+    await clienteAgoraRTCPro.join(appIdAgoraPro, canalNomeLiveTelaPro, tokenTempAgoraPro, null);
+    trilhaAudioAgoraPro = await AgoraRTC.createMicrophoneAudioTrack();
+    const resultadoTelaAgoraPro = await AgoraRTC.createScreenVideoTrack({ encoderConfig: "1080p_1", optimizationMode: "detail" }, "disable");
+    if(Array.isArray(resultadoTelaAgoraPro)){
+      trilhaTelaAgoraPro = resultadoTelaAgoraPro[0];
+    } else {
+      trilhaTelaAgoraPro = resultadoTelaAgoraPro;
+    }
+    trilhaTelaAgoraPro.on("track-ended", function(){ encerrarLiveTelaPro(); });
+    trilhaTelaAgoraPro.play('video-live-tela-pro');
+    await clienteAgoraRTCPro.publish([trilhaAudioAgoraPro, trilhaTelaAgoraPro]);
+  }
+
+  async function encerrarLiveTelaPro() {
+    const uidEncerrarTelaPro = meuUID;
+    const docIdEncerrarTelaPro = canalLiveAtualPro;
     await sairAgoraPro();
-    document.getElementById('tela-live-camera-pro').style.display = 'none';
-    if (uidEncerrarPro && docIdEncerrarPro) {
-      await db.collection('canais').doc(uidEncerrarPro).collection('lives').doc(docIdEncerrarPro).update({ status: 'encerrada', encerradaEm: firebase.firestore.FieldValue.serverTimestamp() });
+    document.getElementById('tela-live-tela-pro').style.display = 'none';
+    if (uidEncerrarTelaPro && docIdEncerrarTelaPro) {
+      await db.collection('canais').doc(uidEncerrarTelaPro).collection('lives').doc(docIdEncerrarTelaPro).update({ status: 'encerrada', encerradaEm: firebase.firestore.FieldValue.serverTimestamp() });
     }
     canalLiveAtualPro = null;
     canalAgoraLiveAtualPro = null;
@@ -3224,9 +3485,9 @@ async function iniciarAgoraPro(canalNomeAgoraPro, tipoAgoraPro) {
 
 
   //====================================
-  // VERIFICAÇÃO DE ATUALIZÇÃO DO APP
+  // VERIFICAÇÃO DE ATUALIZÇÃO DO APP - VERSAO
   //====================================
-  const versaoFixaIndexComparacaoUnica = "1.4.0";
+  const versaoFixaIndexComparacaoUnica = "1.5.0";
   function compararVersaoFixaIndexUnico(versaoInstaladaComparacaoUnica, versaoFirestoreComparacaoUnica){
     const partesInstaladaUnica = versaoInstaladaComparacaoUnica.split('.').map(Number);
     const partesFirestoreUnica = versaoFirestoreComparacaoUnica.split('.').map(Number);

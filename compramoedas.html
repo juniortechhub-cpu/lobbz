@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loja de Moedas - Lobbz</title>
+<link id="app-favicon" rel="icon" type="image/png" href="">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.header-loja{position:sticky;top:0;width:100%;max-width:480px;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#0F1117;z-index:10;border-bottom:1px solid rgba(255,255,255,0.05)}
+.btn-voltar-loja{width:36px;height:36px;border-radius:50%;background:#1E2230;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.saldo-topo-loja{display:flex;align-items:center;gap:6px;background:#1E2230;border:1px solid rgba(255,255,255,0.08);padding:6px 12px;border-radius:20px}
+.main-loja{width:100%;max-width:480px;padding:20px 16px 100px 16px;display:flex;flex-direction:column;gap:16px}
+.titulo-loja{font-size:22px;font-weight:700}
+.sub-loja{font-size:13px;color:#94A3B8;line-height:1.5}
+.grid-pacotes-loja{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.card-pacote-loja{background:#1E2230;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;position:relative;transition:transform 0.2s,border-color 0.2s}
+.card-pacote-loja:hover{transform:translateY(-2px);border-color:rgba(124,58,237,0.4)}
+.card-pacote-loja.popular-loja{border-color:#7C3AED;box-shadow:0 0 0 1px #7C3AED}
+.badge-popular-loja{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);color:#FFF;font-size:10px;font-weight:700;padding:4px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:0.5px}
+.icone-moeda-card-loja{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);display:flex;align-items:center;justify-content:center}
+.qtd-moedas-loja{font-size:18px;font-weight:700}
+.bonus-moedas-loja{font-size:11px;color:#22C55E;font-weight:600}
+.preco-moedas-loja{font-size:14px;font-weight:700;color:#FFF;margin-top:4px}
+.btn-comprar-loja{width:100%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);color:#FFF;border:none;padding:10px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:auto}
+</style>
+</head>
+<body>
+
+<div class="header-loja">
+  <button class="btn-voltar-loja" onclick="window.location.href='inicio.html'">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>
+  </button>
+  <div class="saldo-topo-loja">
+    <span id="icone-saldo-loja" style="display:flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M9 12c.6 1 2 1 3 0c1-1 0-2-1-2s-2-1-1-2c.6-1 2-1 3 0"></path></svg></span>
+    <span id="texto-saldo-loja" style="font-size:13px;font-weight:700">0</span>
+  </div>
+</div>
+
+<div class="main-loja">
+  <div>
+    <h1 class="titulo-loja">Loja de Moedas</h1>
+    <p class="sub-loja">Compre moedas para enviar presentes e apoiar seus streamings favoritos durante as lives.</p>
+  </div>
+
+  <div class="grid-pacotes-loja">
+    <div class="card-pacote-loja" onclick="comprarPacoteMoedasUnico(50,5)">
+      <div class="icone-moeda-card-loja"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M9 12c.6 1 2 1 3 0c1-1 0-2-1-2s-2-1-1-2c.6-1 2-1 3 0"></path></svg></div>
+      <span class="qtd-moedas-loja">50</span>
+      <span class="bonus-moedas-loja" style="visibility:hidden">+0 bônus</span>
+      <span class="preco-moedas-loja">R$ 5,00</span>
+      <button class="btn-comprar-loja"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>Comprar</button>
+    </div>
+
+    <div class="card-pacote-loja" onclick="comprarPacoteMoedasUnico(110,10)">
+      <div class="icone-moeda-card-loja"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M9 12c.6 1 2 1 3 0c1-1 0-2-1-2s-2-1-1-2c.6-1 2-1 3 0"></path></svg></div>
+      <span class="qtd-moedas-loja">110</span>
+      <span class="bonus-moedas-loja">+10 bônus</span>
+      <span class="preco-moedas-loja">R$ 10,00</span>
+      <button class="btn-comprar-loja"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>Comprar</button>
+    </div>
+
+    <div class="card-pacote-loja popular-loja" onclick="comprarPacoteMoedasUnico(260,20)">
+      <span class="badge-popular-loja">Mais popular</span>
+      <div class="icone-moeda-card-loja"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M9 12c.6 1 2 1 3 0c1-1 0-2-1-2s-2-1-1-2c.6-1 2-1 3 0"></path></svg></div>
+      <span class="qtd-moedas-loja">260</span>
+      <span class="bonus-moedas-loja">+60 bônus</span>
+      <span class="preco-moedas-loja">R$ 20,00</span>
+      <button class="btn-comprar-loja"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>Comprar</button>
+    </div>
+
+    <div class="card-pacote-loja" onclick="comprarPacoteMoedasUnico(700,50)">
+      <div class="icone-moeda-card-loja"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M9 12c.6 1 2 1 3 0c1-1 0-2-1-2s-2-1-1-2c.6-1 2-1 3 0"></path></svg></div>
+      <span class="qtd-moedas-loja">700</span>
+      <span class="bonus-moedas-loja">+200 bônus</span>
+      <span class="preco-moedas-loja">R$ 50,00</span>
+      <button class="btn-comprar-loja"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>Comprar</button>
+    </div>
+
+    <div class="card-pacote-loja" onclick="comprarPacoteMoedasUnico(1500,100)">
+      <div class="icone-moeda-card-loja"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M9 12c.6 1 2 1 3 0c1-1 0-2-1-2s-2-1-1-2c.6-1 2-1 3 0"></path></svg></div>
+      <span class="qtd-moedas-loja">1.500</span>
+      <span class="bonus-moedas-loja">+500 bônus</span>
+      <span class="preco-moedas-loja">R$ 100,00</span>
+      <button class="btn-comprar-loja"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>Comprar</button>
+    </div>
+
+    <div class="card-pacote-loja" onclick="comprarPacoteMoedasUnico(3200,200)">
+      <div class="icone-moeda-card-loja"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M9 12c.6 1 2 1 3 0c1-1 0-2-1-2s-2-1-1-2c.6-1 2-1 3 0"></path></svg></div>
+      <span class="qtd-moedas-loja">3.200</span>
+      <span class="bonus-moedas-loja">+1.200 bônus</span>
+      <span class="preco-moedas-loja">R$ 200,00</span>
+      <button class="btn-comprar-loja"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>Comprar</button>
+    </div>
+
+  </div>
+
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfigCompraUnico = { apiKey: "AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U", authDomain: "lobbz-a2e5b.firebaseapp.com", projectId: "lobbz-a2e5b", storageBucket: "lobbz-a2e5b.firebasestorage.app", messagingSenderId: "540689991558", appId: "1:540689991558:web:c4ccbe7ac3d53de0d80e07" };
+firebase.initializeApp(firebaseConfigCompraUnico);
+const dbCompraMoedasUnico = firebase.firestore();
+
+function formatarSaldoComPontoCompraUnico(valorNumericoCompraUnico){
+  const numeroConvertidoCompraUnico = Number(valorNumericoCompraUnico);
+  const valorFormatadoCompraUnico = numeroConvertidoCompraUnico.toLocaleString('pt-BR');
+  return valorFormatadoCompraUnico;
+}
+
+function buscarSaldoMoedasUsuarioCompraUnico(uidBuscarSaldoCompraUnico){
+  const refUsuarioSaldoCompraUnico = dbCompraMoedasUnico.collection('usuarios').doc(uidBuscarSaldoCompraUnico);
+  refUsuarioSaldoCompraUnico.onSnapshot(function(docSaldoCompraUnico){
+    if(docSaldoCompraUnico.exists){
+      const dadosUsuarioSaldoCompraUnico = docSaldoCompraUnico.data();
+      const valorSaldoMoedasCompraUnico = dadosUsuarioSaldoCompraUnico.saldoMoedas;
+      const elementoTextoSaldoCompraUnico = document.getElementById('texto-saldo-loja');
+      if(elementoTextoSaldoCompraUnico){
+        const valorFormatadoSaldoCompraUnico = formatarSaldoComPontoCompraUnico(valorSaldoMoedasCompraUnico);
+        elementoTextoSaldoCompraUnico.innerText = valorFormatadoSaldoCompraUnico;
+      }
+    }
+  });
+}
+
+async function comprarPacoteMoedasUnico(quantidadeCompraMoedasUnico, precoCompraMoedasUnico){
+  const usuarioAtualCompraUnico = firebase.auth().currentUser;
+  if(!usuarioAtualCompraUnico){ window.location.href='login.html'; return; }
+  const uidCompraMoedasUnico = usuarioAtualCompraUnico.uid;
+  const refUsuarioCompraMoedasUnico = dbCompraMoedasUnico.collection('usuarios').doc(uidCompraMoedasUnico);
+  await refUsuarioCompraMoedasUnico.set({ saldoMoedas: firebase.firestore.FieldValue.increment(quantidadeCompraMoedasUnico) }, { merge: true });
+  const refHistoricoCompraMoedasUnico = dbCompraMoedasUnico.collection('usuarios').doc(uidCompraMoedasUnico).collection('comprasMoedas').doc();
+  await refHistoricoCompraMoedasUnico.set({ quantidade: quantidadeCompraMoedasUnico, preco: precoCompraMoedasUnico, criadoEm: firebase.firestore.FieldValue.serverTimestamp() });
+  alert('Você comprou ' + formatarSaldoComPontoCompraUnico(quantidadeCompraMoedasUnico) + ' moedas!');
+}
+
+firebase.auth().onAuthStateChanged(function(userAuthCompraUnico){
+  if(userAuthCompraUnico){
+    buscarSaldoMoedasUsuarioCompraUnico(userAuthCompraUnico.uid);
+  } else {
+    window.location.href='login.html';
+  }
+});
+
+
+
+
+</script>
+<script type="module" src="appinfo.js"></script>
+</body>
+</html>
