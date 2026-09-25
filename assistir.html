@@ -16,7 +16,7 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
 .titulo-assistir{font-size:18px;font-weight:700;line-height:1.3}
 .canal-assistir{display:flex;align-items:center;gap:12px;padding:12px;background:#1E2230;border:1px solid rgba(255,255,255,0.08);border-radius:16px}
 .avatar-assistir{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;flex-shrink:0}
-.desc-assistir{font-size:13px;color:#94A3B8;background:#1E2230;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:12px;white-space:pre-wrap}
+.desc-assistir{font-size:13px;color:#94A3B8;background:#1E2230;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:1px 15px 0px 15px;white-space:pre-wrap}
 .btn-voltar-assistir{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer}
 
 
@@ -42,6 +42,10 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
+<script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
 </head>
 <body>
 
@@ -58,6 +62,7 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
   </div>
   <div id="badge-status-assistir" class="badge-assistir" style="display:none;"></div>
+  <div id="video-assistir-agora-pro" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#000;display:none;"></div>
 </div>
 
 <div class="info-assistir">
@@ -78,10 +83,6 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
   </div>
 
   <div class="acoes-assistir-unico">
-    <button class="btn-acao-assistir-unico" onclick="curtirVideoAssistirUnico()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-      <span id="contador-like-assistir-unico">Curtir</span>
-    </button>
     <button class="btn-acao-assistir-unico" onclick="compartilharVideoAssistirUnico()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
       Compartilhar
@@ -92,11 +93,35 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
     </button>
   </div>
 
-  <div id="descricao-assistir-unico" class="desc-assistir">Descrição...</div>
+    <!-- DESCRIÇÃO DO VÍDEO -->
+    <div id="descricao-assistir-unico" class="desc-assistir" onclick="alternarDescricaoAssistirUnico()">
+       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:-6px;">
+        <span style="font-weight:700;color:#FFF;font-size:13px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Descrição</span>
+        <svg id="seta-descricao-assistir-unico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div id="texto-descricao-assistir-unico" style="margin-top:4px;white-space:pre-wrap;color:#94A3B8;font-size:13px;display:block;">Descrição...</div>
+    </div>
+
+        <!-- DIGITAR COMENTÁRIOS -->
+    <div id="card-comentarios-assistir-unico" class="desc-assistir" style="margin-top:12px;cursor:default;padding:12px;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:700;color:#FFF;font-size:13px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Comentários <span id="qtd-comentarios-assistir-unico" style="color:#94A3B8;font-weight:600;">0</span></span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:10px;">
+        <div id="avatar-comentar-assistir-unico" style="width:32px;height:32px;border-radius:50%;background:#0F1117;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#FFF;font-weight:700;font-size:12px;"></div>
+        <input id="input-comentario-assistir-unico" placeholder="Escreva um comentário..." style="flex:1;background:#0F1117;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:8px 14px;color:#FFF;font-size:13px;outline:none;" onkeypress="if(event.key==='Enter'){enviarComentarioRealtimeAssistirUnico()}">
+        <button onclick="enviarComentarioRealtimeAssistirUnico()" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0F1117" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+      </div>
+        <div id="lista-comentarios-assistir-unico" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 0px;"></div>
+    </div>
 
 </div>
 
 <script>
+    const appIdAgoraAssistirUnico = '8b963b94108946ccb96fdc3934bdfed2';
+    const tokenAgoraAssistirUnico = '007eJxTYHg8S3/m7gO/fHvrDjMXLrazu3d4Q/ObWHeGhFd/A40juaQUGCySLM2MkyxNDA0sLE3MkpOB3LSUZGNLY5OklLTUFKObrVuyGgIZGUrEAhkZGSAQxOdi8MlPSqrSdc5ILGFgAABelyIK';
+    let clienteAgoraAssistirUnico = null;
+
   const firebaseConfigAssistirUnico = {
     apiKey: "AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U",
     authDomain: "lobbz-a2e5b.firebaseapp.com",
@@ -108,23 +133,139 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
   };
   const appAssistirUnico = firebase.initializeApp(firebaseConfigAssistirUnico);
   const dbAssistirUnico = firebase.firestore();
+  const authAssistirUnico = firebase.auth();
 
   function voltarInicioAssistirUnico(){
     window.location.href = 'inicio.html';
   }
 
     let estadoSeguindoAssistirUnico = false;
-  function seguirCanalAssistirUnico(){
-    const botaoSeguirAssistirUnico = document.getElementById('btn-seguir-assistir-unico');
-    estadoSeguindoAssistirUnico = !estadoSeguindoAssistirUnico;
+    let uidDonoGlobalAssistirUnico = null;
+async function seguirCanalAssistirUnico(){
+  const botaoSeguirAssistirUnico = document.getElementById('btn-seguir-assistir-unico');
+  const usuarioLogadoSeguirUnico = authAssistirUnico.currentUser;
+  if(!usuarioLogadoSeguirUnico){ window.location.href = 'login.html'; return; }
+  const uidLogadoSeguirUnico = usuarioLogadoSeguirUnico.uid;
+  const uidDonoSeguirUnico = uidDonoGlobalAssistirUnico;
+  if(!uidDonoSeguirUnico){ alert('Dono não carregado ainda'); return; }
+  if(uidLogadoSeguirUnico === uidDonoSeguirUnico){ alert('Não pode seguir seu próprio canal'); return; }
+  try{
+    botaoSeguirAssistirUnico.disabled = true;
+    const refSeguidorDocUnico = dbAssistirUnico.collection('canais').doc(uidDonoSeguirUnico).collection('seguidores').doc(uidLogadoSeguirUnico);
+    const refCanalContadorUnico = dbAssistirUnico.collection('canais').doc(uidDonoSeguirUnico);
     if(estadoSeguindoAssistirUnico){
-      botaoSeguirAssistirUnico.classList.add('seguindo-assistir-unico');
-      botaoSeguirAssistirUnico.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M20 6L9 17l-5-5"></path></svg> Seguindo';
+      await refSeguidorDocUnico.delete();
+      await refCanalContadorUnico.set({ inscritos: firebase.firestore.FieldValue.increment(-1) }, { merge: true });
+      estadoSeguindoAssistirUnico = false;
     } else {
-      botaoSeguirAssistirUnico.classList.remove('seguindo-assistir-unico');
-      botaoSeguirAssistirUnico.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg> Seguir';
+      await refSeguidorDocUnico.set({ uid: uidLogadoSeguirUnico, seguidoEm: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      await refCanalContadorUnico.set({ inscritos: firebase.firestore.FieldValue.increment(1) }, { merge: true });
+      estadoSeguindoAssistirUnico = true;
     }
+    renderBotaoSeguirLogadoAssistirUnico();
+  } catch(erroSeguirUnico){
+    alert('Erro seguir: ' + erroSeguirUnico.message);
+    console.log('Erro seguir', erroSeguirUnico);
+  } finally {
+    botaoSeguirAssistirUnico.disabled = false;
   }
+}
+
+  //==========================================
+  // FUNÇÃO DE HABILITAR O BOTÃO SEGUIR APENAS SE TIVER LOGADO
+  //==========================================
+const svgIconeSeguirBrancoAssistirUnico = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>';
+const svgIconeSeguindoCheckAssistirUnico = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M20 6L9 17l-5-5"></path></svg>';
+const svgIconeFazerLoginBrancoAssistirUnico = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>';
+
+function renderBotaoFazerLoginDeslogadoAssistirUnico(){
+  const botaoSeguirRenderLoginAssistirUnico = document.getElementById('btn-seguir-assistir-unico');
+  botaoSeguirRenderLoginAssistirUnico.classList.remove('seguindo-assistir-unico');
+  botaoSeguirRenderLoginAssistirUnico.innerHTML = svgIconeFazerLoginBrancoAssistirUnico + ' Fazer Login';
+  botaoSeguirRenderLoginAssistirUnico.onclick = function(){ window.location.href = 'login.html'; };
+}
+
+function renderBotaoSeguirLogadoAssistirUnico(){
+  const botaoSeguirRenderLogadoAssistirUnico = document.getElementById('btn-seguir-assistir-unico');
+  if(estadoSeguindoAssistirUnico){
+    botaoSeguirRenderLogadoAssistirUnico.classList.add('seguindo-assistir-unico');
+    botaoSeguirRenderLogadoAssistirUnico.innerHTML = svgIconeSeguindoCheckAssistirUnico + ' Seguindo';
+  } else {
+    botaoSeguirRenderLogadoAssistirUnico.classList.remove('seguindo-assistir-unico');
+    botaoSeguirRenderLogadoAssistirUnico.innerHTML = svgIconeSeguirBrancoAssistirUnico + ' Seguir';
+  }
+  botaoSeguirRenderLogadoAssistirUnico.onclick = seguirCanalAssistirUnico;
+}
+
+async function verificarSeSegueAssistirUnico(uidLogadoVerifUnico, uidDonoVerifUnico){
+  const refVerifSeguirUnico = dbAssistirUnico.collection('canais').doc(uidDonoVerifUnico).collection('seguidores').doc(uidLogadoVerifUnico);
+  const docVerifSeguirUnico = await refVerifSeguirUnico.get();
+  estadoSeguindoAssistirUnico = docVerifSeguirUnico.exists;
+  renderBotaoSeguirLogadoAssistirUnico();
+}
+
+function gerenciarEstadoAutenticacaoSeguirAssistirUnico(){
+  authAssistirUnico.onAuthStateChanged(async function(usuarioLogadoAssistirUnico){
+    const botaoSeguirOcultarProprioUnico = document.getElementById('btn-seguir-assistir-unico');
+    const avatarComentarUnico = document.getElementById('avatar-comentar-assistir-unico');
+    if(usuarioLogadoAssistirUnico){
+      const fotoAuthUnico = usuarioLogadoAssistirUnico.photoURL;
+      const nomeAuthUnico = usuarioLogadoAssistirUnico.displayName;
+      let inicialAuthUnico = 'U';
+      if(nomeAuthUnico){
+        inicialAuthUnico = nomeAuthUnico.charAt(0).toUpperCase();
+      }
+      if(fotoAuthUnico){
+        avatarComentarUnico.innerHTML = '<img src="' + fotoAuthUnico + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      } else {
+        try{
+          const storageFotoUnico = firebase.storage();
+          const caminhoFotoUnico = 'usuarios/' + usuarioLogadoAssistirUnico.uid;
+          console.log('Buscando foto Storage em:', caminhoFotoUnico);
+          const pastaUsuarioFotoUnico = storageFotoUnico.ref(caminhoFotoUnico);
+          const listaArquivosFotoUnico = await pastaUsuarioFotoUnico.listAll();
+          console.log('Arquivos achados:', listaArquivosFotoUnico.items.length);
+          if(listaArquivosFotoUnico.items.length > 0){
+            const primeiraFotoUnico = listaArquivosFotoUnico.items[0];
+            const urlFotoStorageUnico = await primeiraFotoUnico.getDownloadURL();
+            console.log('URL foto:', urlFotoStorageUnico);
+            avatarComentarUnico.innerHTML = '<img src="' + urlFotoStorageUnico + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+          } else {
+            avatarComentarUnico.innerText = inicialAuthUnico;
+            avatarComentarUnico.style.display = 'flex';
+            avatarComentarUnico.style.alignItems = 'center';
+            avatarComentarUnico.style.justifyContent = 'center';
+            avatarComentarUnico.style.color = '#FFF';
+            avatarComentarUnico.style.fontWeight = '700';
+          }
+        }catch(erroFotoUnico){
+          console.log('Erro Storage avatar:', erroFotoUnico);
+          avatarComentarUnico.innerText = inicialAuthUnico;
+          avatarComentarUnico.style.display = 'flex';
+          avatarComentarUnico.style.alignItems = 'center';
+          avatarComentarUnico.style.justifyContent = 'center';
+          avatarComentarUnico.style.color = '#FFF';
+          avatarComentarUnico.style.fontWeight = '700';
+        }
+      }
+      if(uidDonoGlobalAssistirUnico && usuarioLogadoAssistirUnico.uid === uidDonoGlobalAssistirUnico){
+        if(botaoSeguirOcultarProprioUnico){ botaoSeguirOcultarProprioUnico.style.display = 'none'; }
+        return;
+      }
+      if(botaoSeguirOcultarProprioUnico){ botaoSeguirOcultarProprioUnico.style.display = 'flex'; }
+      if(uidDonoGlobalAssistirUnico){
+        await verificarSeSegueAssistirUnico(usuarioLogadoAssistirUnico.uid, uidDonoGlobalAssistirUnico);
+      } else {
+        renderBotaoSeguirLogadoAssistirUnico();
+      }
+    } else {
+      if(botaoSeguirOcultarProprioUnico){ botaoSeguirOcultarProprioUnico.style.display = 'flex'; }
+      renderBotaoFazerLoginDeslogadoAssistirUnico();
+    }
+  });
+}
+
+
   function compartilharVideoAssistirUnico(){
     const urlCompartilharAssistirUnico = window.location.href;
     if(navigator.share){
@@ -142,10 +283,73 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
     alert('Vídeo salvo');
   }
 
+  //=============================================
+  //   FUNÇÃO DE CONTAGEM DE SEGUIDORES
+  //=============================================
+    function formatarSeguidoresAssistirUnico(qtdSeguidoresFormatUnico){
+    const qtdFormatUnico = Number(qtdSeguidoresFormatUnico) || 0;
+    if(qtdFormatUnico === 0){ return '0 seguidores'; }
+    if(qtdFormatUnico === 1){ return '1 seguidor'; }
+    if(qtdFormatUnico < 1000){ return qtdFormatUnico + ' seguidores'; }
+    if(qtdFormatUnico < 1000000){
+      const milFormatUnico = (qtdFormatUnico / 1000).toFixed(1).replace('.0','');
+      return milFormatUnico + ' mil seguidores';
+    }
+    const miFormatUnico = (qtdFormatUnico / 1000000).toFixed(1).replace('.0','');
+    return miFormatUnico + ' mi seguidores';
+  }
+  function escutarInscritosAssistirUnico(uidDonoEscutaUnico){
+    const handleElementoEscutaUnico = document.getElementById('handle-canal-assistir-unico');
+    dbAssistirUnico.collection('canais').doc(uidDonoEscutaUnico).onSnapshot(function(docEscutaUnico){
+      if(docEscutaUnico.exists){
+        const dadosEscutaUnico = docEscutaUnico.data();
+        const inscritosEscutaUnico = dadosEscutaUnico.inscritos || 0;
+        if(handleElementoEscutaUnico){
+          handleElementoEscutaUnico.innerText = formatarSeguidoresAssistirUnico(inscritosEscutaUnico);
+        }
+      }
+    });
+  }
+
+  //========================================
+  //   FUNÇÃO DE CALCULAR A DATA QUE O VÍDEO FOI POSTADO
+  //========================================
+    function calcularTempoPostagemYouTubeAssistirUnico(timestampCriadoEmAssistirUnico){
+    let dataCriacaoAssistirUnico;
+    if(!timestampCriadoEmAssistirUnico){ return 'hoje'; }
+    if(timestampCriadoEmAssistirUnico.toDate){ dataCriacaoAssistirUnico = timestampCriadoEmAssistirUnico.toDate(); }
+    else if(timestampCriadoEmAssistirUnico.seconds){ dataCriacaoAssistirUnico = new Date(timestampCriadoEmAssistirUnico.seconds * 1000); }
+    else { dataCriacaoAssistirUnico = new Date(timestampCriadoEmAssistirUnico); }
+    const agoraAssistirUnico = new Date();
+    const diffMsAssistirUnico = agoraAssistirUnico - dataCriacaoAssistirUnico;
+    const diffDiasAssistirUnico = Math.floor(diffMsAssistirUnico / (1000 * 60 * 60 * 24));
+    if(diffDiasAssistirUnico <= 0){ return 'hoje'; }
+    if(diffDiasAssistirUnico === 1){ return 'ontem'; }
+    if(diffDiasAssistirUnico < 30){ return `há ${diffDiasAssistirUnico} dias`; }
+    if(diffDiasAssistirUnico < 60){ return 'há 1 mês'; }
+    if(diffDiasAssistirUnico < 365){
+      const mesesAssistirUnico = Math.floor(diffDiasAssistirUnico / 30);
+      return `há ${mesesAssistirUnico} meses`;
+    }
+    const anosAssistirUnico = Math.floor(diffDiasAssistirUnico / 365);
+    if(anosAssistirUnico === 1){ return 'há 1 ano'; }
+    return `há ${anosAssistirUnico} anos`;
+  }
+
   async function carregarVideoAssistirUnico(){
     const paramsAssistirUnico = new URLSearchParams(window.location.search);
     const idLiveAssistirUnico = paramsAssistirUnico.get('live');
     const uidDonoAssistirUnico = paramsAssistirUnico.get('uid');
+    uidDonoGlobalAssistirUnico = uidDonoAssistirUnico;
+    const botaoSeguirProprioPosSetUnico = document.getElementById('btn-seguir-assistir-unico');
+    const usuarioAtualProprioCheckUnico = authAssistirUnico.currentUser;
+    if(usuarioAtualProprioCheckUnico && usuarioAtualProprioCheckUnico.uid === uidDonoGlobalAssistirUnico){
+      if(botaoSeguirProprioPosSetUnico){ botaoSeguirProprioPosSetUnico.style.display = 'none'; }
+    }
+    const usuarioAtualVerifPosSetUnico = authAssistirUnico.currentUser;
+    if(usuarioAtualVerifPosSetUnico && usuarioAtualVerifPosSetUnico.uid !== uidDonoGlobalAssistirUnico){
+      verificarSeSegueAssistirUnico(usuarioAtualVerifPosSetUnico.uid, uidDonoGlobalAssistirUnico);
+    }
     const tituloElementoAssistirUnico = document.getElementById('titulo-assistir-unico');
     const thumbElementoAssistirUnico = document.getElementById('thumb-assistir-unico');
     const placeholderElementoAssistirUnico = document.getElementById('placeholder-assistir-unico');
@@ -153,6 +357,8 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
     const nomeCanalElementoAssistirUnico = document.getElementById('nome-canal-assistir-unico');
     const avatarCanalElementoAssistirUnico = document.getElementById('avatar-canal-assistir-unico');
     const descElementoAssistirUnico = document.getElementById('descricao-assistir-unico');
+    const textoDescricaoElementoAssistirUnico = document.getElementById('texto-descricao-assistir-unico');
+    const metaViewsElementoAssistirUnico = document.getElementById('meta-views-assistir-unico');
     if(!idLiveAssistirUnico || !uidDonoAssistirUnico){ tituloElementoAssistirUnico.innerText = 'Vídeo não encontrado'; return; }
     try{
       const docLiveAssistirUnico = await dbAssistirUnico.collection('canais').doc(uidDonoAssistirUnico).collection('lives').doc(idLiveAssistirUnico).get();
@@ -163,8 +369,12 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
       const thumbLiveAssistirUnico = dadosLiveAssistirUnico.thumbUrl || '';
       const statusLiveAssistirUnico = dadosLiveAssistirUnico.status || 'encerrada';
       tituloElementoAssistirUnico.innerText = tituloLiveAssistirUnico;
-      descElementoAssistirUnico.innerText = descricaoLiveAssistirUnico;
-//      if(metaViewsElementoAssistirUnico){ metaViewsElementoAssistirUnico.innerHTML = (dadosLiveAssistirUnico.views || 0) + ' visualizações <span></span> ' + (dadosLiveAssistirUnico.data || 'hoje'); }
+      textoDescricaoElementoAssistirUnico.innerText = descricaoLiveAssistirUnico;
+      const tempoPostagemAssistirUnico = calcularTempoPostagemYouTubeAssistirUnico(dadosLiveAssistirUnico.criadoEm);
+      if(metaViewsElementoAssistirUnico){
+        const viewsQtdAssistirUnico = dadosLiveAssistirUnico.views || 0;
+        metaViewsElementoAssistirUnico.innerHTML = viewsQtdAssistirUnico + ' visualizações <span></span> ' + tempoPostagemAssistirUnico;
+      }
       if(thumbLiveAssistirUnico){
         thumbElementoAssistirUnico.src = thumbLiveAssistirUnico;
         thumbElementoAssistirUnico.style.display = 'block';
@@ -173,6 +383,8 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
       if(statusLiveAssistirUnico === 'ao_vivo'){
         badgeElementoAssistirUnico.innerHTML = '<div style="width:6px;height:6px;background:#FFF;border-radius:50%;"></div> AO VIVO';
         badgeElementoAssistirUnico.style.display = 'flex';
+        const canalAgoraAssistirValorUnico = dadosLiveAssistirUnico.canalAgora || idLiveAssistirUnico;
+        iniciarViewerAgoraAssistirUnico(canalAgoraAssistirValorUnico);
       } else {
         badgeElementoAssistirUnico.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"></rect><polygon points="10 8 16 12 10 16 10 8"></polygon></svg> VÍDEO';
         badgeElementoAssistirUnico.style.display = 'flex';
@@ -183,22 +395,208 @@ body{background:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;di
         const dadosCanalAssistirUnico = docCanalAssistirUnico.data();
         const nomeCanalAssistirValorUnico = dadosCanalAssistirUnico.nomeCanal || 'Canal';
         const fotoCanalAssistirValorUnico = dadosCanalAssistirUnico.fotoURL || '';
-        const handleCanalAssistirValorUnico = dadosCanalAssistirUnico.handle || '@' + nomeCanalAssistirValorUnico.toLowerCase();
+        const inscritosCanalValorUnico = dadosCanalAssistirUnico.inscritos || 0;
         nomeCanalElementoAssistirUnico.innerText = nomeCanalAssistirValorUnico;
-        document.getElementById('handle-canal-assistir-unico').innerText = handleCanalAssistirValorUnico;
+        document.getElementById('handle-canal-assistir-unico').innerText = formatarSeguidoresAssistirUnico(inscritosCanalValorUnico);
+        escutarInscritosAssistirUnico(uidDonoAssistirUnico);
         if(fotoCanalAssistirValorUnico){
           avatarCanalElementoAssistirUnico.innerHTML = '<img src="' + fotoCanalAssistirValorUnico + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
         } else {
           avatarCanalElementoAssistirUnico.innerText = nomeCanalAssistirValorUnico.charAt(0).toUpperCase();
         }
-      }
+        iniciarComentariosRealtimeAssistirUnico(idLiveAssistirUnico);
+        }
     }catch(erroAssistirUnico){
       tituloElementoAssistirUnico.innerText = 'Erro ao carregar vídeo';
     }
   }
 
+  //===========================================
+  //   FUNÇÃO DE EXPANDIR E RECOLHER DESCRIÇÃO DO VIDEO
+  //===========================================
+    function alternarDescricaoAssistirUnico(){
+    const textoDescricaoAlternarUnico = document.getElementById('texto-descricao-assistir-unico');
+    const setaDescricaoAlternarUnico = document.getElementById('seta-descricao-assistir-unico');
+    const estaAbertaAlternarUnico = textoDescricaoAlternarUnico.style.display === 'block';
+    if(estaAbertaAlternarUnico){
+      textoDescricaoAlternarUnico.style.display = 'none';
+      setaDescricaoAlternarUnico.style.transform = 'rotate(0deg)';
+    } else {
+      textoDescricaoAlternarUnico.style.display = 'block';
+      setaDescricaoAlternarUnico.style.transform = 'rotate(180deg)';
+    }
+  }
+
+  //===================================
+  //   FUNÇÃO DE MOSTRAR HORARIO DOS COMENTARIOS
+  //===================================
+    function formatarTempoRelativoComentarioUnico(timestampComentarioUnico){
+    if(!timestampComentarioUnico) return 'agora';
+    const agoraTempoUnico = Date.now();
+    const diferencaTempoUnico = agoraTempoUnico - timestampComentarioUnico;
+    const segundosTempoUnico = Math.floor(diferencaTempoUnico / 1000);
+    if(segundosTempoUnico < 60) return 'agora';
+    const minutosTempoUnico = Math.floor(segundosTempoUnico / 60);
+    if(minutosTempoUnico < 60) return minutosTempoUnico + 'm';
+    const horasTempoUnico = Math.floor(minutosTempoUnico / 60);
+    if(horasTempoUnico < 24) return horasTempoUnico + 'h';
+    const diasTempoUnico = Math.floor(horasTempoUnico / 24);
+    return diasTempoUnico + 'd';
+  }
+
+
+  //=====================================================
+  //   FUNÇÃO DE ESCREVER COMENTÁRIOS 
+  //=====================================================
+    function iniciarComentariosRealtimeAssistirUnico(idLiveComentarioUnico){
+      const databaseComentarioUnico = firebase.database();
+      const refComentariosUnico = databaseComentarioUnico.ref('live_chat/' + idLiveComentarioUnico + '/comentarios');
+      const listaComentariosUnico = document.getElementById('lista-comentarios-assistir-unico');
+      const qtdComentariosUnico = document.getElementById('qtd-comentarios-assistir-unico');
+      let contadorComentariosUnico = 0;
+      refComentariosUnico.limitToLast(50).on('child_added', (snapshotComentarioUnico) => {
+        const dadosComentarioUnico = snapshotComentarioUnico.val();
+        if(!dadosComentarioUnico) return;
+        const nomeComentarioUnico = dadosComentarioUnico.nome;
+        const fotoComentarioUnico = dadosComentarioUnico.foto;
+        let textoComentarioUnico = dadosComentarioUnico.texto;
+         const tempoCriadoComentarioUnico = dadosComentarioUnico.criadoEm;
+        const textoTempoComentarioUnico = formatarTempoRelativoComentarioUnico(tempoCriadoComentarioUnico);
+         if(!textoComentarioUnico){
+          textoComentarioUnico = '';
+        }
+        let inicialComentarioUnico = 'U';
+        if(nomeComentarioUnico){
+          inicialComentarioUnico = nomeComentarioUnico.charAt(0).toUpperCase();
+        }
+        let avatarHtmlComentarioUnico = '<div style="width:32px;height:32px;border-radius:50%;background:#0F1117;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#FFF;">' + inicialComentarioUnico + '</div>';
+        if(fotoComentarioUnico){
+          avatarHtmlComentarioUnico = '<div style="width:32px;height:32px;border-radius:50%;background:#0F1117;flex-shrink:0;overflow:hidden;"><img src="' + fotoComentarioUnico + '" style="width:100%;height:100%;object-fit:cover;"></div>';
+        }
+        let nomeHtmlComentarioUnico = '';
+        if(nomeComentarioUnico){
+          nomeHtmlComentarioUnico = '<span style="font-weight:700;color:#FFF;font-size:13px;">' + nomeComentarioUnico + '</span>';
+        }
+        const itemComentarioUnico = document.createElement('div');
+        itemComentarioUnico.style.display = 'flex';
+        itemComentarioUnico.style.gap = '8px';
+        itemComentarioUnico.style.alignItems = 'flex-start';
+        itemComentarioUnico.innerHTML = avatarHtmlComentarioUnico + '<div style="flex:1;"><div style="display:flex;gap:6px;align-items:center;">' + nomeHtmlComentarioUnico + '<span style="font-size:11px;color:#94A3B8;">' + textoTempoComentarioUnico + '</span></div><div style="color:#94A3B8;font-size:13px;margin-top:2px;white-space:pre-wrap;">' + textoComentarioUnico + '</div></div>';
+        listaComentariosUnico.insertBefore(itemComentarioUnico, listaComentariosUnico.firstChild);
+        listaComentariosUnico.scrollTop = 0;
+        contadorComentariosUnico++;
+        qtdComentariosUnico.innerText = contadorComentariosUnico;
+      });
+    }
+
+  async function enviarComentarioRealtimeAssistirUnico(){
+    const inputComentarioEnviarUnico = document.getElementById('input-comentario-assistir-unico');
+    const textoComentarioEnviarUnico = inputComentarioEnviarUnico.value.trim();
+    if(!textoComentarioEnviarUnico) return;
+    const usuarioAtualComentarioEnviarUnico = authAssistirUnico.currentUser;
+    if(!usuarioAtualComentarioEnviarUnico) return;
+    const urlParamsComentarioEnviarUnico = new URLSearchParams(window.location.search);
+    const idLiveComentarioEnviarUnico = urlParamsComentarioEnviarUnico.get('live');
+    const databaseEnviarUnico = firebase.database();
+    const refEnviarUnico = databaseEnviarUnico.ref('live_chat/' + idLiveComentarioEnviarUnico + '/comentarios');
+    let nomeEnviarUnico = usuarioAtualComentarioEnviarUnico.displayName;
+    if(!nomeEnviarUnico){
+      try{
+        const docNomeUsuarioUnico = await dbAssistirUnico.collection('usuarios').doc(usuarioAtualComentarioEnviarUnico.uid).get();
+        if(docNomeUsuarioUnico.exists){
+          const dadosNomeUsuarioUnico = docNomeUsuarioUnico.data();
+          nomeEnviarUnico = dadosNomeUsuarioUnico.nomeUsuario;
+          if(!nomeEnviarUnico){
+            nomeEnviarUnico = dadosNomeUsuarioUnico.nome;
+          }
+          if(!nomeEnviarUnico){
+            nomeEnviarUnico = dadosNomeUsuarioUnico.nomeCanal;
+          }
+          if(!nomeEnviarUnico){
+            nomeEnviarUnico = dadosNomeUsuarioUnico.name;
+          }
+        }
+      }catch(erroNomeUnico){
+        console.log('Erro buscar nome usuarios:', erroNomeUnico);
+      }
+    }
+    if(!nomeEnviarUnico){
+      try{
+        const docNomeUsuarioSingularUnico = await dbAssistirUnico.collection('usuario').doc(usuarioAtualComentarioEnviarUnico.uid).get();
+        if(docNomeUsuarioSingularUnico.exists){
+          const dadosNomeUsuarioSingularUnico = docNomeUsuarioSingularUnico.data();
+          nomeEnviarUnico = dadosNomeUsuarioSingularUnico.nomeUsuario;
+          if(!nomeEnviarUnico){
+            nomeEnviarUnico = dadosNomeUsuarioSingularUnico.nome;
+          }
+          if(!nomeEnviarUnico){
+            nomeEnviarUnico = dadosNomeUsuarioSingularUnico.nomeCanal;
+          }
+        }
+      }catch(erroNomeSingularUnico){
+        console.log('Erro buscar nome usuario:', erroNomeSingularUnico);
+      }
+    }
+    if(!nomeEnviarUnico){
+      nomeEnviarUnico = 'Usuário';
+    }
+    let fotoEnviarUnico = usuarioAtualComentarioEnviarUnico.photoURL;
+    if(!fotoEnviarUnico){
+      try{
+        const storageEnviarUnico = firebase.storage();
+        const caminhoEnviarUnico = 'usuarios/' + usuarioAtualComentarioEnviarUnico.uid;
+        const pastaEnviarUnico = storageEnviarUnico.ref(caminhoEnviarUnico);
+        const listaEnviarUnico = await pastaEnviarUnico.listAll();
+        console.log('Enviar - arquivos achados:', listaEnviarUnico.items.length);
+        if(listaEnviarUnico.items.length > 0){
+          const arquivoEnviarUnico = listaEnviarUnico.items[0];
+          fotoEnviarUnico = await arquivoEnviarUnico.getDownloadURL();
+          console.log('Enviar - URL foto:', fotoEnviarUnico);
+        }
+      }catch(erroEnviarUnico){
+        console.log('Erro Storage enviar:', erroEnviarUnico);
+      }
+    }
+    if(!fotoEnviarUnico){
+      fotoEnviarUnico = '';
+    }
+    refEnviarUnico.push({
+      uid: usuarioAtualComentarioEnviarUnico.uid,
+      nome: nomeEnviarUnico,
+      foto: fotoEnviarUnico,
+      texto: textoComentarioEnviarUnico,
+      criadoEm: firebase.database.ServerValue.TIMESTAMP
+    });
+    inputComentarioEnviarUnico.value = '';
+  }
+
+  //===============================================
+  //     FUNÇÃO DE ASSISTIR LIVE AO VIVO
+  //===============================================
+    async function iniciarViewerAgoraAssistirUnico(canalAgoraViewerUnico){
+    const divVideoAgoraViewerUnico = document.getElementById('video-assistir-agora-pro');
+    const thumbViewerUnico = document.getElementById('thumb-assistir-unico');
+    const placeholderViewerUnico = document.getElementById('placeholder-assistir-unico');
+    if(divVideoAgoraViewerUnico){ divVideoAgoraViewerUnico.style.display = 'block'; }
+    if(thumbViewerUnico){ thumbViewerUnico.style.display = 'none'; }
+    if(placeholderViewerUnico){ placeholderViewerUnico.style.display = 'none'; }
+    clienteAgoraAssistirUnico = AgoraRTC.createClient({ mode: 'live', codec: 'h264' });
+    await clienteAgoraAssistirUnico.setClientRole('audience');
+    clienteAgoraAssistirUnico.on('user-published', async (userAgoraViewerUnico, mediaTypeViewerUnico) => {
+      await clienteAgoraAssistirUnico.subscribe(userAgoraViewerUnico, mediaTypeViewerUnico);
+      if(mediaTypeViewerUnico === 'video'){
+        userAgoraViewerUnico.videoTrack.play('video-assistir-agora-pro');
+      }
+      if(mediaTypeViewerUnico === 'audio'){
+        userAgoraViewerUnico.audioTrack.play();
+      }
+    });
+    await clienteAgoraAssistirUnico.join(appIdAgoraAssistirUnico, canalAgoraViewerUnico, tokenAgoraAssistirUnico, null);
+  }
+
   document.addEventListener('DOMContentLoaded', function(){
     carregarVideoAssistirUnico();
+    gerenciarEstadoAutenticacaoSeguirAssistirUnico();
   });
 </script>
 
