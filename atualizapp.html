@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atualização - Lobbz</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background-color:#0F1117;color:#FFF;font-family:'Plus Jakarta Sans',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.card-atualizapp-unica{background-color:#1E2230;border-radius:24px;padding:32px 24px;max-width:400px;width:100%;border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;align-items:center;gap:18px;box-shadow:0 10px 25px rgba(0,0,0,0.4);text-align:center}
+.icon-box-atualizapp-unica{width:70px;height:70px;border-radius:20px;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);display:flex;align-items:center;justify-content:center}
+.titulo-atualizapp-unica{font-size:22px;font-weight:700;color:#FFF}
+.desc-atualizapp-unica{font-size:13px;color:#94A3B8;line-height:1.5;margin-top:-8px}
+.versao-box-atualizapp-unica{margin-top:4px;display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08)}
+.versao-text-atualizapp-unica{font-size:11px;color:#94A3B8;font-weight:600;letter-spacing:0.5px}
+.barra-progresso-fundo-unica{width:100%;height:6px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;margin-top:6px}
+.barra-progresso-frente-unica{width:0%;height:100%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);border-radius:10px;transition:width 2s ease}
+.btn-download-atualizapp-unica{width:100%;background:linear-gradient(135deg,#0066FF 0%,#7C3AED 100%);color:#FFF;border:none;padding:14px;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.btn-voltar-atualizapp-unica{background:none;border:none;color:#94A3B8;font-size:12px;cursor:pointer;margin-top:6px}
+.btn-voltar-atualizapp-unica:hover{color:#FFF;text-decoration:underline}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+
+</head>
+<body>
+  <div class="card-atualizapp-unica">
+    <div class="icon-box-atualizapp-unica">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    </div>
+    <h2 class="titulo-atualizapp-unica">Nova atualização disponível</h2>
+    <p class="desc-atualizapp-unica">Uma nova versão do Lobbz está disponível com melhorias e correções. O download vai iniciar automaticamente.</p>
+    <div class="versao-box-atualizapp-unica">
+      <span id="versaoNovaAtualizappUnica" class="versao-text-atualizapp-unica">Versão: ...</span>
+    </div>
+    <div class="barra-progresso-fundo-unica">
+      <div id="barraProgressoFrenteUnica" class="barra-progresso-frente-unica"></div>
+    </div>
+    <button id="btnDownloadAtualizappUnica" class="btn-download-atualizapp-unica" onclick="iniciarDownloadManualAtualizappUnica()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      Baixar agora
+    </button>
+    <button class="btn-voltar-atualizapp-unica" onclick="voltarInicioAtualizappUnica()">Voltar para o início</button>
+  </div>
+
+<script>
+const firebaseConfigAtualizappUnica = {
+  apiKey: "AIzaSyDcX15UtgqteHH0MhCCZjZBbJkKNaoB61U",
+  authDomain: "lobbz-a2e5b.firebaseapp.com",
+  projectId: "lobbz-a2e5b",
+  storageBucket: "lobbz-a2e5b.firebasestorage.app",
+  messagingSenderId: "54068991558",
+  appId: "1:54068991558:web:c4ccbe7ac3d53de0d80e07"
+};
+if(!firebase.apps.length){
+  firebase.initializeApp(firebaseConfigAtualizappUnica);
+}
+const dbAtualizappUnica = firebase.firestore();
+const linkDownloadApkAtualizappUnica = "https://github.com/juniortechhub-cpu/lobbz/raw/main/lobbz.apk";
+function iniciarDownloadAutomaticoAtualizappUnica(){
+  const barraProgressoAtualizappUnica = document.getElementById('barraProgressoFrenteUnica');
+  if(barraProgressoAtualizappUnica){ barraProgressoAtualizappUnica.style.width = '100%'; }
+  const btnDownloadAtualizappUnica = document.getElementById('btnDownloadAtualizappUnica');
+  if(btnDownloadAtualizappUnica){ btnDownloadAtualizappUnica.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg> Baixando...'; }
+  setTimeout(function(){
+    window.location.href = linkDownloadApkAtualizappUnica;
+  }, 800);
+}
+function iniciarDownloadManualAtualizappUnica(){
+  window.location.href = linkDownloadApkAtualizappUnica;
+}
+function voltarInicioAtualizappUnica(){
+  window.location.href = 'inicio.html';
+}
+async function buscarVersaoFirestoreAtualizappUnica(){
+  const spanVersaoFirestoreUnica = document.getElementById('versaoNovaAtualizappUnica');
+  try{
+    const docVersaoFirestoreAtualizappUnica = await dbAtualizappUnica.collection('app').doc('info').get();
+    if(docVersaoFirestoreAtualizappUnica.exists){
+      const dadosVersaoFirestoreUnica = docVersaoFirestoreAtualizappUnica.data();
+      const versaoFirestoreValorUnica = dadosVersaoFirestoreUnica.versao;
+      if(spanVersaoFirestoreUnica){
+        spanVersaoFirestoreUnica.innerText = 'Versão: •' + versaoFirestoreValorUnica + '•';
+      }
+    }
+  }catch(erroVersaoFirestoreUnica){
+    if(spanVersaoFirestoreUnica){ spanVersaoFirestoreUnica.innerText = 'versao: "erro"'; }
+  }
+}
+window.addEventListener('load', function(){
+  buscarVersaoFirestoreAtualizappUnica();
+  setTimeout(function(){
+    iniciarDownloadAutomaticoAtualizappUnica();
+  }, 1500);
+});
+</script>
+
+
+<script type="module" src="appinfo.js"></script>
+</body>
+</html>
